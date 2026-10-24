@@ -1,0 +1,28 @@
+{
+    "name": "Analytics",
+    "description": null,
+    "tags": [
+        "Environment",
+        "DeploymentType",
+        "Brand",
+        "AppCategory",
+        "Exposure",
+        "AdminEmail",
+        "OwningOrg",
+        "DataClassification"
+    ],
+    "target": {
+        "AWS": [
+            "AWS Glue Job",
+            "AWS Glue Crawler",
+            "AWS Athena Workgroup",
+            "AWS Kinesis Data Streams",
+            "AWS Kinesis Video Streams",
+            "AWS OpenSearch Domain"
+        ],
+        "Azure": [
+            "Azure Application Insights"
+        ],
+        "GCP": []
+    }
+}

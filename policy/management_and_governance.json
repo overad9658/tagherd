@@ -1,0 +1,53 @@
+{
+    "name": "Management & Governance",
+    "description": null,
+    "tags": [
+        "Environment",
+        "DeploymentType",
+        "Brand",
+        "AppCategory",
+        "AdminEmail",
+        "OwningOrg"
+    ],
+    "target": {
+        "AWS": [
+            "AWS CloudFormation Stack",
+            "AWS SSM Document",
+            "AWS SSM Parameter",
+            "AWS CloudWatch Alarm",
+            "AWS CloudWatch Log Group",
+            "AWS CloudWatch Metric Filter Alarm",
+            "AWS RDS Event Subscription",
+            "AWS Service Catalog Product",
+            "AWS WorkSpace",
+            "AWS Organizational Unit",
+            "AWS Service Catalog Portfolio",
+            "AWS Step Function State Machine",
+            "AWS EventBridge Bus",
+            "AWS Backup Plan Rule"
+        ],
+        "Azure": [
+            "Azure Resource Group",
+            "Azure Batch Account",
+            "Azure Compute Gallery",
+            "Azure Automation Account",
+            "Azure Microsoft Entra ID Tenant",
+            "Azure Management Group",
+            "Azure Subscription",
+            "Azure Diagnostic Settings",
+            "Azure App Configuration"
+        ],
+        "GCP": [
+            "GCP Project"
+        ]
+    },
+    "filters": {
+        "AWS": {
+            "name": {
+                "DOES_NOT_CONTAIN": [
+                    "/aws/lambda/aws-controltower-NotificationForwarder"
+                ]
+            }
+        }
+    }
+}

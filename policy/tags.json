@@ -1,0 +1,38 @@
+{
+    "Environment": [
+        "Production",
+        "Staging",
+        "Development",
+        "Testing",
+        "CI",
+        "DTS"
+    ],
+    "DeploymentType": [
+        "Manual",
+        "Automation"
+    ],
+    "Brand": null,
+    "AppCategory": null,
+    "Exposure": [
+        "Internal",
+        "External"
+    ],
+    "AdminEmail": null,
+    "OwningOrg": [
+        "ITOps",
+        "DevOps",
+        "InfoSec",
+        "Finance",
+        "Platform"
+    ],
+    "EndpointType": [
+        "Server",
+        "Workstation"
+    ],
+    "DataClassification": [
+        "Public",
+        "Internal",
+        "Confidential",
+        "Sensitive"
+    ]
+}

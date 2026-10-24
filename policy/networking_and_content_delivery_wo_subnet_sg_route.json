@@ -1,0 +1,67 @@
+{
+    "name": "Networking & Content Delivery (w/o subnet, SG and route tables)",
+    "description": null,
+    "tags": [
+        "Environment",
+        "DeploymentType",
+        "Brand",
+        "AppCategory",
+        "AdminEmail",
+        "OwningOrg"
+    ],
+    "target": {
+        "AWS": [
+            "AWS Prefix List",
+            "AWS VPC",
+            "AWS VPC Endpoint",
+            "AWS VPC Flow Log",
+            "AWS VPC Peering",
+            "AWS VPC Endpoint Service",
+            "AWS App Runner VPC Connector",
+            "AWS Internet Gateway",
+            "AWS NAT Gateway",
+            "AWS Elastic IP Address",
+            "AWS ELB V1 Classic Load Balancer",
+            "AWS ELB V2 Network Load Balancer",
+            "AWS ELB V2 Application Load Balancer",
+            "AWS CloudFront Distribution",
+            "AWS Route53 Resolver Query Logging Configuration",
+            "AWS Egress Only Internet Gateway",
+            "AWS API Gateway",
+            "AWS API Gateway V2",
+            "AWS WAF Web ACL",
+            "AWS Customer Gateway",
+            "AWS VPN Gateway",
+            "AWS EC2 Client VPN Endpoint",
+            "AWS Shield Protection",
+            "AWS Network ACL",
+            "AWS Route53 DNS Zone",
+            "AWS Route53 Registered Domain",
+            "AWS Route 53 Health Check",
+            "AWS Network Interface"
+        ],
+        "Azure": [
+            "Azure Virtual Network",
+            "Azure NAT Gateway",
+            "Azure Virtual Network Gateway",
+            "Azure Application Gateway",
+            "Azure Public IP Address",
+            "Azure Front Door Standard/Premium",
+            "Azure Load Balancer",
+            "Azure Traffic Manager",
+            "Azure WAF Policy - Application Gateway",
+            "Azure WAF Policy - CDN",
+            "Azure WAF Policy - Front Door",
+            "Azure DNS Zone",
+            "Azure Private DNS Zone",
+            "Azure API Management",
+            "Azure CDN Profile",
+            "Azure Network Interface"
+        ],
+        "GCP": [
+            "GCP Compute Address",
+            "GCP Load Balancing Forwarding Rule",
+            "GCP DNS Managed Zone"
+        ]
+    }
+}

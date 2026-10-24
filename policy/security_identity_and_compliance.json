@@ -1,0 +1,53 @@
+{
+    "name": "Security, Identity, & Compliance",
+    "description": null,
+    "tags": [
+        "Environment",
+        "DeploymentType",
+        "Brand",
+        "AppCategory",
+        "AdminEmail",
+        "OwningOrg"
+    ],
+    "target": {
+        "AWS": [
+            "AWS IAM Role",
+            "AWS IAM AWS Managed Policy",
+            "AWS IAM Customer Managed Policy",
+            "AWS IAM Root User Policy",
+            "AWS IAM Service Control Policy (SCP)",
+            "AWS IAM Resource Control Policy (RCP)",
+            "AWS IAM User",
+            "AWS ACM Server Certificate",
+            "AWS CloudTrail",
+            "AWS Secret",
+            "AWS Account",
+            "AWS SAML Identity Provider",
+            "AWS OIDC Identity Provider",
+            "AWS Cognito User Pool",
+            "AWS Cognito Identity Pool",
+            "AWS IAM Server Certificate",
+            "AWS GuardDuty",
+            "AWS SES Domain Identity",
+            "AWS SES Email Address Identity",
+            "AWS SSH Key pair"
+        ],
+        "Azure": [
+            "Azure Microsoft Entra ID Role",
+            "Azure Microsoft Entra ID User",
+            "Azure Microsoft Entra ID Group",
+            "Azure Key Vault Certificate",
+            "Azure Log Analytics Dedicated Cluster",
+            "Azure Log Analytics Workspace",
+            "Azure Key Vault",
+            "Azure SSH Key pair"
+        ],
+        "GCP": [
+            "GCP Certificate Manager Certificate",
+            "GCP Secret Manager Secret",
+            "GCP Secret",
+            "GCP Cloud KMS Crypto Key",
+            "GCP KMS Key"
+        ]
+    }
+}

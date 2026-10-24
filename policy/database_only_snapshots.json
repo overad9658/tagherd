@@ -1,0 +1,21 @@
+{
+    "name": "Database (only snapshots)",
+    "description": null,
+    "tags": [
+        "Environment",
+        "DeploymentType",
+        "Brand",
+        "AppCategory",
+        "AdminEmail",
+        "OwningOrg",
+        "DataClassification"
+    ],
+    "target": {
+        "AWS": [
+            "AWS DB Cluster Snapshot",
+            "AWS DB Instance Snapshot"
+        ],        
+        "Azure": [],
+        "GCP": []
+    }
+}

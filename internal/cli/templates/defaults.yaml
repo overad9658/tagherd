@@ -1,0 +1,12 @@
+# Default tag values by cloud, scope, group or type. The most specific match
+# wins: type, then group, then scope, then cloud. Every value must pass the
+# tag dictionary.
+#
+# aws:
+#   "111122223333":
+#     Brand: Acme
+#     AppCategory: Payments
+#   groups:
+#     Database: { DataClassification: Confidential }
+# azure:
+#   "*": { Exposure: Internal }

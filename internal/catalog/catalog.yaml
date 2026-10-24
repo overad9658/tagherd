@@ -1,0 +1,301 @@
+# tagherd type catalog: policy display name -> provider resource type.
+#
+# native_type  AWS: CloudFormation / AWS Config type. Azure: ARM type, lower case
+#              as Resource Graph returns it. GCP: Cloud Asset Inventory asset type.
+#              A type with no provider equivalent uses a descriptive placeholder
+#              and is marked taggable: false.
+# match        Attribute predicates, required when entries share a native type.
+#              Attribute names are set by each discovery adapter (phase 3).
+# taggable     true | false (NOT_TAGGABLE) | partial (scanned, never written).
+# write_scope  org-management-account: writes must use the Organizations
+#              management account's role.
+# alias_of     The policy lists the same thing under two names; the alias shares
+#              the named entry's classification.
+#
+# Taggability marked false or partial is expected, to be confirmed in the pilot.
+
+# ---------------------------------------------------------------- AWS
+- {display: "AWS ACM Server Certificate", cloud: AWS, native_type: "AWS::ACM::Certificate", taggable: true}
+- {display: "AWS API Gateway", cloud: AWS, native_type: "AWS::ApiGateway::RestApi", taggable: true}
+- {display: "AWS API Gateway V2", cloud: AWS, native_type: "AWS::ApiGatewayV2::Api", taggable: true}
+- {display: "AWS Account", cloud: AWS, native_type: "AWS::Organizations::Account", taggable: true, write_scope: org-management-account}
+- {display: "AWS App Runner Service", cloud: AWS, native_type: "AWS::AppRunner::Service", taggable: true}
+- {display: "AWS App Runner VPC Connector", cloud: AWS, native_type: "AWS::AppRunner::VpcConnector", taggable: true}
+- {display: "AWS AppSync API", cloud: AWS, native_type: "AWS::AppSync::GraphQLApi", taggable: true}
+- {display: "AWS Athena Workgroup", cloud: AWS, native_type: "AWS::Athena::WorkGroup", taggable: true}
+- {display: "AWS Auto Scaling Group", cloud: AWS, native_type: "AWS::AutoScaling::AutoScalingGroup", taggable: true}
+- {display: "AWS Backup Plan", cloud: AWS, native_type: "AWS::Backup::BackupPlan", taggable: true, note: "Not yet in the policy; the policy's \"AWS Backup Plan Rule\" means this"}
+- {display: "AWS Backup Plan Rule", cloud: AWS, alias_of: "AWS Backup Plan", taggable: true, note: "Rename to \"AWS Backup Plan\" in management_and_governance.json"}
+- {display: "AWS Backup Vault", cloud: AWS, native_type: "AWS::Backup::BackupVault", taggable: true}
+- {display: "AWS Batch Compute Environment", cloud: AWS, native_type: "AWS::Batch::ComputeEnvironment", taggable: true}
+- {display: "AWS Batch Job Definition", cloud: AWS, native_type: "AWS::Batch::JobDefinition", taggable: true}
+- {display: "AWS CloudFormation Stack", cloud: AWS, native_type: "AWS::CloudFormation::Stack", taggable: true}
+- {display: "AWS CloudFront Distribution", cloud: AWS, native_type: "AWS::CloudFront::Distribution", taggable: true}
+- {display: "AWS CloudTrail", cloud: AWS, native_type: "AWS::CloudTrail::Trail", taggable: true}
+- {display: "AWS CloudWatch Alarm", cloud: AWS, native_type: "AWS::CloudWatch::Alarm", taggable: true}
+- {display: "AWS CloudWatch Log Group", cloud: AWS, native_type: "AWS::Logs::LogGroup", taggable: true}
+- {display: "AWS CloudWatch Metric Filter Alarm", cloud: AWS, alias_of: "AWS CloudWatch Alarm", taggable: true, note: "Duplicate of \"AWS CloudWatch Alarm\" in the same group; remove from the policy"}
+- {display: "AWS CodeBuild Project", cloud: AWS, native_type: "AWS::CodeBuild::Project", taggable: true}
+- {display: "AWS CodeDeploy Application", cloud: AWS, native_type: "AWS::CodeDeploy::Application", taggable: true}
+- {display: "AWS CodeDeploy Deployment Group", cloud: AWS, native_type: "AWS::CodeDeploy::DeploymentGroup", taggable: true}
+- {display: "AWS CodePipeline Pipeline", cloud: AWS, native_type: "AWS::CodePipeline::Pipeline", taggable: true}
+- {display: "AWS Cognito Identity Pool", cloud: AWS, native_type: "AWS::Cognito::IdentityPool", taggable: true}
+- {display: "AWS Cognito User Pool", cloud: AWS, native_type: "AWS::Cognito::UserPool", taggable: true}
+- {display: "AWS Comprehend Document Classifier Version", cloud: AWS, native_type: "AWS::Comprehend::DocumentClassifier", taggable: true}
+- {display: "AWS Comprehend Entity Recognizer Version", cloud: AWS, native_type: "AWS::Comprehend::EntityRecognizer", taggable: true}
+- {display: "AWS Comprehend Flywheel", cloud: AWS, native_type: "AWS::Comprehend::Flywheel", taggable: true}
+- {display: "AWS Customer Gateway", cloud: AWS, native_type: "AWS::EC2::CustomerGateway", taggable: true}
+- {display: "AWS DB Cluster Snapshot", cloud: AWS, native_type: "AWS::RDS::DBClusterSnapshot", taggable: true}
+- {display: "AWS DB Instance Snapshot", cloud: AWS, native_type: "AWS::RDS::DBSnapshot", taggable: true}
+- {display: "AWS Data Firehose Stream", cloud: AWS, native_type: "AWS::KinesisFirehose::DeliveryStream", taggable: true}
+- display: "AWS DataSync Location"
+  cloud: AWS
+  native_type:
+    - "AWS::DataSync::LocationAzureBlob"
+    - "AWS::DataSync::LocationEFS"
+    - "AWS::DataSync::LocationFSxLustre"
+    - "AWS::DataSync::LocationFSxONTAP"
+    - "AWS::DataSync::LocationFSxOpenZFS"
+    - "AWS::DataSync::LocationFSxWindows"
+    - "AWS::DataSync::LocationHDFS"
+    - "AWS::DataSync::LocationNFS"
+    - "AWS::DataSync::LocationObjectStorage"
+    - "AWS::DataSync::LocationS3"
+    - "AWS::DataSync::LocationSMB"
+  taggable: true
+- {display: "AWS DataSync Task", cloud: AWS, native_type: "AWS::DataSync::Task", taggable: true}
+- {display: "AWS DocumentDB Cluster", cloud: AWS, native_type: "AWS::RDS::DBCluster", match: {engine: docdb}, taggable: true}
+- {display: "AWS DocumentDB Instance", cloud: AWS, native_type: "AWS::RDS::DBInstance", match: {engine: docdb}, taggable: true}
+- {display: "AWS DynamoDB Table", cloud: AWS, native_type: "AWS::DynamoDB::Table", taggable: true}
+- {display: "AWS EBS Encrypted Snapshot", cloud: AWS, native_type: "AWS::EC2::Snapshot", match: {encrypted: "true"}, taggable: true}
+- {display: "AWS EBS Unencrypted Snapshot", cloud: AWS, native_type: "AWS::EC2::Snapshot", match: {encrypted: "false"}, taggable: true}
+- {display: "AWS EC2 Client VPN Endpoint", cloud: AWS, native_type: "AWS::EC2::ClientVpnEndpoint", taggable: true}
+- {display: "AWS EC2 Instance", cloud: AWS, native_type: "AWS::EC2::Instance", taggable: true}
+- {display: "AWS EC2 Route Table", cloud: AWS, native_type: "AWS::EC2::RouteTable", taggable: true}
+- {display: "AWS EC2 Security Group", cloud: AWS, native_type: "AWS::EC2::SecurityGroup", taggable: true}
+- {display: "AWS EC2 Volume (EBS)", cloud: AWS, native_type: "AWS::EC2::Volume", taggable: true}
+- {display: "AWS ECS Service", cloud: AWS, native_type: "AWS::ECS::Service", taggable: true}
+- {display: "AWS ECS Task", cloud: AWS, native_type: "AWS::ECS::Task", taggable: true}
+- {display: "AWS ECS Task Definition Revision", cloud: AWS, native_type: "AWS::ECS::TaskDefinition", taggable: true}
+- {display: "AWS ELB V1 Classic Load Balancer", cloud: AWS, native_type: "AWS::ElasticLoadBalancing::LoadBalancer", taggable: true}
+- {display: "AWS ELB V2 Application Load Balancer", cloud: AWS, native_type: "AWS::ElasticLoadBalancingV2::LoadBalancer", match: {type: application}, taggable: true}
+- {display: "AWS ELB V2 Network Load Balancer", cloud: AWS, native_type: "AWS::ElasticLoadBalancingV2::LoadBalancer", match: {type: network}, taggable: true}
+- {display: "AWS Egress Only Internet Gateway", cloud: AWS, native_type: "AWS::EC2::EgressOnlyInternetGateway", taggable: true}
+- {display: "AWS Elastic Beanstalk Application", cloud: AWS, native_type: "AWS::ElasticBeanstalk::Application", taggable: true}
+- {display: "AWS Elastic Container Service (ECS)", cloud: AWS, native_type: "AWS::ECS::Cluster", taggable: true, note: "Assumed to mean the ECS cluster; rename in the policy to confirm"}
+- {display: "AWS Elastic DocumentDB Cluster", cloud: AWS, native_type: "AWS::DocDBElastic::Cluster", taggable: true}
+- {display: "AWS Elastic File System (EFS)", cloud: AWS, native_type: "AWS::EFS::FileSystem", taggable: true}
+- {display: "AWS Elastic IP Address", cloud: AWS, native_type: "AWS::EC2::EIP", taggable: true}
+- {display: "AWS Elastic Kubernetes Service (EKS) Cluster", cloud: AWS, native_type: "AWS::EKS::Cluster", taggable: true}
+- {display: "AWS ElastiCache (Memcached) Cluster", cloud: AWS, native_type: "AWS::ElastiCache::CacheCluster", match: {engine: memcached}, taggable: true}
+- {display: "AWS ElastiCache (Redis OSS) Cluster", cloud: AWS, native_type: "AWS::ElastiCache::ReplicationGroup", taggable: true}
+- {display: "AWS ElastiCache (Redis OSS) Node", cloud: AWS, native_type: "AWS::ElastiCache::CacheCluster", match: {engine: [redis, valkey]}, taggable: true}
+- {display: "AWS EventBridge Bus", cloud: AWS, native_type: "AWS::Events::EventBus", taggable: true}
+- {display: "AWS FSx File Cache", cloud: AWS, native_type: "AWS::FSx::FileCache", taggable: true}
+- {display: "AWS FSx for Lustre", cloud: AWS, native_type: "AWS::FSx::FileSystem", match: {file_system_type: LUSTRE}, taggable: true}
+- {display: "AWS FSx for NetApp ONTAP", cloud: AWS, native_type: "AWS::FSx::FileSystem", match: {file_system_type: ONTAP}, taggable: true}
+- {display: "AWS FSx for OpenZFS", cloud: AWS, native_type: "AWS::FSx::FileSystem", match: {file_system_type: OPENZFS}, taggable: true}
+- {display: "AWS FSx for Windows File Server", cloud: AWS, native_type: "AWS::FSx::FileSystem", match: {file_system_type: WINDOWS}, taggable: true}
+- {display: "AWS Glue Crawler", cloud: AWS, native_type: "AWS::Glue::Crawler", taggable: true}
+- {display: "AWS Glue Job", cloud: AWS, native_type: "AWS::Glue::Job", taggable: true}
+- {display: "AWS GuardDuty", cloud: AWS, native_type: "AWS::GuardDuty::Detector", taggable: true}
+- {display: "AWS IAM AWS Managed Policy", cloud: AWS, native_type: "AWS::IAM::Policy", match: {policy_owner: aws}, taggable: false, note: "Customers cannot tag AWS managed policies"}
+- {display: "AWS IAM Customer Managed Policy", cloud: AWS, native_type: "AWS::IAM::Policy", match: {policy_owner: customer}, taggable: true}
+- {display: "AWS IAM Resource Control Policy (RCP)", cloud: AWS, native_type: "AWS::Organizations::Policy", match: {policy_type: RESOURCE_CONTROL_POLICY}, taggable: true, write_scope: org-management-account}
+- {display: "AWS IAM Role", cloud: AWS, native_type: "AWS::IAM::Role", taggable: true}
+- {display: "AWS IAM Root User Policy", cloud: AWS, native_type: "AWS::IAM::RootUserPolicy", taggable: false, note: "No customer tag API; confirm what the policy means by this type"}
+- {display: "AWS IAM Server Certificate", cloud: AWS, native_type: "AWS::IAM::ServerCertificate", taggable: true}
+- {display: "AWS IAM Service Control Policy (SCP)", cloud: AWS, native_type: "AWS::Organizations::Policy", match: {policy_type: SERVICE_CONTROL_POLICY}, taggable: true, write_scope: org-management-account}
+- {display: "AWS IAM User", cloud: AWS, native_type: "AWS::IAM::User", taggable: true}
+- {display: "AWS Internet Gateway", cloud: AWS, native_type: "AWS::EC2::InternetGateway", taggable: true}
+- {display: "AWS Kinesis Data Streams", cloud: AWS, native_type: "AWS::Kinesis::Stream", taggable: true}
+- {display: "AWS Kinesis Video Streams", cloud: AWS, native_type: "AWS::KinesisVideo::Stream", taggable: true}
+- {display: "AWS Lambda Function", cloud: AWS, native_type: "AWS::Lambda::Function", taggable: true}
+- {display: "AWS Lightsail Instance", cloud: AWS, native_type: "AWS::Lightsail::Instance", taggable: true}
+- {display: "AWS MQ Broker", cloud: AWS, native_type: "AWS::AmazonMQ::Broker", taggable: true}
+- {display: "AWS MQ Configuration", cloud: AWS, native_type: "AWS::AmazonMQ::Configuration", taggable: true}
+- {display: "AWS Machine Image (AMI)", cloud: AWS, native_type: "AWS::EC2::Image", taggable: true}
+- {display: "AWS MediaConvert Queue", cloud: AWS, native_type: "AWS::MediaConvert::Queue", taggable: true}
+- {display: "AWS NAT Gateway", cloud: AWS, native_type: "AWS::EC2::NatGateway", taggable: true}
+- {display: "AWS Neptune Cluster", cloud: AWS, native_type: "AWS::RDS::DBCluster", match: {engine: neptune}, taggable: true}
+- {display: "AWS Neptune Instance", cloud: AWS, native_type: "AWS::RDS::DBInstance", match: {engine: neptune}, taggable: true}
+- {display: "AWS Network ACL", cloud: AWS, native_type: "AWS::EC2::NetworkAcl", taggable: true}
+- {display: "AWS Network Interface", cloud: AWS, native_type: "AWS::EC2::NetworkInterface", taggable: true}
+- {display: "AWS OIDC Identity Provider", cloud: AWS, native_type: "AWS::IAM::OIDCProvider", taggable: true}
+- {display: "AWS OpenSearch Domain", cloud: AWS, native_type: "AWS::OpenSearch::Domain", taggable: true}
+- {display: "AWS Organizational Unit", cloud: AWS, native_type: "AWS::Organizations::OrganizationalUnit", taggable: true, write_scope: org-management-account}
+- {display: "AWS Prefix List", cloud: AWS, native_type: "AWS::EC2::PrefixList", taggable: true}
+- {display: "AWS Private ECR Repository", cloud: AWS, native_type: "AWS::ECR::Repository", taggable: true}
+- {display: "AWS Public ECR Repository", cloud: AWS, native_type: "AWS::ECR::PublicRepository", taggable: true}
+- {display: "AWS RDS Aurora MySQL Cluster", cloud: AWS, native_type: "AWS::RDS::DBCluster", match: {engine: [aurora-mysql, aurora]}, taggable: true}
+- {display: "AWS RDS Aurora MySQL Instance", cloud: AWS, native_type: "AWS::RDS::DBInstance", match: {engine: [aurora-mysql, aurora]}, taggable: true}
+- {display: "AWS RDS Aurora PostgreSQL Cluster", cloud: AWS, native_type: "AWS::RDS::DBCluster", match: {engine: aurora-postgresql}, taggable: true}
+- {display: "AWS RDS Aurora PostgreSQL Instance", cloud: AWS, native_type: "AWS::RDS::DBInstance", match: {engine: aurora-postgresql}, taggable: true}
+- {display: "AWS RDS Cluster MySQL Instance", cloud: AWS, native_type: "AWS::RDS::DBInstance", match: {engine: mysql, cluster_member: "true"}, taggable: true}
+- {display: "AWS RDS Cluster PostgreSQL Instance", cloud: AWS, native_type: "AWS::RDS::DBInstance", match: {engine: postgres, cluster_member: "true"}, taggable: true}
+- {display: "AWS RDS Event Subscription", cloud: AWS, native_type: "AWS::RDS::EventSubscription", taggable: true}
+- {display: "AWS RDS MSSQL Server Cluster", cloud: AWS, native_type: "AWS::RDS::DBCluster", match: {engine: {contains: sqlserver}}, taggable: true}
+- {display: "AWS RDS MSSQL Server Instance", cloud: AWS, native_type: "AWS::RDS::DBInstance", match: {engine: {contains: sqlserver}}, taggable: true}
+- {display: "AWS RDS MariaDB Instance", cloud: AWS, native_type: "AWS::RDS::DBInstance", match: {engine: mariadb}, taggable: true}
+- {display: "AWS RDS MySQL Cluster", cloud: AWS, native_type: "AWS::RDS::DBCluster", match: {engine: mysql}, taggable: true}
+- {display: "AWS RDS MySQL Instance", cloud: AWS, native_type: "AWS::RDS::DBInstance", match: {engine: mysql, cluster_member: "false"}, taggable: true}
+- {display: "AWS RDS Oracle Instance", cloud: AWS, native_type: "AWS::RDS::DBInstance", match: {engine: {contains: oracle}}, taggable: true}
+- {display: "AWS RDS PostgreSQL Cluster", cloud: AWS, native_type: "AWS::RDS::DBCluster", match: {engine: postgres}, taggable: true}
+- {display: "AWS RDS PostgreSQL Instance", cloud: AWS, native_type: "AWS::RDS::DBInstance", match: {engine: postgres, cluster_member: "false"}, taggable: true}
+- {display: "AWS Redshift Cluster", cloud: AWS, native_type: "AWS::Redshift::Cluster", taggable: true}
+- {display: "AWS Redshift Datashare", cloud: AWS, native_type: "AWS::Redshift::DataShare", taggable: false, note: "No tag API on the datashare"}
+- {display: "AWS Rekognition Stream Processor", cloud: AWS, native_type: "AWS::Rekognition::StreamProcessor", taggable: true}
+- {display: "AWS Route 53 Health Check", cloud: AWS, native_type: "AWS::Route53::HealthCheck", taggable: true}
+- {display: "AWS Route53 DNS Zone", cloud: AWS, native_type: "AWS::Route53::HostedZone", taggable: true}
+- {display: "AWS Route53 Registered Domain", cloud: AWS, native_type: "AWS::Route53Domains::Domain", taggable: true}
+- {display: "AWS Route53 Resolver Query Logging Configuration", cloud: AWS, native_type: "AWS::Route53Resolver::ResolverQueryLoggingConfig", taggable: true}
+- {display: "AWS S3 Bucket", cloud: AWS, native_type: "AWS::S3::Bucket", taggable: true}
+- {display: "AWS S3 Glacier Vault", cloud: AWS, native_type: "AWS::Glacier::Vault", taggable: true}
+- {display: "AWS SAML Identity Provider", cloud: AWS, native_type: "AWS::IAM::SAMLProvider", taggable: true}
+- {display: "AWS SES Domain Identity", cloud: AWS, native_type: "AWS::SES::EmailIdentity", match: {identity_type: DOMAIN}, taggable: true}
+- {display: "AWS SES Email Address Identity", cloud: AWS, native_type: "AWS::SES::EmailIdentity", match: {identity_type: EMAIL_ADDRESS}, taggable: true}
+- {display: "AWS SSH Key pair", cloud: AWS, native_type: "AWS::EC2::KeyPair", taggable: true}
+- {display: "AWS SSM Document", cloud: AWS, native_type: "AWS::SSM::Document", taggable: true}
+- {display: "AWS SSM Parameter", cloud: AWS, native_type: "AWS::SSM::Parameter", taggable: true}
+- {display: "AWS SageMaker Model", cloud: AWS, native_type: "AWS::SageMaker::Model", taggable: true}
+- {display: "AWS SageMaker Notebook", cloud: AWS, native_type: "AWS::SageMaker::NotebookInstance", taggable: true}
+- {display: "AWS Secret", cloud: AWS, native_type: "AWS::SecretsManager::Secret", taggable: true}
+- {display: "AWS Service Catalog Portfolio", cloud: AWS, native_type: "AWS::ServiceCatalog::Portfolio", taggable: true}
+- {display: "AWS Service Catalog Product", cloud: AWS, native_type: "AWS::ServiceCatalog::CloudFormationProduct", taggable: true}
+- {display: "AWS Shield Protection", cloud: AWS, native_type: "AWS::Shield::Protection", taggable: true}
+- {display: "AWS Simple Notification Service (SNS) Topic", cloud: AWS, native_type: "AWS::SNS::Topic", taggable: true}
+- {display: "AWS Simple Queue Service (SQS) Queue", cloud: AWS, native_type: "AWS::SQS::Queue", taggable: true}
+- {display: "AWS Spot Fleet Request", cloud: AWS, native_type: "AWS::EC2::SpotFleet", taggable: true}
+- {display: "AWS Step Function State Machine", cloud: AWS, native_type: "AWS::StepFunctions::StateMachine", taggable: true}
+- {display: "AWS VPC", cloud: AWS, native_type: "AWS::EC2::VPC", taggable: true}
+- {display: "AWS VPC Endpoint", cloud: AWS, native_type: "AWS::EC2::VPCEndpoint", taggable: true}
+- {display: "AWS VPC Endpoint Service", cloud: AWS, native_type: "AWS::EC2::VPCEndpointService", taggable: true}
+- {display: "AWS VPC Flow Log", cloud: AWS, native_type: "AWS::EC2::FlowLog", taggable: true}
+- {display: "AWS VPC Peering", cloud: AWS, native_type: "AWS::EC2::VPCPeeringConnection", taggable: true}
+- {display: "AWS VPC Subnet", cloud: AWS, native_type: "AWS::EC2::Subnet", taggable: true}
+- {display: "AWS VPN Gateway", cloud: AWS, native_type: "AWS::EC2::VPNGateway", taggable: true}
+- {display: "AWS WAF Web ACL", cloud: AWS, native_type: "AWS::WAFv2::WebACL", taggable: true}
+- {display: "AWS WorkSpace", cloud: AWS, native_type: "AWS::WorkSpaces::Workspace", taggable: true}
+
+# ---------------------------------------------------------------- Azure
+- {display: "Azure ACI Container", cloud: Azure, native_type: "microsoft.containerinstance/containergroups/containers", taggable: false, note: "A container inside a group; tags live on the group"}
+- {display: "Azure API Management", cloud: Azure, native_type: "microsoft.apimanagement/service", taggable: true}
+- {display: "Azure App Configuration", cloud: Azure, native_type: "microsoft.appconfiguration/configurationstores", taggable: true}
+- {display: "Azure App Service", cloud: Azure, native_type: "microsoft.web/sites", match: {kind: {not_contains: functionapp}}, taggable: true}
+- {display: "Azure Application Gateway", cloud: Azure, native_type: "microsoft.network/applicationgateways", taggable: true}
+- {display: "Azure Application Insights", cloud: Azure, native_type: "microsoft.insights/components", taggable: true}
+- {display: "Azure Automation Account", cloud: Azure, native_type: "microsoft.automation/automationaccounts", taggable: true}
+- {display: "Azure Availability Set", cloud: Azure, native_type: "microsoft.compute/availabilitysets", taggable: true}
+- {display: "Azure Backup Vault", cloud: Azure, native_type: "microsoft.dataprotection/backupvaults", taggable: true}
+- {display: "Azure Batch Account", cloud: Azure, native_type: "microsoft.batch/batchaccounts", taggable: true}
+- {display: "Azure Blob Storage Container", cloud: Azure, native_type: "microsoft.storage/storageaccounts/blobservices/containers", taggable: false, note: "Containers hold metadata, not ARM tags"}
+- {display: "Azure CDN Profile", cloud: Azure, native_type: "microsoft.cdn/profiles", match: {sku: {not_contains: azurefrontdoor}}, taggable: true}
+- {display: "Azure Cloud Service", cloud: Azure, native_type: "microsoft.compute/cloudservices", taggable: true}
+- {display: "Azure Compute Gallery", cloud: Azure, native_type: "microsoft.compute/galleries", taggable: true}
+- {display: "Azure Compute Public Snapshot", cloud: Azure, native_type: "microsoft.compute/snapshots", taggable: true}
+- {display: "Azure Compute Virtual Machine", cloud: Azure, native_type: "microsoft.compute/virtualmachines", taggable: true}
+- {display: "Azure Compute Virtual Machine Image", cloud: Azure, native_type: "microsoft.compute/images", taggable: true}
+- {display: "Azure Compute Virtual Machine Scale Set", cloud: Azure, native_type: "microsoft.compute/virtualmachinescalesets", taggable: true}
+- {display: "Azure Container Instance Group", cloud: Azure, native_type: "microsoft.containerinstance/containergroups", taggable: true}
+- {display: "Azure Container Registry (ACR)", cloud: Azure, native_type: "microsoft.containerregistry/registries", taggable: true}
+- {display: "Azure Cosmos DB Account", cloud: Azure, native_type: "microsoft.documentdb/databaseaccounts", taggable: true}
+- {display: "Azure Cosmos DB for PostgreSQL Cluster", cloud: Azure, native_type: "microsoft.dbforpostgresql/servergroupsv2", taggable: true}
+- {display: "Azure DNS Zone", cloud: Azure, native_type: "microsoft.network/dnszones", taggable: true}
+- {display: "Azure Data Explorer (Kusto) Cluster", cloud: Azure, native_type: "microsoft.kusto/clusters", taggable: true}
+- {display: "Azure Database for MariaDB (Server)", cloud: Azure, native_type: "microsoft.dbformariadb/servers", taggable: true}
+- {display: "Azure Database for MySQL (Server)", cloud: Azure, native_type: "microsoft.dbformysql/servers", taggable: true}
+- {display: "Azure Database for MySQL Flexible (Server)", cloud: Azure, native_type: "microsoft.dbformysql/flexibleservers", taggable: true}
+- {display: "Azure Database for PostgreSQL (Server)", cloud: Azure, native_type: "microsoft.dbforpostgresql/servers", taggable: true}
+- {display: "Azure Database for PostgreSQL Flexible (Server)", cloud: Azure, native_type: "microsoft.dbforpostgresql/flexibleservers", taggable: true}
+- {display: "Azure Databricks Catalog", cloud: Azure, native_type: "databricks/unity-catalog/catalog", taggable: false, note: "Unity Catalog object, not an ARM resource"}
+- {display: "Azure Diagnostic Settings", cloud: Azure, native_type: "microsoft.insights/diagnosticsettings", taggable: false, note: "Extension resource without tags"}
+- {display: "Azure Disk", cloud: Azure, native_type: "microsoft.compute/disks", taggable: true}
+- {display: "Azure Event Grid Domain", cloud: Azure, native_type: "microsoft.eventgrid/domains", taggable: true}
+- {display: "Azure Event Grid Partner Namespace", cloud: Azure, native_type: "microsoft.eventgrid/partnernamespaces", taggable: true}
+- {display: "Azure Event Grid Topic", cloud: Azure, native_type: "microsoft.eventgrid/topics", taggable: true}
+- {display: "Azure Event Hub Namespace", cloud: Azure, native_type: "microsoft.eventhub/namespaces", taggable: true}
+- {display: "Azure File Share", cloud: Azure, native_type: "microsoft.storage/storageaccounts/fileservices/shares", taggable: false, note: "Shares hold metadata, not ARM tags"}
+- {display: "Azure Front Door Standard/Premium", cloud: Azure, native_type: "microsoft.cdn/profiles", match: {sku: {contains: azurefrontdoor}}, taggable: true}
+- {display: "Azure Function", cloud: Azure, native_type: "microsoft.web/sites", match: {kind: {contains: functionapp, not_contains: workflowapp}}, taggable: true}
+- {display: "Azure Key Vault", cloud: Azure, native_type: "microsoft.keyvault/vaults", taggable: true}
+- {display: "Azure Key Vault Certificate", cloud: Azure, native_type: "microsoft.keyvault/vaults/certificates", taggable: true, note: "Data-plane tags; needs the Key Vault writer"}
+- {display: "Azure Kubernetes Service (AKS) Cluster", cloud: Azure, native_type: "microsoft.containerservice/managedclusters", taggable: true}
+- {display: "Azure Load Balancer", cloud: Azure, native_type: "microsoft.network/loadbalancers", taggable: true}
+- {display: "Azure Log Analytics Dedicated Cluster", cloud: Azure, native_type: "microsoft.operationalinsights/clusters", taggable: true}
+- {display: "Azure Log Analytics Workspace", cloud: Azure, native_type: "microsoft.operationalinsights/workspaces", taggable: true}
+- {display: "Azure Logic App Workflow", cloud: Azure, native_type: "microsoft.logic/workflows", taggable: true}
+- {display: "Azure Management Group", cloud: Azure, native_type: "microsoft.management/managementgroups", taggable: false, note: "Management groups do not support tags"}
+- {display: "Azure Microsoft Entra ID Group", cloud: Azure, native_type: "entra/group", taggable: false, note: "Directory object, not an ARM resource"}
+- {display: "Azure Microsoft Entra ID Role", cloud: Azure, native_type: "entra/directoryrole", taggable: false, note: "Directory object, not an ARM resource"}
+- {display: "Azure Microsoft Entra ID Tenant", cloud: Azure, native_type: "entra/tenant", taggable: false, note: "Directory object, not an ARM resource"}
+- {display: "Azure Microsoft Entra ID User", cloud: Azure, native_type: "entra/user", taggable: false, note: "Directory object, not an ARM resource"}
+- {display: "Azure NAT Gateway", cloud: Azure, native_type: "microsoft.network/natgateways", taggable: true}
+- {display: "Azure Network Interface", cloud: Azure, native_type: "microsoft.network/networkinterfaces", taggable: true}
+- {display: "Azure Network Security Group (Classic)", cloud: Azure, native_type: "microsoft.classicnetwork/networksecuritygroups", taggable: false, note: "Classic (ASM) resource"}
+- {display: "Azure Network Security Group (NSG)", cloud: Azure, native_type: "microsoft.network/networksecuritygroups", taggable: true}
+- {display: "Azure OpenAI", cloud: Azure, native_type: "microsoft.cognitiveservices/accounts", match: {kind: openai}, taggable: true}
+- {display: "Azure OpenAI Fine Tuning Job", cloud: Azure, native_type: "azure-openai/fine-tuning-job", taggable: false, note: "Data-plane object, not an ARM resource"}
+- {display: "Azure OpenAI Model", cloud: Azure, native_type: "azure-openai/model", taggable: false, note: "Data-plane object, not an ARM resource"}
+- {display: "Azure Private DNS Zone", cloud: Azure, native_type: "microsoft.network/privatednszones", taggable: true}
+- {display: "Azure Public IP Address", cloud: Azure, native_type: "microsoft.network/publicipaddresses", taggable: true}
+- {display: "Azure Recovery Services Vault", cloud: Azure, native_type: "microsoft.recoveryservices/vaults", taggable: true}
+- {display: "Azure Redis", cloud: Azure, native_type: "microsoft.cache/redis", taggable: true}
+- {display: "Azure Redis Enterprise", cloud: Azure, native_type: "microsoft.cache/redisenterprise", taggable: true}
+- {display: "Azure Resource Group", cloud: Azure, native_type: "microsoft.resources/subscriptions/resourcegroups", taggable: true}
+- {display: "Azure Route Table", cloud: Azure, native_type: "microsoft.network/routetables", taggable: true}
+- {display: "Azure SQL Managed Instance", cloud: Azure, native_type: "microsoft.sql/managedinstances", taggable: true}
+- {display: "Azure SQL Server", cloud: Azure, native_type: "microsoft.sql/servers", taggable: true}
+- {display: "Azure SQL Virtual Machine", cloud: Azure, native_type: "microsoft.sqlvirtualmachine/sqlvirtualmachines", taggable: true}
+- {display: "Azure SSH Key pair", cloud: Azure, native_type: "microsoft.compute/sshpublickeys", taggable: true}
+- {display: "Azure Scale Set Virtual Machine", cloud: Azure, native_type: "microsoft.compute/virtualmachinescalesets/virtualmachines", taggable: false, note: "Instances inherit the scale set's tags"}
+- {display: "Azure Service Bus Namespace", cloud: Azure, native_type: "microsoft.servicebus/namespaces", taggable: true}
+- {display: "Azure Static Web App", cloud: Azure, native_type: "microsoft.web/staticsites", taggable: true}
+- {display: "Azure Storage Account", cloud: Azure, native_type: "microsoft.storage/storageaccounts", taggable: true, note: "Listed under AWS in storage.json; move it to the Azure list"}
+- {display: "Azure Subscription", cloud: Azure, native_type: "microsoft.resources/subscriptions", taggable: true}
+- {display: "Azure Synapse Analytics", cloud: Azure, native_type: "microsoft.synapse/workspaces", taggable: true}
+- {display: "Azure Traffic Manager", cloud: Azure, native_type: "microsoft.network/trafficmanagerprofiles", taggable: true}
+- {display: "Azure Virtual Network", cloud: Azure, native_type: "microsoft.network/virtualnetworks", taggable: true}
+- {display: "Azure Virtual Network Gateway", cloud: Azure, native_type: "microsoft.network/virtualnetworkgateways", taggable: true}
+- {display: "Azure WAF Policy - Application Gateway", cloud: Azure, native_type: "microsoft.network/applicationgatewaywebapplicationfirewallpolicies", taggable: true}
+- {display: "Azure WAF Policy - CDN", cloud: Azure, native_type: "microsoft.cdn/cdnwebapplicationfirewallpolicies", taggable: true}
+- {display: "Azure WAF Policy - Front Door", cloud: Azure, native_type: "microsoft.network/frontdoorwebapplicationfirewallpolicies", taggable: true}
+
+# ---------------------------------------------------------------- GCP
+- {display: "GCP BigQuery Dataset", cloud: GCP, native_type: "bigquery.googleapis.com/Dataset", taggable: true}
+- {display: "GCP Bigtable", cloud: GCP, native_type: "bigtableadmin.googleapis.com/Instance", taggable: true}
+- {display: "GCP Bucket", cloud: GCP, native_type: "storage.googleapis.com/Bucket", taggable: true}
+- {display: "GCP Certificate Manager Certificate", cloud: GCP, native_type: "certificatemanager.googleapis.com/Certificate", taggable: true}
+- {display: "GCP Cloud Function", cloud: GCP, native_type: ["cloudfunctions.googleapis.com/CloudFunction", "cloudfunctions.googleapis.com/Function"], taggable: true}
+- {display: "GCP Cloud KMS Crypto Key", cloud: GCP, native_type: "cloudkms.googleapis.com/CryptoKey", taggable: true}
+- {display: "GCP Cloud Run Service", cloud: GCP, native_type: "run.googleapis.com/Service", taggable: true}
+- {display: "GCP Cloud SQL Instance", cloud: GCP, native_type: "sqladmin.googleapis.com/Instance", taggable: true}
+- {display: "GCP Compute Address", cloud: GCP, native_type: ["compute.googleapis.com/Address", "compute.googleapis.com/GlobalAddress"], taggable: true}
+- {display: "GCP Compute Disk", cloud: GCP, native_type: ["compute.googleapis.com/Disk", "compute.googleapis.com/RegionDisk"], taggable: true}
+- {display: "GCP Compute Image", cloud: GCP, native_type: "compute.googleapis.com/Image", taggable: true}
+- {display: "GCP Compute Instance", cloud: GCP, native_type: "compute.googleapis.com/Instance", taggable: true}
+- {display: "GCP Compute Instance Template", cloud: GCP, native_type: ["compute.googleapis.com/InstanceTemplate", "compute.googleapis.com/RegionInstanceTemplate"], taggable: partial, note: "Instance templates are immutable"}
+- {display: "GCP Compute Snapshot", cloud: GCP, native_type: "compute.googleapis.com/Snapshot", taggable: true}
+- {display: "GCP DNS Managed Zone", cloud: GCP, native_type: "dns.googleapis.com/ManagedZone", taggable: true}
+- {display: "GCP FileStore", cloud: GCP, native_type: "file.googleapis.com/Instance", taggable: true}
+- {display: "GCP Google Artifact Registry (GAR)", cloud: GCP, native_type: "artifactregistry.googleapis.com/Repository", taggable: true}
+- {display: "GCP KMS Key", cloud: GCP, alias_of: "GCP Cloud KMS Crypto Key", taggable: true, note: "Duplicate of \"GCP Cloud KMS Crypto Key\"; keep one in the policy"}
+- {display: "GCP Kubernetes Engine (GKE) Cluster", cloud: GCP, native_type: "container.googleapis.com/Cluster", taggable: true}
+- {display: "GCP Load Balancing Forwarding Rule", cloud: GCP, native_type: ["compute.googleapis.com/ForwardingRule", "compute.googleapis.com/GlobalForwardingRule"], taggable: true}
+- {display: "GCP Memorystore Memcache Instance", cloud: GCP, native_type: "memcache.googleapis.com/Instance", taggable: true}
+- {display: "GCP Memorystore Redis Instance", cloud: GCP, native_type: "redis.googleapis.com/Instance", taggable: true}
+- {display: "GCP Project", cloud: GCP, native_type: "cloudresourcemanager.googleapis.com/Project", taggable: true}
+- {display: "GCP Pub/Sub Subscription", cloud: GCP, native_type: "pubsub.googleapis.com/Subscription", taggable: true}
+- {display: "GCP Pub/Sub Topic", cloud: GCP, native_type: "pubsub.googleapis.com/Topic", taggable: true}
+- {display: "GCP Secret", cloud: GCP, alias_of: "GCP Secret Manager Secret", taggable: true, note: "Duplicate of \"GCP Secret Manager Secret\"; keep one in the policy"}
+- {display: "GCP Secret Manager Secret", cloud: GCP, native_type: "secretmanager.googleapis.com/Secret", taggable: true}
+- {display: "GCP Spanner Instance", cloud: GCP, native_type: "spanner.googleapis.com/Instance", taggable: true}
+- {display: "GCP Vertex AI Batch Prediction Job", cloud: GCP, native_type: "aiplatform.googleapis.com/BatchPredictionJob", taggable: partial, note: "Labels are fixed at creation"}
+- {display: "GCP Vertex AI Dataset", cloud: GCP, native_type: "aiplatform.googleapis.com/Dataset", taggable: true}
+- {display: "GCP Vertex AI Managed Workbench", cloud: GCP, alias_of: "GCP Vertex AI Workbench Managed Notebook", taggable: true, note: "Duplicate of \"GCP Vertex AI Workbench Managed Notebook\""}
+- {display: "GCP Vertex AI Model", cloud: GCP, native_type: "aiplatform.googleapis.com/Model", taggable: true}
+- {display: "GCP Vertex AI Pipeline Run", cloud: GCP, native_type: "aiplatform.googleapis.com/PipelineJob", taggable: partial, note: "Labels are fixed at creation"}
+- {display: "GCP Vertex AI Training", cloud: GCP, native_type: ["aiplatform.googleapis.com/CustomJob", "aiplatform.googleapis.com/TrainingPipeline"], taggable: partial, note: "Labels are fixed at creation"}
+- {display: "GCP Vertex AI User Managed Workbench", cloud: GCP, alias_of: "GCP Vertex AI Workbench User Managed Notebook", taggable: true, note: "Duplicate of \"GCP Vertex AI Workbench User Managed Notebook\""}
+- {display: "GCP Vertex AI Workbench Instance", cloud: GCP, native_type: "notebooks.googleapis.com/Instance", match: {workbench_version: v2}, taggable: true}
+- {display: "GCP Vertex AI Workbench Managed Notebook", cloud: GCP, native_type: "notebooks.googleapis.com/Runtime", taggable: true}
+- {display: "GCP Vertex AI Workbench User Managed Notebook", cloud: GCP, native_type: "notebooks.googleapis.com/Instance", match: {workbench_version: v1}, taggable: true}

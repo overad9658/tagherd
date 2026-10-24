@@ -1,0 +1,10 @@
+# Corrections for invalid tag values: tag -> { value found: dictionary value }.
+# Matching ignores case. Never applied to DeploymentType.
+#
+# Environment:
+#   prod: Production
+#   prd: Production
+#   dev: Development
+# OwningOrg:
+#   it-ops: ITOps
+#   security: InfoSec

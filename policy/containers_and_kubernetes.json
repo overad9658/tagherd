@@ -1,0 +1,34 @@
+{
+    "name": "Containers & Kubernetes",
+    "description": null,
+    "tags": [
+        "Environment",
+        "DeploymentType",
+        "Brand",
+        "AppCategory",
+        "Exposure",
+        "AdminEmail",
+        "OwningOrg"
+    ],
+    "target": {
+        "AWS": [
+            "AWS Elastic Kubernetes Service (EKS) Cluster",
+            "AWS ECS Task",
+            "AWS ECS Task Definition Revision",
+            "AWS ECS Service",
+            "AWS Auto Scaling Group",
+            "AWS Elastic Container Service (ECS)"
+        ],
+        "Azure": [
+            "Azure Container Instance Group",
+            "Azure ACI Container",
+            "Azure Kubernetes Service (AKS) Cluster",
+            "Azure Scale Set Virtual Machine",
+            "Azure Compute Virtual Machine Scale Set"
+        ],
+        "GCP": [
+            "GCP Cloud Run Service",
+            "GCP Kubernetes Engine (GKE) Cluster"
+        ]
+    }
+}

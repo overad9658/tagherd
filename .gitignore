@@ -1,0 +1,12 @@
+/bin/
+/dist/
+*.test
+*.out
+coverage.*
+.DS_Store
+
+# Local runs
+/tagherd.yaml
+/plan.json
+/patches/
+tagherd-audit.ndjson

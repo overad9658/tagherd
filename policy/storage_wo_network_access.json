@@ -1,0 +1,30 @@
+{
+    "name": "Storage (w/o network access)",
+    "description": null,
+    "tags": [
+        "Environment",
+        "DeploymentType",
+        "Brand",
+        "AppCategory",
+        "AdminEmail",
+        "OwningOrg",
+        "DataClassification"
+    ],
+    "target": {
+        "AWS": [
+            "AWS EC2 Volume (EBS)",
+            "AWS EBS Unencrypted Snapshot",
+            "AWS EBS Encrypted Snapshot",
+            "AWS Elastic File System (EFS)",
+            "AWS S3 Glacier Vault"
+        ],
+        "Azure": [
+            "Azure Disk"
+        ],
+        "GCP": [
+            "GCP Compute Disk",
+            "GCP Compute Snapshot",
+            "GCP FileStore"
+        ]
+    }
+}

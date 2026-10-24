@@ -1,0 +1,41 @@
+{
+    "name": "Machine Learning",
+    "description": null,
+    "tags": [
+        "Environment",
+        "DeploymentType",
+        "Brand",
+        "AppCategory",
+        "Exposure",
+        "AdminEmail",
+        "OwningOrg",
+        "DataClassification"
+    ],
+    "target": {
+        "AWS": [
+            "AWS SageMaker Notebook",
+            "AWS SageMaker Model",
+            "AWS Comprehend Flywheel",
+            "AWS Comprehend Entity Recognizer Version",
+            "AWS Comprehend Document Classifier Version",
+            "AWS Rekognition Stream Processor"
+        ],
+        "Azure": [
+            "Azure OpenAI",
+            "Azure OpenAI Fine Tuning Job",
+            "Azure OpenAI Model"
+        ],
+        "GCP": [
+            "GCP Vertex AI Training",
+            "GCP Vertex AI Pipeline Run",
+            "GCP Vertex AI Model",
+            "GCP Vertex AI Batch Prediction Job",
+            "GCP Vertex AI Workbench Managed Notebook",
+            "GCP Vertex AI Workbench User Managed Notebook",
+            "GCP Vertex AI Workbench Instance",
+            "GCP Vertex AI User Managed Workbench",
+            "GCP Vertex AI Managed Workbench",
+            "GCP Vertex AI Dataset"
+        ]
+    }
+}

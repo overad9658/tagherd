@@ -1,0 +1,41 @@
+# tagherd configuration. Secrets never go in this file: any value can
+# reference an environment variable as ${NAME}. Relative paths resolve
+# against this file's directory.
+#
+# Precedence: command-line flag, then TAGHERD_<FLAG> environment variable,
+# then this file, then the default.
+
+policy_dir: ./policy             # tags.json and the group files
+ownership_file: ./ownership.yaml # scope -> OwningOrg
+defaults_file: ./defaults.yaml   # optional scope-level tag defaults
+synonyms_file: ./synonyms.yaml   # invalid value -> dictionary value
+
+scopes:
+  aws:
+    organization: true
+    read_role_name: tagherd-read
+    write_role_name: tagherd-write
+    exclude_accounts: []
+  azure:
+    tenant_id: "${AZURE_TENANT_ID}"
+    subscriptions: ["*"]
+  gcp:
+    organization_id: "${GCP_ORG_ID}"
+    projects: ["*"]
+
+terraform:
+  allowed_repositories: []        # e.g. { scm: GitHub, org: example-org, repo: "*" }
+  pull_requests:
+    branch_prefix: tagherd/
+  module_registries: []           # e.g. { type: jfrog, url: "${JFROG_URL}", token: "${JFROG_TOKEN}" }
+  scm_tokens:
+    github: "${GITHUB_TOKEN}"
+    bitbucket: "${BITBUCKET_TOKEN}"
+
+# Wiz runs the machine-image override query. Without this block the AMI
+# group falls back to the default tag test.
+# wiz:
+#   api_url: https://api.<region>.app.wiz.io/graphql
+#   client_id: "${WIZ_CLIENT_ID}"
+#   client_secret: "${WIZ_CLIENT_SECRET}"
+#   timeout: 60s

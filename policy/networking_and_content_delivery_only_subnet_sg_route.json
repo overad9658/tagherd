@@ -1,0 +1,24 @@
+{
+    "name": "Networking & Content Delivery (only subnet, SG and route tables)",
+    "description": null,
+    "tags": [
+        "Environment",
+        "DeploymentType",
+        "Brand",
+        "AppCategory"
+    ],
+    "target": {
+        "AWS": [
+            "AWS VPC Subnet",
+            "AWS EC2 Security Group",
+            "AWS EC2 Route Table"
+        ],
+        "Azure": [
+            "Azure Network Security Group (Classic)",
+            "Azure Network Security Group (NSG)",
+            "Azure Route Table"
+        ],
+        "GCP": [
+        ]
+    }
+}

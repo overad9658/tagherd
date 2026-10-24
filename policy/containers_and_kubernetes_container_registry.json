@@ -1,0 +1,23 @@
+{
+    "name": "Containers & Kubernetes (Container Registries)",
+    "description": null,
+    "tags": [
+        "DeploymentType",
+        "Brand",
+        "Exposure",
+        "AdminEmail",
+        "OwningOrg"
+    ],
+    "target": {
+        "AWS": [
+            "AWS Private ECR Repository",
+            "AWS Public ECR Repository"
+        ],
+        "Azure": [
+            "Azure Container Registry (ACR)"
+        ],
+        "GCP": [
+            "GCP Google Artifact Registry (GAR)"
+        ]
+    }
+}

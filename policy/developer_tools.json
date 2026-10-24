@@ -1,0 +1,21 @@
+{
+    "name": "Developer Tools",
+    "description": null,
+    "tags": [
+        "DeploymentType",
+        "Brand",
+        "AppCategory",
+        "AdminEmail",
+        "OwningOrg"
+    ],
+    "target": {
+        "AWS": [
+            "AWS CodeBuild Project",
+            "AWS CodePipeline Pipeline",
+            "AWS CodeDeploy Application",
+            "AWS CodeDeploy Deployment Group"
+        ],
+        "Azure": [],
+        "GCP": []
+    }
+}

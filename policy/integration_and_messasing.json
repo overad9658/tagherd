@@ -1,0 +1,43 @@
+{
+    "name": "Integration & Messaging",
+    "description": null,
+    "tags": [
+        "Environment",
+        "DeploymentType",
+        "Brand",
+        "AppCategory",
+        "AdminEmail",
+        "OwningOrg",
+        "DataClassification"
+    ],
+    "target": {
+        "AWS": [
+            "AWS Simple Notification Service (SNS) Topic",
+            "AWS Simple Queue Service (SQS) Queue",
+            "AWS Data Firehose Stream",
+            "AWS MQ Configuration",
+            "AWS MQ Broker",
+            "AWS AppSync API"
+        ],
+        "Azure": [
+            "Azure Event Hub Namespace",
+            "Azure Event Grid Domain",
+            "Azure Event Grid Partner Namespace",
+            "Azure Event Grid Topic",
+            "Azure Service Bus Namespace"
+        ],
+        "GCP": [
+            "GCP Pub/Sub Topic",
+            "GCP Pub/Sub Subscription"
+        ]
+    },
+    "filters": {
+        "AWS": {
+            "name": {
+                "DOES_NOT_CONTAIN": [
+                    "aws-controltower-SecurityNotifications"
+                ]
+            }
+        }
+    }
+}

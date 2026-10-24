@@ -1,0 +1,48 @@
+{
+    "name": "Compute (w/o machines and machine images)",
+    "description": null,
+    "tags": [
+        "Environment",
+        "DeploymentType",
+        "Brand",
+        "AppCategory",
+        "Exposure",
+        "AdminEmail",
+        "OwningOrg"
+    ],
+    "target": {
+        "AWS": [
+            "AWS Spot Fleet Request",
+            "AWS Lambda Function",
+            "AWS Lightsail Instance",
+            "AWS Elastic Beanstalk Application",
+            "AWS App Runner Service",
+            "AWS Batch Compute Environment",
+            "AWS Batch Job Definition",
+            "AWS DataSync Location",
+            "AWS DataSync Task",
+            "AWS MediaConvert Queue"
+        ],
+        "Azure": [
+            "Azure Availability Set",
+            "Azure Function",
+            "Azure App Service",
+            "Azure Cloud Service",
+            "Azure Logic App Workflow",
+            "Azure Static Web App"
+        ],
+        "GCP": [
+            "GCP Cloud Function",
+            "GCP Compute Instance Template"
+        ]
+    },
+    "filters": {
+        "AWS": {
+            "name": {
+                "DOES_NOT_CONTAIN": [
+                    "aws-controltower-NotificationForwarder"
+                ]
+            }
+        }
+    }
+}

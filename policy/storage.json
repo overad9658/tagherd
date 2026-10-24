@@ -1,0 +1,36 @@
+{
+    "name": "Storage",
+    "description": null,
+    "tags": [
+        "Environment",
+        "DeploymentType",
+        "Brand",
+        "AppCategory",
+        "Exposure",
+        "AdminEmail",
+        "OwningOrg",
+        "DataClassification"
+    ],
+    "target": {
+        "AWS": [
+            "AWS S3 Bucket",
+            "AWS FSx File Cache",
+            "AWS FSx for Lustre",
+            "AWS FSx for NetApp ONTAP",
+            "AWS FSx for OpenZFS",
+            "AWS FSx for Windows File Server",
+            "Azure Storage Account",
+            "AWS Backup Vault"
+        ],
+        "Azure": [
+            "Azure Blob Storage Container",
+            "Azure Compute Public Snapshot",
+            "Azure File Share",
+            "Azure Backup Vault",
+            "Azure Recovery Services Vault"
+        ],
+        "GCP": [
+            "GCP Bucket"
+        ]
+    }
+}

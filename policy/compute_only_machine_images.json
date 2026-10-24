@@ -1,0 +1,168 @@
+{
+    "name": "Compute (only machine images)",
+    "description": null,
+    "tags": [
+        "DeploymentType",
+        "AdminEmail",
+        "OwningOrg"
+    ],
+    "target": {
+        "AWS": [
+            "AWS Machine Image (AMI)"
+        ],
+        "Azure": [
+            "Azure Compute Virtual Machine Image"
+        ],
+        "GCP": [
+            "GCP Compute Image"
+        ]
+    },
+    "override": {
+        "AWS": {
+            "all": null,
+            "missing": {
+                "type": [
+                    "SERVICE_CONFIGURATION",
+                    "VIRTUAL_MACHINE_IMAGE"
+                ],
+                "select": true,
+                "where": {
+                    "nativeType": {
+                        "EQUALS": [
+                            "ami"
+                        ]
+                    },
+                    "cloudPlatform": {
+                        "EQUALS": [
+                            "AWS"
+                        ]
+                    },
+                    "_or": [
+                        {
+                            "tags": {
+                                "TAG_DOES_NOT_CONTAIN_ANY": [
+                                    {
+                                        "key": "DeploymentType",
+                                        "value": "Manual"
+                                    },
+                                    {
+                                        "key": "DeploymentType",
+                                        "value": "Automation"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "tags": {
+                                "TAG_DOES_NOT_CONTAIN_ANY": [
+                                    {
+                                        "key": "OwningOrg",
+                                        "value": "ITOps"
+                                    },
+                                    {
+                                        "key": "OwningOrg",
+                                        "value": "DevOps"
+                                    },
+                                    {
+                                        "key": "OwningOrg",
+                                        "value": "InfoSec"
+                                    },
+                                    {
+                                        "key": "OwningOrg",
+                                        "value": "Finance"
+                                    },
+                                    {
+                                        "key": "OwningOrg",
+                                        "value": "Platform"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "tags": {
+                                "TAG_DOES_NOT_CONTAIN_ANY": [
+                                    {
+                                        "key": "AdminEmail"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "relationships": [
+                    {
+                        "type": [
+                            {
+                                "type": "USES"
+                            }
+                        ],
+                        "negate": true,
+                        "with": {
+                            "type": [
+                                "SERVICE_CONFIGURATION"
+                            ],
+                            "where": {
+                                "nativeType": {
+                                    "EQUALS": [
+                                        "ec2#amitags"
+                                    ]
+                                },
+                                "_or": [
+                                    {
+                                        "tags": {
+                                            "TAG_CONTAINS_ANY": [
+                                                {
+                                                    "key": "DeploymentType",
+                                                    "value": "Manual"
+                                                },
+                                                {
+                                                    "key": "DeploymentType",
+                                                    "value": "Automation"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "tags": {
+                                            "TAG_CONTAINS_ANY": [
+                                                {
+                                                    "key": "OwningOrg",
+                                                    "value": "ITOps"
+                                                },
+                                                {
+                                                    "key": "OwningOrg",
+                                                    "value": "DevOps"
+                                                },
+                                                {
+                                                    "key": "OwningOrg",
+                                                    "value": "InfoSec"
+                                                },
+                                                {
+                                                    "key": "OwningOrg",
+                                                    "value": "Finance"
+                                                },
+                                                {
+                                                    "key": "OwningOrg",
+                                                    "value": "Platform"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "tags": {
+                                            "TAG_CONTAINS_ANY": [
+                                                {
+                                                    "key": "AdminEmail"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

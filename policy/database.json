@@ -1,0 +1,68 @@
+{
+    "name": "Database",
+    "description": null,
+    "tags": [
+        "Environment",
+        "DeploymentType",
+        "Brand",
+        "AppCategory",
+        "Exposure",
+        "AdminEmail",
+        "OwningOrg",
+        "DataClassification"
+    ],
+    "target": {
+        "AWS": [
+            "AWS DocumentDB Instance",
+            "AWS DynamoDB Table",
+            "AWS RDS MSSQL Server Instance",
+            "AWS RDS MariaDB Instance",
+            "AWS RDS Aurora MySQL Instance",
+            "AWS RDS Aurora MySQL Cluster",
+            "AWS RDS Aurora PostgreSQL Instance",
+            "AWS RDS Aurora PostgreSQL Cluster",
+            "AWS Redshift Datashare",
+            "AWS Redshift Cluster",
+            "AWS ElastiCache (Redis OSS) Cluster",
+            "AWS ElastiCache (Redis OSS) Node",
+            "AWS ElastiCache (Memcached) Cluster",
+            "AWS RDS MSSQL Server Cluster",
+            "AWS RDS MySQL Cluster",
+            "AWS RDS MySQL Instance",
+            "AWS RDS Oracle Instance",
+            "AWS RDS PostgreSQL Instance",
+            "AWS RDS Cluster PostgreSQL Instance",
+            "AWS RDS Cluster MySQL Instance",
+            "AWS DocumentDB Cluster",
+            "AWS Neptune Cluster",
+            "AWS Neptune Instance",
+            "AWS RDS PostgreSQL Cluster",
+            "AWS Elastic DocumentDB Cluster"
+        ],
+        "Azure": [
+            "Azure Cosmos DB Account",
+            "Azure Databricks Catalog",
+            "Azure Database for PostgreSQL (Server)",
+            "Azure Database for MySQL Flexible (Server)",
+            "Azure Database for MySQL (Server)",
+            "Azure Database for MariaDB (Server)",
+            "Azure Database for PostgreSQL Flexible (Server)",
+            "Azure Redis",
+            "Azure SQL Server",
+            "Azure SQL Managed Instance",
+            "Azure Synapse Analytics",
+            "Azure Data Explorer (Kusto) Cluster",
+            "Azure SQL Virtual Machine",
+            "Azure Redis Enterprise",
+            "Azure Cosmos DB for PostgreSQL Cluster"
+        ],
+        "GCP": [
+            "GCP BigQuery Dataset",
+            "GCP Bigtable",
+            "GCP Cloud SQL Instance",
+            "GCP Memorystore Redis Instance",
+            "GCP Memorystore Memcache Instance",
+            "GCP Spanner Instance"
+        ]
+    }
+}

@@ -1,0 +1,13 @@
+{
+    "Environment": [
+        "Production",
+        "Staging",
+        "Development",
+        "Testing"
+    ],
+    "DeploymentType": [
+        "Manual",
+        "Automation"
+    ],
+    "AdminEmail": null
+}

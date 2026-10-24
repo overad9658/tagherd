@@ -1,0 +1,9 @@
+# Owning org by scope, used to fill OwningOrg. Values must be one of the
+# OwningOrg values in tags.json.
+#
+# aws:
+#   "111122223333": Platform
+# azure:
+#   "00000000-0000-0000-0000-000000000000": ITOps
+# gcp:
+#   my-project-id: DevOps

@@ -1,0 +1,25 @@
+{
+    "name": "Compute (only machines)",
+    "description": null,
+    "tags": [
+        "Environment",
+        "DeploymentType",
+        "Brand",
+        "AppCategory",
+        "Exposure",
+        "AdminEmail",
+        "OwningOrg",
+        "EndpointType"
+    ],
+    "target": {
+        "AWS": [
+            "AWS EC2 Instance"
+        ],
+        "Azure": [
+            "Azure Compute Virtual Machine"
+        ],
+        "GCP": [
+            "GCP Compute Instance"
+        ]
+    }
+}
