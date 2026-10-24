@@ -94,45 +94,57 @@ const (
 )
 
 func renderTable(w io.Writer, rows Rows, color bool) error {
-	tw := tabwriter.NewWriter(w, 0, 0, 2, ' ', 0)
+	var b strings.Builder
+	tw := tabwriter.NewWriter(&b, 0, 0, 2, ' ', 0)
 	if len(rows.Headers) > 0 {
 		h := strings.Join(rows.Headers, "\t")
 		if color {
 			// Wrap each cell, so tabwriter still measures equal widths.
 			h = ansiBold + strings.Join(rows.Headers, ansiReset+"\t"+ansiBold) + ansiReset
 		}
-		fmt.Fprintln(tw, h)
+		_, _ = fmt.Fprintln(tw, h) // a strings.Builder never fails
 	}
 	for _, r := range rows.Rows {
-		fmt.Fprintln(tw, strings.Join(r, "\t"))
+		_, _ = fmt.Fprintln(tw, strings.Join(r, "\t"))
 	}
 	if err := tw.Flush(); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, b.String()); err != nil {
 		return err
 	}
 	return footer(w, rows.Footer)
 }
 
 func renderMarkdown(w io.Writer, rows Rows) error {
-	esc := func(s string) string { return strings.ReplaceAll(s, "|", `\|`) }
+	if _, err := io.WriteString(w, markdownTable(rows.Headers, rows.Rows)); err != nil {
+		return err
+	}
+	return footer(w, rows.Footer)
+}
+
+// markdownTable formats a GitHub-flavored table, escaping pipes in cells.
+func markdownTable(headers []string, rows [][]string) string {
+	var b strings.Builder
 	line := func(cells []string) {
 		parts := make([]string, len(cells))
 		for i, c := range cells {
-			parts[i] = esc(c)
+			parts[i] = strings.ReplaceAll(c, "|", `\|`)
 		}
-		fmt.Fprintf(w, "| %s |\n", strings.Join(parts, " | "))
+		b.WriteString("| " + strings.Join(parts, " | ") + " |\n")
 	}
-	if len(rows.Headers) > 0 {
-		line(rows.Headers)
-		sep := make([]string, len(rows.Headers))
+	if len(headers) > 0 {
+		line(headers)
+		sep := make([]string, len(headers))
 		for i := range sep {
 			sep[i] = "---"
 		}
-		fmt.Fprintf(w, "| %s |\n", strings.Join(sep, " | "))
+		b.WriteString("| " + strings.Join(sep, " | ") + " |\n")
 	}
-	for _, r := range rows.Rows {
+	for _, r := range rows {
 		line(r)
 	}
-	return footer(w, rows.Footer)
+	return b.String()
 }
 
 func footer(w io.Writer, lines []string) error {

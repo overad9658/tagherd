@@ -125,7 +125,7 @@ func (c *Config) Require(paths ...string) error {
 func Find(explicit string) (string, error) {
 	if explicit != "" {
 		if _, err := os.Stat(explicit); err != nil {
-			return "", fmt.Errorf("%w: config file %s: %v", ErrInvalid, explicit, errors.Unwrap(err))
+			return "", fmt.Errorf("%w: config file %s: %w", ErrInvalid, explicit, errors.Unwrap(err))
 		}
 		return explicit, nil
 	}
@@ -149,7 +149,7 @@ func Load(path string) (*Config, error) {
 	}
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %v", ErrInvalid, err)
+		return nil, fmt.Errorf("%w: %w", ErrInvalid, err)
 	}
 	cfg, err := Parse(data, os.LookupEnv)
 	if err != nil {
@@ -169,7 +169,7 @@ func Load(path string) (*Config, error) {
 func Parse(data []byte, lookup func(string) (string, bool)) (*Config, error) {
 	var root yaml.Node
 	if err := yaml.Unmarshal(data, &root); err != nil {
-		return nil, fmt.Errorf("%w: %v", ErrInvalid, err)
+		return nil, fmt.Errorf("%w: %w", ErrInvalid, err)
 	}
 	cfg := &Config{Unset: map[string]string{}}
 	if len(root.Content) == 0 {
@@ -180,12 +180,12 @@ func Parse(data []byte, lookup func(string) (string, bool)) (*Config, error) {
 	// Re-encode the expanded tree so the decoder can reject unknown keys.
 	var buf bytes.Buffer
 	if err := yaml.NewEncoder(&buf).Encode(root.Content[0]); err != nil {
-		return nil, fmt.Errorf("%w: %v", ErrInvalid, err)
+		return nil, fmt.Errorf("%w: %w", ErrInvalid, err)
 	}
 	dec := yaml.NewDecoder(&buf)
 	dec.KnownFields(true)
 	if err := dec.Decode(cfg); err != nil && !errors.Is(err, io.EOF) {
-		return nil, fmt.Errorf("%w: %v", ErrInvalid, err)
+		return nil, fmt.Errorf("%w: %w", ErrInvalid, err)
 	}
 	return cfg, nil
 }

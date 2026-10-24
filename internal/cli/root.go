@@ -69,7 +69,7 @@ func Execute(args []string, stdout, stderr io.Writer, getenv func(string) (strin
 	if err != nil {
 		var ee *output.ExitError
 		if !errors.As(err, &ee) || ee.Code == output.ExitUsage {
-			fmt.Fprintf(stderr, "tagherd: %v\n", err)
+			_, _ = fmt.Fprintf(stderr, "tagherd: %v\n", err)
 		}
 	}
 	return output.ExitCode(err)
@@ -89,7 +89,7 @@ apply writes: nothing changes in a cloud account unless apply runs.`,
 	root.SetOut(a.stdout)
 	root.SetErr(a.stderr)
 	root.SetFlagErrorFunc(func(_ *cobra.Command, err error) error {
-		return fmt.Errorf("%w: %v", output.ErrUsage, err)
+		return fmt.Errorf("%w: %w", output.ErrUsage, err)
 	})
 
 	f := root.PersistentFlags()
@@ -238,16 +238,26 @@ func (a *app) loadPolicy() (*policy.Set, error) {
 
 // render writes a result to stdout or --out.
 func (a *app) render(data any, rows output.Rows) error {
-	w := a.stdout
-	if a.g.out != "" {
-		f, err := os.Create(a.g.out)
-		if err != nil {
-			return fmt.Errorf("--out: %w", err)
-		}
-		defer f.Close()
-		w = f
+	return a.write(func(w io.Writer) error {
+		return output.Render(w, output.Options{Format: a.format, Color: a.color}, data, rows)
+	})
+}
+
+// write runs fn against stdout, or against the --out file.
+func (a *app) write(fn func(io.Writer) error) (err error) {
+	if a.g.out == "" {
+		return fn(a.stdout)
 	}
-	return output.Render(w, output.Options{Format: a.format, Color: a.color}, data, rows)
+	f, err := os.Create(a.g.out)
+	if err != nil {
+		return fmt.Errorf("--out: %w", err)
+	}
+	defer func() {
+		if cerr := f.Close(); cerr != nil && err == nil {
+			err = fmt.Errorf("--out: %w", cerr)
+		}
+	}()
+	return fn(f)
 }
 
 func isTerminal(w io.Writer) bool {

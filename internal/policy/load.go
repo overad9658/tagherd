@@ -108,7 +108,7 @@ func (l *loader) hashFile(name string, data []byte) {
 			canon = b
 		}
 	}
-	fmt.Fprintf(l.hash, "%s\n%d\n", name, len(canon))
+	_, _ = fmt.Fprintf(l.hash, "%s\n%d\n", name, len(canon)) // hash writes never fail
 	l.hash.Write(canon)
 }
 
