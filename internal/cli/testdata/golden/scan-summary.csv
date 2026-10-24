@@ -1,0 +1,13 @@
+dimension,key,cloud,evaluated,compliant,percent
+overall,all,,11,4,36.4
+group,Compute (only machine images),,2,1,50.0
+group,Compute (only machines),,3,0,0.0
+group,Compute (w/o machines and machine images),,2,1,50.0
+group,Database,,2,1,50.0
+group,Storage,,2,1,50.0
+cloud,AWS,,7,2,28.6
+cloud,Azure,,2,1,50.0
+cloud,GCP,,2,1,50.0
+scope,111122223333,AWS,7,2,28.6
+scope,00000000-0000-0000-0000-000000000001,Azure,2,1,50.0
+scope,acme-prod,GCP,2,1,50.0

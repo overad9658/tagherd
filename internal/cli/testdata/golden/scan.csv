@@ -1,0 +1,15 @@
+cloud,scope,region,group,type,id,name,finding,tag,current,proposed,fixable
+AWS,111122223333,,Machine Learning,AWS Comprehend Flywheel,,,UNMAPPED_TYPE,,,,false
+AWS,111122223333,us-east-1,Compute (only machines),AWS EC2 Instance,arn:aws:ec2:us-east-1:111122223333:instance/i-0abc,web-1,DUPLICATE_KEY,Environment,"Environment=Production, environment=Staging",,false
+AWS,111122223333,,"Security, Identity, & Compliance",AWS IAM AWS Managed Policy,arn:aws:iam::aws:policy/ReadOnlyAccess,ReadOnlyAccess,NOT_TAGGABLE,,,,false
+AWS,111122223333,us-east-1,Compute (w/o machines and machine images),AWS Lambda Function,arn:aws:lambda:us-east-1:111122223333:function:billing-api,billing-api,CASE_MISMATCH,Brand,brand=Acme,Brand=Acme,true
+AWS,111122223333,us-east-1,Compute (w/o machines and machine images),AWS Lambda Function,arn:aws:lambda:us-east-1:111122223333:function:billing-api,billing-api,INVALID_DEPLOYMENT_TYPE,DeploymentType,Scripted,,false
+AWS,111122223333,us-east-1,Compute (only machine images),AWS Machine Image (AMI),arn:aws:ec2:us-east-1:111122223333:image/ami-0001,base-2026-09,MISSING_TAG,OwningOrg,,,false
+AWS,111122223333,us-east-1,Database,AWS RDS PostgreSQL Instance,arn:aws:rds:us-east-1:111122223333:db:orders,orders,CASE_MISMATCH,Environment,production,Production,true
+AWS,111122223333,us-east-1,Storage,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,INVALID_VALUE,AdminEmail,not-an-email,,false
+AWS,111122223333,us-east-1,Storage,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,EMPTY_VALUE,Brand,"  ",,false
+AWS,111122223333,us-east-1,Storage,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,MISSING_TAG,DeploymentType,,Manual,true
+AWS,111122223333,us-east-1,Storage,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,INVALID_VALUE,Exposure,Public,,false
+Azure,00000000-0000-0000-0000-000000000001,eastus,Compute (only machines),Azure Compute Virtual Machine,/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-app/providers/Microsoft.Compute/virtualMachines/vm-app,vm-app,CASE_MISMATCH,EndpointType,server,Server,true
+GCP,acme-prod,us-central1,Compute (only machines),GCP Compute Instance,//compute.googleapis.com/projects/acme-prod/zones/us-central1-a/instances/batch-1,batch-1,MISSING_TAG,AdminEmail,,,false
+GCP,acme-prod,us-central1,Compute (only machines),GCP Compute Instance,//compute.googleapis.com/projects/acme-prod/zones/us-central1-a/instances/batch-1,batch-1,INVALID_VALUE,Environment,prod,,false

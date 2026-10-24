@@ -1,0 +1,128 @@
+{
+  "summary": {
+    "resources": {
+      "discovered": 14,
+      "out_of_scope": 1,
+      "filtered": 1,
+      "not_taggable": 1,
+      "evaluated": 11,
+      "compliant": 4
+    },
+    "compliance": {
+      "overall": {
+        "key": "all",
+        "evaluated": 11,
+        "compliant": 4,
+        "percent": 36.4
+      },
+      "by_group": [
+        {
+          "key": "Compute (only machine images)",
+          "evaluated": 2,
+          "compliant": 1,
+          "percent": 50
+        },
+        {
+          "key": "Compute (only machines)",
+          "evaluated": 3,
+          "compliant": 0,
+          "percent": 0
+        },
+        {
+          "key": "Compute (w/o machines and machine images)",
+          "evaluated": 2,
+          "compliant": 1,
+          "percent": 50
+        },
+        {
+          "key": "Database",
+          "evaluated": 2,
+          "compliant": 1,
+          "percent": 50
+        },
+        {
+          "key": "Storage",
+          "evaluated": 2,
+          "compliant": 1,
+          "percent": 50
+        }
+      ],
+      "by_cloud": [
+        {
+          "key": "AWS",
+          "evaluated": 7,
+          "compliant": 2,
+          "percent": 28.6
+        },
+        {
+          "key": "Azure",
+          "evaluated": 2,
+          "compliant": 1,
+          "percent": 50
+        },
+        {
+          "key": "GCP",
+          "evaluated": 2,
+          "compliant": 1,
+          "percent": 50
+        }
+      ],
+      "by_scope": [
+        {
+          "key": "111122223333",
+          "cloud": "AWS",
+          "evaluated": 7,
+          "compliant": 2,
+          "percent": 28.6
+        },
+        {
+          "key": "00000000-0000-0000-0000-000000000001",
+          "cloud": "Azure",
+          "evaluated": 2,
+          "compliant": 1,
+          "percent": 50
+        },
+        {
+          "key": "acme-prod",
+          "cloud": "GCP",
+          "evaluated": 2,
+          "compliant": 1,
+          "percent": 50
+        }
+      ]
+    },
+    "findings_by_tag": {
+      "AdminEmail": 2,
+      "Brand": 2,
+      "DeploymentType": 2,
+      "EndpointType": 1,
+      "Environment": 3,
+      "Exposure": 1,
+      "OwningOrg": 1
+    },
+    "findings_by_code": {
+      "CASE_MISMATCH": 3,
+      "DUPLICATE_KEY": 1,
+      "EMPTY_VALUE": 1,
+      "INVALID_DEPLOYMENT_TYPE": 1,
+      "INVALID_VALUE": 3,
+      "MISSING_TAG": 3,
+      "NOT_TAGGABLE": 1,
+      "UNMAPPED_TYPE": 1
+    },
+    "unreadable_scopes": [
+      {
+        "cloud": "AWS",
+        "scope": "444455556666",
+        "error": "AccessDenied: not authorized to assume tagherd-read"
+      }
+    ],
+    "unmapped_types": [
+      {
+        "cloud": "AWS",
+        "scope": "111122223333",
+        "type": "AWS Comprehend Flywheel"
+      }
+    ]
+  }
+}

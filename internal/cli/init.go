@@ -42,8 +42,8 @@ touched.`,
 				case inPolicy && policyExists:
 					return nil
 				case err == nil && !force:
-					fmt.Fprintf(a.stdout, "kept     %s (exists; --force to overwrite)\n", dst)
-					return nil
+					_, err := fmt.Fprintf(a.stdout, "kept     %s (exists; --force to overwrite)\n", dst)
+					return err
 				case err != nil && !errors.Is(err, fs.ErrNotExist):
 					return err
 				}
@@ -57,8 +57,8 @@ touched.`,
 				if err := os.WriteFile(dst, data, 0o644); err != nil {
 					return err
 				}
-				fmt.Fprintf(a.stdout, "created  %s\n", dst)
-				return nil
+				_, err = fmt.Fprintf(a.stdout, "created  %s\n", dst)
+				return err
 			})
 		},
 	}

@@ -1,0 +1,204 @@
+# Fake-provider fixture covering every finding code, a name filter, an
+# out-of-scope resource, an unreadable scope, a coverage gap and the Wiz
+# override. Used by the scan, cli and output tests.
+#
+#   go run ./cmd/tagherd scan --fixture testdata/fixtures/scan.yaml
+
+wiz:
+  missing:
+    - arn:aws:ec2:us-east-1:111122223333:image/ami-0001
+
+scopes:
+  - cloud: AWS
+    id: "111122223333"
+    name: prod
+    tags: {Brand: Acme}
+    uncovered: ["AWS Comprehend Flywheel"]
+    resources:
+      # CASE_MISMATCH on a value: the spec's example finding.
+      - native_type: AWS::RDS::DBInstance
+        id: arn:aws:rds:us-east-1:111122223333:db:orders
+        name: orders
+        region: us-east-1
+        attrs: {engine: postgres, cluster_member: "false"}
+        tags:
+          Environment: production
+          DeploymentType: Manual
+          Brand: Acme
+          AppCategory: Payments
+          Exposure: Internal
+          AdminEmail: dba@example.com
+          OwningOrg: Platform
+          DataClassification: Confidential
+
+      # Compliant.
+      - native_type: AWS::DynamoDB::Table
+        id: arn:aws:dynamodb:us-east-1:111122223333:table/sessions
+        name: sessions
+        region: us-east-1
+        tags:
+          Environment: Production
+          DeploymentType: Automation
+          Brand: Acme
+          AppCategory: Payments
+          Exposure: Internal
+          AdminEmail: dba@example.com
+          OwningOrg: Platform
+          DataClassification: Internal
+
+      # Out of scope: no catalog entry matches the db2 engine.
+      - native_type: AWS::RDS::DBInstance
+        id: arn:aws:rds:us-east-1:111122223333:db:legacy
+        name: legacy
+        region: us-east-1
+        attrs: {engine: db2-se, cluster_member: "false"}
+
+      # Filtered by the Compute group's Control Tower name filter.
+      - native_type: AWS::Lambda::Function
+        id: arn:aws:lambda:us-east-1:111122223333:function:aws-controltower-NotificationForwarder
+        name: aws-controltower-NotificationForwarder
+        region: us-east-1
+
+      # INVALID_DEPLOYMENT_TYPE, and a key-spelling CASE_MISMATCH.
+      - native_type: AWS::Lambda::Function
+        id: arn:aws:lambda:us-east-1:111122223333:function:billing-api
+        name: billing-api
+        region: us-east-1
+        tags:
+          Environment: Production
+          DeploymentType: Scripted
+          brand: Acme
+          AppCategory: Billing
+          Exposure: External
+          AdminEmail: billing@example.com
+          OwningOrg: Finance
+
+      # MISSING_TAG (DeploymentType, fixable to Manual), EMPTY_VALUE and two
+      # INVALID_VALUEs (an enumerated tag and a malformed email).
+      - native_type: AWS::S3::Bucket
+        id: arn:aws:s3:::acme-logs
+        name: acme-logs
+        region: us-east-1
+        created: 2026-10-01T12:00:00Z
+        tags:
+          Environment: Production
+          Brand: "  "
+          AppCategory: Logging
+          Exposure: Public
+          AdminEmail: not-an-email
+          OwningOrg: ITOps
+          DataClassification: Internal
+
+      # DUPLICATE_KEY: two spellings of Environment with different values.
+      - native_type: AWS::EC2::Instance
+        id: arn:aws:ec2:us-east-1:111122223333:instance/i-0abc
+        name: web-1
+        region: us-east-1
+        tags:
+          Environment: Production
+          environment: Staging
+          DeploymentType: Manual
+          Brand: Acme
+          AppCategory: Web
+          Exposure: External
+          AdminEmail: web@example.com
+          OwningOrg: Platform
+          EndpointType: Server
+
+      # NOT_TAGGABLE: customers cannot tag AWS managed policies.
+      - native_type: AWS::IAM::Policy
+        id: arn:aws:iam::aws:policy/ReadOnlyAccess
+        name: ReadOnlyAccess
+        attrs: {policy_owner: aws}
+
+      # Wiz reports this AMI, so its missing OwningOrg is a finding.
+      - native_type: AWS::EC2::Image
+        id: arn:aws:ec2:us-east-1:111122223333:image/ami-0001
+        name: base-2026-09
+        region: us-east-1
+        tags: {DeploymentType: Automation, AdminEmail: images@example.com}
+
+      # Wiz does not report this AMI (its ec2#amitags config carries a valid
+      # value), so the missing AdminEmail is exempt.
+      - native_type: AWS::EC2::Image
+        id: arn:aws:ec2:us-east-1:111122223333:image/ami-0002
+        name: base-2026-10
+        region: us-east-1
+        tags: {DeploymentType: Automation, OwningOrg: Platform}
+
+  # Unreadable: the scan reports it and exits 3.
+  - cloud: AWS
+    id: "444455556666"
+    name: dev
+    fail: "AccessDenied: not authorized to assume tagherd-read"
+
+  - cloud: Azure
+    id: 00000000-0000-0000-0000-000000000001
+    name: sub-prod
+    resources:
+      # Azure tag names ignore case, so "environment" is compliant; the
+      # lowercase EndpointType value is a CASE_MISMATCH.
+      - native_type: microsoft.compute/virtualmachines
+        id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-app/providers/Microsoft.Compute/virtualMachines/vm-app
+        name: vm-app
+        region: eastus
+        parent: rg-app
+        tags:
+          environment: Production
+          DeploymentType: Manual
+          Brand: Acme
+          AppCategory: Web
+          Exposure: Internal
+          AdminEmail: app@example.com
+          OwningOrg: DevOps
+          EndpointType: server
+
+      # Compliant function app.
+      - native_type: microsoft.web/sites
+        id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-app/providers/Microsoft.Web/sites/fn-orders
+        name: fn-orders
+        region: eastus
+        parent: rg-app
+        attrs: {kind: "functionapp,linux"}
+        tags:
+          Environment: Production
+          DeploymentType: Automation
+          Brand: Acme
+          AppCategory: Payments
+          Exposure: Internal
+          AdminEmail: app@example.com
+          OwningOrg: DevOps
+
+  - cloud: GCP
+    id: acme-prod
+    name: acme-prod
+    resources:
+      # Compliant: lowercase labels match, AdminEmail is a Resource Manager tag.
+      - native_type: storage.googleapis.com/Bucket
+        id: //storage.googleapis.com/projects/_/buckets/acme-assets
+        name: acme-assets
+        region: us
+        labels:
+          environment: production
+          deploymenttype: manual
+          brand: acme
+          appcategory: web
+          exposure: external
+          owningorg: platform
+          dataclassification: public
+        rm_tags:
+          AdminEmail: web@example.com
+
+      # INVALID_VALUE (prod is not in the dictionary) and a missing AdminEmail.
+      - native_type: compute.googleapis.com/Instance
+        id: //compute.googleapis.com/projects/acme-prod/zones/us-central1-a/instances/batch-1
+        name: batch-1
+        region: us-central1
+        labels:
+          environment: prod
+          deploymenttype: automation
+          brand: acme
+          appcategory: batch
+          exposure: internal
+          owningorg: platform
+          endpointtype: server

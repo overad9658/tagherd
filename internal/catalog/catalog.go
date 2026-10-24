@@ -120,8 +120,14 @@ type Entry struct {
 
 // Catalog is the loaded, validated set of entries.
 type Catalog struct {
-	Entries []*Entry // sorted by cloud, then display
-	byKey   map[key]*Entry
+	Entries  []*Entry // sorted by cloud, then display
+	byKey    map[key]*Entry
+	byNative map[nativeKey][]*Entry // canonical entries only
+}
+
+type nativeKey struct {
+	cloud  model.Cloud
+	native string // lower-cased
 }
 
 type key struct {
@@ -140,7 +146,7 @@ func Parse(data []byte) (*Catalog, error) {
 	if err := dec.Decode(&entries); err != nil {
 		return nil, fmt.Errorf("catalog: %w", err)
 	}
-	c := &Catalog{Entries: entries, byKey: make(map[key]*Entry, len(entries))}
+	c := &Catalog{Entries: entries, byKey: make(map[key]*Entry, len(entries)), byNative: map[nativeKey][]*Entry{}}
 	var errs []error
 	for _, e := range entries {
 		if !slices.Contains(model.Clouds, e.Cloud) {
@@ -163,6 +169,10 @@ func Parse(data []byte) (*Catalog, error) {
 			errs = append(errs, fmt.Errorf("%q: duplicate entry", e.Display))
 		}
 		c.byKey[k] = e
+		for _, nt := range e.NativeTypes {
+			nk := nativeKey{e.Cloud, strings.ToLower(nt)}
+			c.byNative[nk] = append(c.byNative[nk], e)
+		}
 	}
 	for _, e := range entries {
 		if e.AliasOf == "" {
@@ -227,4 +237,33 @@ func (c *Catalog) Canonical(e *Entry) *Entry {
 	}
 	t, _ := c.Lookup(e.Cloud, e.AliasOf)
 	return t
+}
+
+// ErrAmbiguous means more than one catalog entry matched a resource.
+var ErrAmbiguous = errors.New("ambiguous catalog match")
+
+// Classify returns the entry for a discovered resource: the one canonical
+// entry whose native type matches and whose predicates all hold. It returns
+// nil when the resource is of no catalog type.
+func (c *Catalog) Classify(cloud model.Cloud, nativeType string, attrs map[string]string) (*Entry, error) {
+	var hit *Entry
+	for _, e := range c.byNative[nativeKey{cloud, strings.ToLower(nativeType)}] {
+		if !e.matches(attrs) {
+			continue
+		}
+		if hit != nil {
+			return nil, fmt.Errorf("%w: %s resource matches %q and %q", ErrAmbiguous, nativeType, hit.Display, e.Display)
+		}
+		hit = e
+	}
+	return hit, nil
+}
+
+func (e *Entry) matches(attrs map[string]string) bool {
+	for attr, m := range e.Match {
+		if !m.Match(attrs[attr]) {
+			return false
+		}
+	}
+	return true
 }

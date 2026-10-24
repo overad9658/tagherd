@@ -1,0 +1,56 @@
+## tagherd scan
+
+36.4% compliant (4 of 11 evaluated). 14 discovered, 1 out of scope, 1 filtered, 1 not taggable. 1 scope(s) unreadable. 1 coverage gap(s).
+
+| GROUP | EVALUATED | COMPLIANT | COMPLIANCE |
+| --- | --- | --- | --- |
+| Compute (only machine images) | 2 | 1 | 50.0% |
+| Compute (only machines) | 3 | 0 | 0.0% |
+| Compute (w/o machines and machine images) | 2 | 1 | 50.0% |
+| Database | 2 | 1 | 50.0% |
+| Storage | 2 | 1 | 50.0% |
+
+| CLOUD | EVALUATED | COMPLIANT | COMPLIANCE |
+| --- | --- | --- | --- |
+| AWS | 7 | 2 | 28.6% |
+| Azure | 2 | 1 | 50.0% |
+| GCP | 2 | 1 | 50.0% |
+
+| SCOPE | EVALUATED | COMPLIANT | COMPLIANCE |
+| --- | --- | --- | --- |
+| AWS 111122223333 | 7 | 2 | 28.6% |
+| Azure 00000000-0000-0000-0000-000000000001 | 2 | 1 | 50.0% |
+| GCP acme-prod | 2 | 1 | 50.0% |
+
+| UNREADABLE SCOPE | ERROR |
+| --- | --- |
+| AWS 444455556666 | AccessDenied: not authorized to assume tagherd-read |
+
+| TAG | FINDINGS |
+| --- | --- |
+| AdminEmail | 2 |
+| Brand | 2 |
+| DeploymentType | 2 |
+| EndpointType | 1 |
+| Environment | 3 |
+| Exposure | 1 |
+| OwningOrg | 1 |
+
+### Findings (14 of 14)
+
+| Cloud | Scope | Type | Name | Tag | Finding | Current | Proposed |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| AWS | 111122223333 | AWS Comprehend Flywheel |  |  | UNMAPPED_TYPE |  |  |
+| AWS | 111122223333 | AWS EC2 Instance | web-1 | Environment | DUPLICATE_KEY | Environment=Production, environment=Staging |  |
+| AWS | 111122223333 | AWS IAM AWS Managed Policy | ReadOnlyAccess |  | NOT_TAGGABLE |  |  |
+| AWS | 111122223333 | AWS Lambda Function | billing-api | Brand | CASE_MISMATCH | brand=Acme | Brand=Acme |
+| AWS | 111122223333 | AWS Lambda Function | billing-api | DeploymentType | INVALID_DEPLOYMENT_TYPE | Scripted |  |
+| AWS | 111122223333 | AWS Machine Image (AMI) | base-2026-09 | OwningOrg | MISSING_TAG |  |  |
+| AWS | 111122223333 | AWS RDS PostgreSQL Instance | orders | Environment | CASE_MISMATCH | production | Production |
+| AWS | 111122223333 | AWS S3 Bucket | acme-logs | AdminEmail | INVALID_VALUE | not-an-email |  |
+| AWS | 111122223333 | AWS S3 Bucket | acme-logs | Brand | EMPTY_VALUE |    |  |
+| AWS | 111122223333 | AWS S3 Bucket | acme-logs | DeploymentType | MISSING_TAG |  | Manual |
+| AWS | 111122223333 | AWS S3 Bucket | acme-logs | Exposure | INVALID_VALUE | Public |  |
+| Azure | 00000000-0000-0000-0000-000000000001 | Azure Compute Virtual Machine | vm-app | EndpointType | CASE_MISMATCH | server | Server |
+| GCP | acme-prod | GCP Compute Instance | batch-1 | AdminEmail | MISSING_TAG |  |  |
+| GCP | acme-prod | GCP Compute Instance | batch-1 | Environment | INVALID_VALUE | prod |  |
