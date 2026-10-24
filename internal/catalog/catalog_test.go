@@ -1,6 +1,7 @@
 package catalog
 
 import (
+	"errors"
 	"strings"
 	"testing"
 
@@ -84,5 +85,59 @@ func TestMatcher(t *testing.T) {
 		if got := tc.m.Match(tc.value); got != tc.want {
 			t.Errorf("%+v.Match(%q) = %v, want %v", tc.m, tc.value, got, tc.want)
 		}
+	}
+}
+
+func TestClassify(t *testing.T) {
+	c, err := Default()
+	if err != nil {
+		t.Fatal(err)
+	}
+	tests := []struct {
+		cloud  model.Cloud
+		native string
+		attrs  map[string]string
+		want   string // "" for no match
+	}{
+		{model.AWS, "AWS::RDS::DBInstance", map[string]string{"engine": "postgres", "cluster_member": "false"}, "AWS RDS PostgreSQL Instance"},
+		{model.AWS, "AWS::RDS::DBInstance", map[string]string{"engine": "postgres", "cluster_member": "true"}, "AWS RDS Cluster PostgreSQL Instance"},
+		{model.AWS, "AWS::RDS::DBInstance", map[string]string{"engine": "aurora", "cluster_member": "true"}, "AWS RDS Aurora MySQL Instance"},
+		{model.AWS, "AWS::RDS::DBInstance", map[string]string{"engine": "sqlserver-ee"}, "AWS RDS MSSQL Server Instance"},
+		{model.AWS, "AWS::RDS::DBInstance", map[string]string{"engine": "db2-se"}, ""},
+		{model.AWS, "aws::s3::bucket", nil, "AWS S3 Bucket"},
+		{model.AWS, "AWS::ElasticLoadBalancingV2::LoadBalancer", map[string]string{"type": "gateway"}, ""},
+		{model.Azure, "microsoft.web/sites", map[string]string{"kind": "functionapp,linux"}, "Azure Function"},
+		{model.Azure, "microsoft.web/sites", map[string]string{"kind": "app,linux"}, "Azure App Service"},
+		{model.Azure, "microsoft.web/sites", map[string]string{"kind": "functionapp,workflowapp"}, ""},
+		{model.Azure, "microsoft.cdn/profiles", map[string]string{"sku": "Premium_AzureFrontDoor"}, "Azure Front Door Standard/Premium"},
+		{model.GCP, "compute.googleapis.com/GlobalAddress", nil, "GCP Compute Address"},
+		{model.GCP, "AWS::S3::Bucket", nil, ""}, // native types are per cloud
+	}
+	for _, tc := range tests {
+		e, err := c.Classify(tc.cloud, tc.native, tc.attrs)
+		if err != nil {
+			t.Errorf("%s %v: %v", tc.native, tc.attrs, err)
+			continue
+		}
+		got := ""
+		if e != nil {
+			got = e.Display
+		}
+		if got != tc.want {
+			t.Errorf("Classify(%s, %v) = %q, want %q", tc.native, tc.attrs, got, tc.want)
+		}
+	}
+}
+
+func TestClassifyAmbiguous(t *testing.T) {
+	c, err := Parse([]byte(`
+- {display: "AWS A", cloud: AWS, native_type: "AWS::X", match: {kind: {contains: a}}, taggable: true}
+- {display: "AWS B", cloud: AWS, native_type: "AWS::X", match: {kind: {contains: b}}, taggable: true}
+`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := c.Classify(model.AWS, "AWS::X", map[string]string{"kind": "ab"}); !errors.Is(err, ErrAmbiguous) {
+		t.Errorf("err = %v, want ErrAmbiguous", err)
 	}
 }

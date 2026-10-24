@@ -1,0 +1,305 @@
+{
+  "summary": {
+    "resources": {
+      "discovered": 14,
+      "out_of_scope": 1,
+      "filtered": 1,
+      "not_taggable": 1,
+      "evaluated": 11,
+      "compliant": 4
+    },
+    "compliance": {
+      "overall": {
+        "key": "all",
+        "evaluated": 11,
+        "compliant": 4,
+        "percent": 36.4
+      },
+      "by_group": [
+        {
+          "key": "Compute (only machine images)",
+          "evaluated": 2,
+          "compliant": 1,
+          "percent": 50
+        },
+        {
+          "key": "Compute (only machines)",
+          "evaluated": 3,
+          "compliant": 0,
+          "percent": 0
+        },
+        {
+          "key": "Compute (w/o machines and machine images)",
+          "evaluated": 2,
+          "compliant": 1,
+          "percent": 50
+        },
+        {
+          "key": "Database",
+          "evaluated": 2,
+          "compliant": 1,
+          "percent": 50
+        },
+        {
+          "key": "Storage",
+          "evaluated": 2,
+          "compliant": 1,
+          "percent": 50
+        }
+      ],
+      "by_cloud": [
+        {
+          "key": "AWS",
+          "evaluated": 7,
+          "compliant": 2,
+          "percent": 28.6
+        },
+        {
+          "key": "Azure",
+          "evaluated": 2,
+          "compliant": 1,
+          "percent": 50
+        },
+        {
+          "key": "GCP",
+          "evaluated": 2,
+          "compliant": 1,
+          "percent": 50
+        }
+      ],
+      "by_scope": [
+        {
+          "key": "111122223333",
+          "cloud": "AWS",
+          "evaluated": 7,
+          "compliant": 2,
+          "percent": 28.6
+        },
+        {
+          "key": "00000000-0000-0000-0000-000000000001",
+          "cloud": "Azure",
+          "evaluated": 2,
+          "compliant": 1,
+          "percent": 50
+        },
+        {
+          "key": "acme-prod",
+          "cloud": "GCP",
+          "evaluated": 2,
+          "compliant": 1,
+          "percent": 50
+        }
+      ]
+    },
+    "findings_by_tag": {
+      "AdminEmail": 2,
+      "Brand": 2,
+      "DeploymentType": 2,
+      "EndpointType": 1,
+      "Environment": 3,
+      "Exposure": 1,
+      "OwningOrg": 1
+    },
+    "findings_by_code": {
+      "CASE_MISMATCH": 3,
+      "DUPLICATE_KEY": 1,
+      "EMPTY_VALUE": 1,
+      "INVALID_DEPLOYMENT_TYPE": 1,
+      "INVALID_VALUE": 3,
+      "MISSING_TAG": 3,
+      "NOT_TAGGABLE": 1,
+      "UNMAPPED_TYPE": 1
+    },
+    "unreadable_scopes": [
+      {
+        "cloud": "AWS",
+        "scope": "444455556666",
+        "error": "AccessDenied: not authorized to assume tagherd-read"
+      }
+    ],
+    "unmapped_types": [
+      {
+        "cloud": "AWS",
+        "scope": "111122223333",
+        "type": "AWS Comprehend Flywheel"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "group": "Machine Learning",
+      "type": "AWS Comprehend Flywheel",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "group": "Compute (only machines)",
+      "type": "AWS EC2 Instance",
+      "id": "arn:aws:ec2:us-east-1:111122223333:instance/i-0abc",
+      "name": "web-1",
+      "finding": "DUPLICATE_KEY",
+      "tag": "Environment",
+      "current": "Environment=Production, environment=Staging",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "group": "Security, Identity, \u0026 Compliance",
+      "type": "AWS IAM AWS Managed Policy",
+      "id": "arn:aws:iam::aws:policy/ReadOnlyAccess",
+      "name": "ReadOnlyAccess",
+      "finding": "NOT_TAGGABLE",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "group": "Compute (w/o machines and machine images)",
+      "type": "AWS Lambda Function",
+      "id": "arn:aws:lambda:us-east-1:111122223333:function:billing-api",
+      "name": "billing-api",
+      "finding": "CASE_MISMATCH",
+      "tag": "Brand",
+      "current": "brand=Acme",
+      "proposed": "Brand=Acme",
+      "fixable": true
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "group": "Compute (w/o machines and machine images)",
+      "type": "AWS Lambda Function",
+      "id": "arn:aws:lambda:us-east-1:111122223333:function:billing-api",
+      "name": "billing-api",
+      "finding": "INVALID_DEPLOYMENT_TYPE",
+      "tag": "DeploymentType",
+      "current": "Scripted",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "group": "Compute (only machine images)",
+      "type": "AWS Machine Image (AMI)",
+      "id": "arn:aws:ec2:us-east-1:111122223333:image/ami-0001",
+      "name": "base-2026-09",
+      "finding": "MISSING_TAG",
+      "tag": "OwningOrg",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "group": "Database",
+      "type": "AWS RDS PostgreSQL Instance",
+      "id": "arn:aws:rds:us-east-1:111122223333:db:orders",
+      "name": "orders",
+      "finding": "CASE_MISMATCH",
+      "tag": "Environment",
+      "current": "production",
+      "proposed": "Production",
+      "fixable": true
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "group": "Storage",
+      "type": "AWS S3 Bucket",
+      "id": "arn:aws:s3:::acme-logs",
+      "name": "acme-logs",
+      "finding": "INVALID_VALUE",
+      "tag": "AdminEmail",
+      "current": "not-an-email",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "group": "Storage",
+      "type": "AWS S3 Bucket",
+      "id": "arn:aws:s3:::acme-logs",
+      "name": "acme-logs",
+      "finding": "EMPTY_VALUE",
+      "tag": "Brand",
+      "current": "  ",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "group": "Storage",
+      "type": "AWS S3 Bucket",
+      "id": "arn:aws:s3:::acme-logs",
+      "name": "acme-logs",
+      "finding": "MISSING_TAG",
+      "tag": "DeploymentType",
+      "proposed": "Manual",
+      "fixable": true
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "group": "Storage",
+      "type": "AWS S3 Bucket",
+      "id": "arn:aws:s3:::acme-logs",
+      "name": "acme-logs",
+      "finding": "INVALID_VALUE",
+      "tag": "Exposure",
+      "current": "Public",
+      "fixable": false
+    },
+    {
+      "cloud": "Azure",
+      "scope": "00000000-0000-0000-0000-000000000001",
+      "region": "eastus",
+      "group": "Compute (only machines)",
+      "type": "Azure Compute Virtual Machine",
+      "id": "/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-app/providers/Microsoft.Compute/virtualMachines/vm-app",
+      "name": "vm-app",
+      "finding": "CASE_MISMATCH",
+      "tag": "EndpointType",
+      "current": "server",
+      "proposed": "Server",
+      "fixable": true
+    },
+    {
+      "cloud": "GCP",
+      "scope": "acme-prod",
+      "region": "us-central1",
+      "group": "Compute (only machines)",
+      "type": "GCP Compute Instance",
+      "id": "//compute.googleapis.com/projects/acme-prod/zones/us-central1-a/instances/batch-1",
+      "name": "batch-1",
+      "finding": "MISSING_TAG",
+      "tag": "AdminEmail",
+      "fixable": false
+    },
+    {
+      "cloud": "GCP",
+      "scope": "acme-prod",
+      "region": "us-central1",
+      "group": "Compute (only machines)",
+      "type": "GCP Compute Instance",
+      "id": "//compute.googleapis.com/projects/acme-prod/zones/us-central1-a/instances/batch-1",
+      "name": "batch-1",
+      "finding": "INVALID_VALUE",
+      "tag": "Environment",
+      "current": "prod",
+      "fixable": false
+    }
+  ]
+}

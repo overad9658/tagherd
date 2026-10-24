@@ -113,6 +113,7 @@ apply writes: nothing changes in a cloud account unless apply runs.`,
 		a.initCmd(),
 		a.policyCmd(),
 		a.catalogCmd(),
+		a.scanCmd(),
 		a.versionCmd(),
 	)
 	root.AddCommand(a.notYetCmds()...)

@@ -1,13 +1,13 @@
 package cli
 
 import (
-	"path"
 	"sort"
 	"strings"
 
 	"github.com/spf13/cobra"
 
 	"github.com/overad9658/tagherd/internal/catalog"
+	"github.com/overad9658/tagherd/internal/engine"
 	"github.com/overad9658/tagherd/internal/output"
 )
 
@@ -27,7 +27,7 @@ and --type (case-insensitive globs on the display name).`,
 			var data []*catalog.Entry
 			rows := output.Rows{Headers: []string{"CLOUD", "TYPE", "NATIVE TYPE", "TAGGABLE", "NOTES"}}
 			for _, e := range cat.Entries {
-				if !a.wantCloud(e.Cloud) || !matchAny(a.g.types, e.Display) {
+				if !a.wantCloud(e.Cloud) || !engine.MatchAny(a.g.types, e.Display) {
 					continue
 				}
 				data = append(data, e)
@@ -58,25 +58,6 @@ func notes(e *catalog.Entry) string {
 		parts = append(parts, e.Note)
 	}
 	return strings.Join(parts, "; ")
-}
-
-// matchAny reports whether name matches any pattern, ignoring case. No
-// patterns matches everything.
-func matchAny(patterns []string, name string) bool {
-	if len(patterns) == 0 {
-		return true
-	}
-	n := strings.ToLower(name)
-	for _, p := range patterns {
-		p = strings.ToLower(strings.TrimSpace(p))
-		if p == n {
-			return true
-		}
-		if ok, err := path.Match(p, n); err == nil && ok {
-			return true
-		}
-	}
-	return false
 }
 
 func sorted(xs []string) []string {

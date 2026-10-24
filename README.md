@@ -9,10 +9,16 @@ reviewable plan of tag changes, and applies it. `scan` reads, `plan` decides,
 
 ## Status
 
-Phase 1 (offline foundation) is implemented: config, policy loading and
-validation, the type catalog, and the `init`, `policy`, `catalog`, `version`
-and `completion` commands. `scan`, `inventory`, `plan` and `apply` are
-registered but report the phase they arrive in.
+Phases 1 and 2 (milestone 1) are implemented and run offline:
+
+- Config, policy loading and validation, and the type catalog
+- The evaluation engine: classification, group matching, every finding code,
+  compliance summaries and `--fail-on` exit codes
+- `scan`, against a fake-provider fixture until the cloud adapters land in
+  phase 3
+
+`inventory`, `plan` and `apply` are registered but report the phase they
+arrive in.
 
 ## Build and test
 
@@ -33,7 +39,18 @@ tagherd policy list                     # groups with tag and type counts
 tagherd policy show database            # by group name or file stem; globs allowed
 tagherd catalog --cloud aws --type '*rds*'
 tagherd init                            # tagherd.yaml, value files, policy scaffold
+
+# Until phase 3, scan runs against a fake-provider fixture
+tagherd scan --fixture testdata/fixtures/scan.yaml
+tagherd scan --fixture testdata/fixtures/scan.yaml --cloud azure --fail-on missing
+tagherd scan --fixture testdata/fixtures/scan.yaml --summary -o markdown
 ```
+
+`scan` exits 0 when there are no findings in the `--fail-on` classes, 1 when
+there are, 2 on usage, config or policy errors, and 3 when a scope could not
+be read. Golden output for every format lives in
+`internal/cli/testdata/golden`; refresh it with
+`go test ./internal/cli -update` after checking a change.
 
 Global flags work on every command. Each also reads `TAGHERD_<FLAG>` (for
 example `TAGHERD_POLICY_DIR`), with precedence flag, then environment, then
@@ -49,6 +66,9 @@ internal/config/      tagherd.yaml loading and ${VAR} expansion
 internal/policy/      tags.json and group files: load, validate, select
 internal/catalog/     display name -> provider type catalog (catalog.yaml)
 internal/wiz/         Wiz override query validation
+internal/engine/      classify, match and evaluate resources (pure)
+internal/scan/        discovery across scopes, then the engine
+internal/provider/    provider interfaces; fake/ for tests and fixtures
 internal/output/      renderers and exit codes
 internal/model/       shared types
 policy/               the tagging policy

@@ -187,8 +187,8 @@ func TestInit(t *testing.T) {
 }
 
 func TestNotYetImplemented(t *testing.T) {
-	r := run(t, nil, "scan", "--fail-on", "any")
-	if r.code != output.ExitUsage || !strings.Contains(r.stderr, "phase 2") {
+	r := run(t, nil, "plan", "--defaults", "defaults.yaml")
+	if r.code != output.ExitUsage || !strings.Contains(r.stderr, "phase 4") {
 		t.Errorf("exit %d, stderr %q", r.code, r.stderr)
 	}
 }
