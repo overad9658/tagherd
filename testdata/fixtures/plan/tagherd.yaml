@@ -1,0 +1,8 @@
+# Value files for the plan tests, used with ../scan.yaml:
+#
+#   go run ./cmd/tagherd plan --config testdata/fixtures/plan/tagherd.yaml \
+#     --fixture testdata/fixtures/scan.yaml --out /tmp/plan.json
+policy_dir: ../../../policy
+ownership_file: ownership.yaml
+defaults_file: defaults.yaml
+synonyms_file: synonyms.yaml

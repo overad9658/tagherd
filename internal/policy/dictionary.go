@@ -4,8 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/mail"
 	"strings"
 )
+
+// AdminEmail is the one free-form tag with a format rule: a bare address.
+const AdminEmail = "AdminEmail"
 
 // TagDef is one tag in the dictionary. Allowed is nil for free-form tags.
 type TagDef struct {
@@ -24,6 +28,28 @@ func (t *TagDef) Canonical(value string) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+// Accept returns value in its dictionary spelling when it may be written:
+// one of the allowed values ignoring case, a bare email address for
+// AdminEmail, or any non-blank value for other free-form tags.
+func (t *TagDef) Accept(value string) (string, bool) {
+	value = strings.TrimSpace(value)
+	switch {
+	case value == "":
+		return "", false
+	case t.Enumerated():
+		return t.Canonical(value)
+	case t.Name == AdminEmail && !ValidEmail(value):
+		return "", false
+	}
+	return value, true
+}
+
+// ValidEmail accepts a bare address such as ops@example.com, nothing more.
+func ValidEmail(s string) bool {
+	a, err := mail.ParseAddress(s)
+	return err == nil && a.Address == s && a.Name == ""
 }
 
 // Dictionary is the parsed tags.json, in file order.

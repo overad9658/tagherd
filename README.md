@@ -9,7 +9,7 @@ reviewable plan of tag changes, and applies it. `scan` reads, `plan` decides,
 
 ## Status
 
-Phases 1 to 3 are implemented:
+Phases 1 to 4 are implemented:
 
 - Config, policy loading and validation, and the type catalog
 - The evaluation engine: classification, group matching, every finding code,
@@ -17,10 +17,13 @@ Phases 1 to 3 are implemented:
 - Discovery adapters for AWS (Organizations, AWS Config, per-service list
   calls), Azure (Resource Graph) and GCP (Cloud Asset Inventory, labels and
   Resource Manager tags), behind `scan` and `inventory`
+- `plan`: values from `--set`, `defaults.yaml`, parent tags and the built-in
+  rules (`ownership.yaml`, `synonyms.yaml`), the write route by
+  DeploymentType, the grace period, and the plan file
 
 The adapters are unit-tested against stubs; they have not yet run against
-real accounts (the pilot in the backlog). `plan` and `apply` are registered
-but report the phase they arrive in.
+real accounts (the pilot in the backlog). `apply` is registered but reports
+the phase it arrives in.
 
 ## Build and test
 
@@ -48,17 +51,43 @@ tagherd scan --cloud aws --account '1111*' --group Database
 tagherd scan --fail-on missing --summary -o markdown
 tagherd inventory --cloud gcp --type 'GCP Compute*' -o csv
 
+# Write plan.json (mode 0600) and print it; nothing is written to a cloud
+tagherd plan --set Brand=Acme --defaults defaults.yaml --out plan.json
+tagherd plan --grace 30m -o markdown
+
 # The fake-provider fixture, for development without cloud access
 tagherd scan --fixture testdata/fixtures/scan.yaml
 tagherd inventory --fixture testdata/fixtures/scan.yaml --cloud azure
+tagherd plan --config testdata/fixtures/plan/tagherd.yaml \
+  --fixture testdata/fixtures/scan.yaml --out /tmp/plan.json
 ```
 
 `scan` exits 0 when there are no findings in the `--fail-on` classes, 1 when
 there are, 2 on usage, config or policy errors, and 3 when a scope (or part
-of one, such as one region) could not be read. `inventory` exits 0, 2 or 3.
+of one, such as one region) could not be read. `inventory` and `plan` exit 0,
+2 or 3; `plan` still writes the plan for the scopes it could read.
 Golden output for every format lives in `internal/cli/testdata/golden`;
 refresh it with
 `go test ./internal/cli -update` after checking a change.
+
+## Plan values
+
+For each fixable finding, `plan` takes the first source with a value that
+passes the tag dictionary and the cloud's limits:
+
+1. `--set Tag=Value`, for every resource in the run (missing, empty and
+   invalid values)
+2. `defaults.yaml` by type, group, scope, then cloud (missing and empty)
+3. Parent tags: AWS account, Azure resource group, GCP project labels; never
+   DeploymentType, never AdminEmail from a label
+4. Built-in rules: DeploymentType defaults to Manual, case fixes,
+   `ownership.yaml` for OwningOrg, `synonyms.yaml` for invalid values
+
+Anything else is listed as unresolved with a reason. Manual resources route
+`direct`, Automation `terraform`; a resource with an invalid DeploymentType
+gets no changes. Catalog `partial` types, and GCP types outside the Compute,
+Database and Storage groups, route `unwritable`. `tagherd init` writes
+commented examples of the three value files.
 
 ## Cloud access
 
@@ -89,11 +118,13 @@ internal/config/      tagherd.yaml loading and ${VAR} expansion
 internal/policy/      tags.json and group files: load, validate, select
 internal/catalog/     display name -> provider type catalog (catalog.yaml)
 internal/wiz/         Wiz override query validation
-internal/engine/      classify, match and evaluate resources (pure)
-internal/scan/        discovery across scopes, then the engine
+internal/engine/      classify, match, evaluate and plan (pure)
+internal/values/      defaults, ownership and synonyms files; --set
+internal/scan/        discovery across scopes, then the engine; parent tags for plan
 internal/provider/    provider interfaces; fake/ for tests and fixtures
   aws/ azure/ gcp/    discovery adapters, each behind a stub-able backend
 internal/output/      renderers and exit codes
 internal/model/       shared types
+internal/ulid/        plan IDs
 policy/               the tagging policy
 ```

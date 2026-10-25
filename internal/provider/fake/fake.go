@@ -29,6 +29,9 @@ import (
 //	    name: prod
 //	    fail: "AccessDenied"          # optional: Discover fails with this error
 //	    tags: {Brand: Acme}            # parent tags for the scope
+//	    parents:                       # parent tags by resource parent, instead
+//	      rg-app: {Brand: Contoso}
+//	    parent_fail: "AccessDenied"    # optional: ParentTags fails with this error
 //	    uncovered: ["AWS Comprehend Flywheel"]
 //	    resources:
 //	      - native_type: AWS::RDS::DBInstance
@@ -57,13 +60,15 @@ type FixtureWiz struct {
 }
 
 type FixtureScope struct {
-	Cloud     model.Cloud       `yaml:"cloud"`
-	ID        string            `yaml:"id"`
-	Name      string            `yaml:"name"`
-	Fail      string            `yaml:"fail"`
-	Tags      map[string]string `yaml:"tags"`
-	Uncovered []string          `yaml:"uncovered"`
-	Resources []FixtureResource `yaml:"resources"`
+	Cloud      model.Cloud                  `yaml:"cloud"`
+	ID         string                       `yaml:"id"`
+	Name       string                       `yaml:"name"`
+	Fail       string                       `yaml:"fail"`
+	Tags       map[string]string            `yaml:"tags"`
+	Parents    map[string]map[string]string `yaml:"parents"`
+	ParentFail string                       `yaml:"parent_fail"`
+	Uncovered  []string                     `yaml:"uncovered"`
+	Resources  []FixtureResource            `yaml:"resources"`
 }
 
 type FixtureResource struct {
@@ -218,7 +223,17 @@ func (p *Provider) ParentTags(_ context.Context, r model.Resource) ([]model.Tag,
 	if err != nil {
 		return nil, err
 	}
-	return tags(s.Tags, model.KindTag), nil
+	if s.ParentFail != "" {
+		return nil, errors.New(s.ParentFail)
+	}
+	kind := model.KindTag
+	if p.cloud == model.GCP {
+		kind = model.KindLabel // GCP parents are projects, with labels
+	}
+	if t, ok := s.Parents[r.Parent]; ok {
+		return tags(t, kind), nil
+	}
+	return tags(s.Tags, kind), nil
 }
 
 func (p *Provider) Writer(_ context.Context, sc provider.Scope) (provider.TagWriter, error) {
