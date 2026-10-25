@@ -1,0 +1,4 @@
+aws:
+  "111122223333": Platform
+gcp:
+  acme-prod: Platform

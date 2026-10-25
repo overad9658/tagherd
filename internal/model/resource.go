@@ -87,6 +87,8 @@ type Finding struct {
 	Current  string `json:"current,omitempty"`
 	Proposed string `json:"proposed,omitempty"`
 	Fixable  bool   `json:"fixable"`
+	// Groups are the matched group names, for defaults by group.
+	Groups []string `json:"-"`
 }
 
 // SortFindings orders findings by cloud, scope, type, ID, tag and code, so

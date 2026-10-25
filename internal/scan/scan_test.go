@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"reflect"
 	"slices"
 	"testing"
 
@@ -73,11 +74,11 @@ func TestFixture(t *testing.T) {
 		Cloud: model.AWS, Scope: "111122223333", Region: "us-east-1", Group: "Database",
 		Type: "AWS RDS PostgreSQL Instance", ID: "arn:aws:rds:us-east-1:111122223333:db:orders",
 		Name: "orders", Code: model.CaseMismatch, Tag: "Environment",
-		Current: "production", Proposed: "Production", Fixable: true,
+		Current: "production", Proposed: "Production", Fixable: true, Groups: []string{"Database"},
 	}
 	found := false
 	for _, f := range r.Findings {
-		if f == want {
+		if reflect.DeepEqual(f, want) {
 			found = true
 		}
 	}

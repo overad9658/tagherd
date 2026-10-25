@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"net/mail"
 	"strings"
 
 	"github.com/overad9658/tagherd/internal/model"
@@ -11,7 +10,8 @@ import (
 // Tag names with rules beyond the dictionary.
 const (
 	tagDeploymentType = "DeploymentType"
-	tagAdminEmail     = "AdminEmail"
+	tagAdminEmail     = policy.AdminEmail
+	tagOwningOrg      = "OwningOrg"
 	defaultDeployment = "Manual" // a missing DeploymentType is treated as Manual
 )
 
@@ -72,7 +72,7 @@ func checkTag(cloud model.Cloud, def *policy.TagDef, tags []model.Tag) result {
 		}
 		canonical = c
 	}
-	if def.Name == tagAdminEmail && !validEmail(value) {
+	if def.Name == tagAdminEmail && !policy.ValidEmail(value) {
 		return result{code: model.InvalidValue, current: t.Value}
 	}
 
@@ -121,10 +121,4 @@ func preferred(name string, cands []model.Tag) model.Tag {
 		}
 	}
 	return cands[0]
-}
-
-// validEmail accepts a bare address such as ops@example.com, nothing more.
-func validEmail(s string) bool {
-	a, err := mail.ParseAddress(s)
-	return err == nil && a.Address == s && a.Name == ""
 }

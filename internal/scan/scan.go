@@ -84,6 +84,7 @@ func Discover(ctx context.Context, set *policy.Set, providers map[model.Cloud]pr
 		scopesByCloud[cloud] = scopes
 		for _, s := range scopes {
 			jobs = append(jobs, job{p: p, scope: s, types: types})
+			in.Scopes = append(in.Scopes, string(cloud)+"/"+s.ID)
 		}
 	}
 	discover(ctx, jobs, max(opts.Concurrency, 1), &in, opts.Log)

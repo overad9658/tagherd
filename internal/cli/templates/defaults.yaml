@@ -1,12 +1,16 @@
-# Default tag values by cloud, scope, group or type. The most specific match
-# wins: type, then group, then scope, then cloud. Every value must pass the
-# tag dictionary.
+# Default tag values by cloud, scope, group or type, used by tagherd plan for
+# missing or empty tags. The most specific match wins: type, then group, then
+# scope, then the cloud-wide "*". Every value must pass the tag dictionary.
+# "groups" and "types" are reserved keys, never scope IDs.
 #
 # aws:
-#   "111122223333":
+#   "*": { Exposure: Internal }            # every AWS account
+#   "111122223333":                        # one account
 #     Brand: Acme
 #     AppCategory: Payments
-#   groups:
+#   groups:                                # by group name or file stem
 #     Database: { DataClassification: Confidential }
+#   types:                                 # by catalog display name
+#     AWS S3 Bucket: { DataClassification: Internal }
 # azure:
 #   "*": { Exposure: Internal }

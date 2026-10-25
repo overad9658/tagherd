@@ -1,0 +1,4 @@
+Environment:
+  prod: Production
+Exposure:
+  public: External

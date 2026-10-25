@@ -1,0 +1,5 @@
+aws:
+  types:
+    AWS Machine Image (AMI): { AdminEmail: images@example.com }
+gcp:
+  acme-prod: { AdminEmail: ops@example.com }

@@ -102,7 +102,7 @@ apply writes: nothing changes in a cloud account unless apply runs.`,
 	f.StringArrayVar(&a.g.groups, "group", nil, "limit to policy groups, by name or file stem; repeatable; globs allowed")
 	f.StringArrayVar(&a.g.types, "type", nil, "limit to resource types, by display name; repeatable; globs allowed")
 	f.StringVarP(&a.g.output, "output", "o", "", "output format: table, json, ndjson, csv, markdown (default table on a terminal, json otherwise)")
-	f.StringVar(&a.g.out, "out", "", "write output to a file instead of stdout")
+	f.StringVar(&a.g.out, "out", "", "write output to a file instead of stdout (for plan: the plan file, default plan.json)")
 	f.IntVar(&a.g.concurrency, "concurrency", 8, "number of scopes processed in parallel")
 	f.StringVar(&a.g.profile, "profile", "", "AWS shared-config profile used as the base credential")
 	f.BoolVarP(&a.g.verbose, "verbose", "v", false, "verbose logging")
@@ -114,6 +114,7 @@ apply writes: nothing changes in a cloud account unless apply runs.`,
 		a.policyCmd(),
 		a.catalogCmd(),
 		a.scanCmd(),
+		a.planCmd(),
 		a.inventoryCmd(),
 		a.versionCmd(),
 	)
@@ -150,7 +151,8 @@ func (a *app) setup(cmd *cobra.Command, _ []string) error {
 		return output.Usagef("--concurrency must be at least 1")
 	}
 
-	toTerminal := a.g.out == "" && isTerminal(a.stdout)
+	// plan's --out is the plan file; its rendering always goes to stdout.
+	toTerminal := (a.g.out == "" || cmd.Name() == "plan") && isTerminal(a.stdout)
 	if a.g.output == "" {
 		a.format = output.JSON
 		if toTerminal {

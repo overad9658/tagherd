@@ -34,6 +34,8 @@ type Input struct {
 	// Overrides holds results for overrides that ran. A group with an
 	// override that is absent here falls back to the default tag test.
 	Overrides map[OverrideKey]*OverrideResult
+	// Scopes lists every scope discovery read or tried, as cloud/scope.
+	Scopes []string
 }
 
 // Options narrow the evaluation.
@@ -153,7 +155,6 @@ func (e *evaluation) resource(r *model.Resource) {
 		e.sum.Resources.Filtered++
 		return
 	}
-	groupName := names(groups)
 	for _, g := range groups {
 		if g.Overrides[r.Cloud] != nil && e.in.Overrides[OverrideKey{g.Name, r.Cloud}] == nil {
 			e.fallbacks[fmt.Sprintf("%s (%s)", g.Name, r.Cloud)] = true
@@ -163,7 +164,7 @@ func (e *evaluation) resource(r *model.Resource) {
 	// Non-taggable types are listed but never evaluated.
 	if entry.Taggable == catalog.NotTaggable {
 		e.sum.Resources.NotTaggable++
-		e.add(finding(r, groupName, result{code: model.NotTaggable}, ""))
+		e.add(finding(r, groups, result{code: model.NotTaggable}, ""))
 		return
 	}
 
@@ -179,7 +180,7 @@ func (e *evaluation) resource(r *model.Resource) {
 			continue
 		}
 		compliant = false
-		e.add(finding(r, groupName, res, def.Name))
+		e.add(finding(r, groups, res, def.Name))
 	}
 
 	e.sum.Resources.Evaluated++
@@ -296,11 +297,15 @@ func (e *evaluation) finish() Result {
 	return Result{Summary: e.sum, Findings: e.findings}
 }
 
-func finding(r *model.Resource, group string, res result, tag string) model.Finding {
+func finding(r *model.Resource, groups []*policy.Group, res result, tag string) model.Finding {
+	gs := make([]string, len(groups))
+	for i, g := range groups {
+		gs[i] = g.Name
+	}
 	return model.Finding{
-		Cloud: r.Cloud, Scope: r.Scope, Region: r.Region, Group: group, Type: r.Type,
+		Cloud: r.Cloud, Scope: r.Scope, Region: r.Region, Group: strings.Join(gs, ", "), Type: r.Type,
 		ID: r.ID, Name: r.Name, Code: res.code, Tag: tag,
-		Current: res.current, Proposed: res.proposed, Fixable: res.fixable,
+		Current: res.current, Proposed: res.proposed, Fixable: res.fixable, Groups: gs,
 	}
 }
 
