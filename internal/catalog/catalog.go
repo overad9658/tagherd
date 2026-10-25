@@ -115,7 +115,30 @@ type Entry struct {
 	WriteScope  string             `yaml:"write_scope" json:"write_scope,omitempty"`
 	// AliasOf names another entry this one shares its classification with.
 	AliasOf string `yaml:"alias_of" json:"alias_of,omitempty"`
-	Note    string `yaml:"note" json:"note,omitempty"`
+	// Discovery is how the type is listed; see DiscoveryMode.
+	Discovery string `yaml:"discovery" json:"discovery,omitempty"`
+	Note      string `yaml:"note" json:"note,omitempty"`
+}
+
+// Discovery modes.
+const (
+	DiscoverBulk = "bulk" // the cloud's inventory source (the default)
+	DiscoverList = "list" // a per-service list adapter, named after "list:"
+	DiscoverNone = "none" // no adapter yet: reported as UNMAPPED_TYPE
+)
+
+// DiscoveryMode returns how the type is listed, and for DiscoverList the
+// adapter's name.
+func (e *Entry) DiscoveryMode() (mode, adapter string) {
+	switch {
+	case e.Discovery == "" || e.Discovery == DiscoverBulk:
+		return DiscoverBulk, ""
+	case e.Discovery == DiscoverNone:
+		return DiscoverNone, ""
+	case strings.HasPrefix(e.Discovery, DiscoverList+":"):
+		return DiscoverList, strings.TrimPrefix(e.Discovery, DiscoverList+":")
+	}
+	return "", ""
 }
 
 // Catalog is the loaded, validated set of entries.
@@ -161,8 +184,11 @@ func Parse(data []byte) (*Catalog, error) {
 		if e.AliasOf == "" && len(e.NativeTypes) == 0 {
 			errs = append(errs, fmt.Errorf("%q: native_type is required", e.Display))
 		}
-		if e.AliasOf != "" && (len(e.NativeTypes) > 0 || len(e.Match) > 0) {
-			errs = append(errs, fmt.Errorf("%q: an alias takes no native_type or match", e.Display))
+		if e.AliasOf != "" && (len(e.NativeTypes) > 0 || len(e.Match) > 0 || e.Discovery != "") {
+			errs = append(errs, fmt.Errorf("%q: an alias takes no native_type, match or discovery", e.Display))
+		}
+		if mode, adapter := e.DiscoveryMode(); mode == "" || (mode == DiscoverList && adapter == "") {
+			errs = append(errs, fmt.Errorf("%q: discovery must be bulk, none or list:<adapter>, got %q", e.Display, e.Discovery))
 		}
 		k := key{e.Cloud, strings.ToLower(e.Display)}
 		if _, dup := c.byKey[k]; dup {

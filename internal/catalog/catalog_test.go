@@ -141,3 +141,23 @@ func TestClassifyAmbiguous(t *testing.T) {
 		t.Errorf("err = %v, want ErrAmbiguous", err)
 	}
 }
+
+func TestDiscovery(t *testing.T) {
+	for _, tc := range []struct{ discovery, mode, adapter string }{
+		{"", DiscoverBulk, ""}, {"bulk", DiscoverBulk, ""}, {"none", DiscoverNone, ""}, {"list:ec2", DiscoverList, "ec2"},
+	} {
+		e := &Entry{Discovery: tc.discovery}
+		if mode, adapter := e.DiscoveryMode(); mode != tc.mode || adapter != tc.adapter {
+			t.Errorf("%q: got %s %s", tc.discovery, mode, adapter)
+		}
+	}
+	for _, src := range []string{
+		`[{display: "AWS X", cloud: AWS, native_type: "AWS::X::Y", taggable: true, discovery: config}]`,
+		`[{display: "AWS X", cloud: AWS, native_type: "AWS::X::Y", taggable: true, discovery: "list:"}]`,
+		`[{display: "AWS X", cloud: AWS, native_type: "AWS::X::Y", taggable: true}, {display: "AWS Z", cloud: AWS, alias_of: "AWS X", taggable: true, discovery: none}]`,
+	} {
+		if _, err := Parse([]byte(src)); err == nil {
+			t.Errorf("%s should fail", src)
+		}
+	}
+}

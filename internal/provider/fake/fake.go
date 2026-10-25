@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path"
 	"slices"
 	"sort"
 	"strings"
@@ -164,11 +163,9 @@ func (p *Provider) Cloud() model.Cloud { return p.cloud }
 func (p *Provider) Scopes(_ context.Context, patterns []string) ([]provider.Scope, error) {
 	var out []provider.Scope
 	for _, s := range p.scopes {
-		if matchAny(patterns, s.ID) || matchAny(patterns, s.Name) {
-			out = append(out, provider.Scope{Cloud: p.cloud, ID: s.ID, Name: s.Name})
-		}
+		out = append(out, provider.Scope{Cloud: p.cloud, ID: s.ID, Name: s.Name})
 	}
-	return out, nil
+	return provider.SelectScopes(out, patterns), nil
 }
 
 func (p *Provider) Discover(_ context.Context, sc provider.Scope, types []*catalog.Entry) (provider.Discovery, error) {
@@ -314,19 +311,4 @@ func tags(m map[string]string, kind model.TagKind) []model.Tag {
 		out = append(out, model.Tag{Key: k, Value: m[k], Kind: kind})
 	}
 	return out
-}
-
-func matchAny(patterns []string, s string) bool {
-	if len(patterns) == 0 {
-		return true
-	}
-	for _, p := range patterns {
-		if p == s {
-			return true
-		}
-		if ok, err := path.Match(p, s); err == nil && ok {
-			return true
-		}
-	}
-	return false
 }

@@ -108,7 +108,7 @@
       "INVALID_VALUE": 3,
       "MISSING_TAG": 3,
       "NOT_TAGGABLE": 1,
-      "UNMAPPED_TYPE": 1
+      "UNMAPPED_TYPE": 30
     },
     "unreadable_scopes": [
       {
@@ -120,12 +120,277 @@
     "unmapped_types": [
       {
         "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS Batch Job Definition"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS Comprehend Document Classifier Version"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS Comprehend Entity Recognizer Version"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS Elastic DocumentDB Cluster"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS Glue Crawler"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS IAM Root User Policy"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS MQ Configuration"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS MediaConvert Queue"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS Redshift Datashare"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS Rekognition Stream Processor"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS Route 53 Health Check"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS Route53 Registered Domain"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS S3 Glacier Vault"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS SES Domain Identity"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS SES Email Address Identity"
+      },
+      {
+        "cloud": "AWS",
         "scope": "111122223333",
         "type": "AWS Comprehend Flywheel"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure ACI Container"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Blob Storage Container"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Databricks Catalog"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Diagnostic Settings"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure File Share"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Key Vault Certificate"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Management Group"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Microsoft Entra ID Group"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Microsoft Entra ID Role"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Microsoft Entra ID Tenant"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Microsoft Entra ID User"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure OpenAI Fine Tuning Job"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure OpenAI Model"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Scale Set Virtual Machine"
       }
     ]
   },
   "findings": [
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "group": "Compute (w/o machines and machine images)",
+      "type": "AWS Batch Job Definition",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "group": "Machine Learning",
+      "type": "AWS Comprehend Document Classifier Version",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "group": "Machine Learning",
+      "type": "AWS Comprehend Entity Recognizer Version",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "group": "Database",
+      "type": "AWS Elastic DocumentDB Cluster",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "group": "Analytics",
+      "type": "AWS Glue Crawler",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "group": "Security, Identity, \u0026 Compliance",
+      "type": "AWS IAM Root User Policy",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "group": "Integration \u0026 Messaging",
+      "type": "AWS MQ Configuration",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "group": "Compute (w/o machines and machine images)",
+      "type": "AWS MediaConvert Queue",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "group": "Database",
+      "type": "AWS Redshift Datashare",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "group": "Machine Learning",
+      "type": "AWS Rekognition Stream Processor",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "group": "Networking \u0026 Content Delivery (w/o subnet, SG and route tables)",
+      "type": "AWS Route 53 Health Check",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "group": "Networking \u0026 Content Delivery (w/o subnet, SG and route tables)",
+      "type": "AWS Route53 Registered Domain",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "group": "Storage (w/o network access)",
+      "type": "AWS S3 Glacier Vault",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "group": "Security, Identity, \u0026 Compliance",
+      "type": "AWS SES Domain Identity",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "group": "Security, Identity, \u0026 Compliance",
+      "type": "AWS SES Email Address Identity",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
     {
       "cloud": "AWS",
       "scope": "111122223333",
@@ -260,6 +525,118 @@
       "finding": "INVALID_VALUE",
       "tag": "Exposure",
       "current": "Public",
+      "fixable": false
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "group": "Containers \u0026 Kubernetes",
+      "type": "Azure ACI Container",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "group": "Storage",
+      "type": "Azure Blob Storage Container",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "group": "Database",
+      "type": "Azure Databricks Catalog",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "group": "Management \u0026 Governance",
+      "type": "Azure Diagnostic Settings",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "group": "Storage",
+      "type": "Azure File Share",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "group": "Security, Identity, \u0026 Compliance",
+      "type": "Azure Key Vault Certificate",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "group": "Management \u0026 Governance",
+      "type": "Azure Management Group",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "group": "Security, Identity, \u0026 Compliance",
+      "type": "Azure Microsoft Entra ID Group",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "group": "Security, Identity, \u0026 Compliance",
+      "type": "Azure Microsoft Entra ID Role",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "group": "Management \u0026 Governance",
+      "type": "Azure Microsoft Entra ID Tenant",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "group": "Security, Identity, \u0026 Compliance",
+      "type": "Azure Microsoft Entra ID User",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "group": "Machine Learning",
+      "type": "Azure OpenAI Fine Tuning Job",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "group": "Machine Learning",
+      "type": "Azure OpenAI Model",
+      "finding": "UNMAPPED_TYPE",
+      "fixable": false
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "group": "Containers \u0026 Kubernetes",
+      "type": "Azure Scale Set Virtual Machine",
+      "finding": "UNMAPPED_TYPE",
       "fixable": false
     },
     {

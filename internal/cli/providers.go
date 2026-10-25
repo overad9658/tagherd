@@ -1,0 +1,106 @@
+package cli
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"strings"
+
+	"github.com/overad9658/tagherd/internal/model"
+	"github.com/overad9658/tagherd/internal/output"
+	"github.com/overad9658/tagherd/internal/provider"
+	awsprovider "github.com/overad9658/tagherd/internal/provider/aws"
+	azureprovider "github.com/overad9658/tagherd/internal/provider/azure"
+	"github.com/overad9658/tagherd/internal/provider/fake"
+	gcpprovider "github.com/overad9658/tagherd/internal/provider/gcp"
+	"github.com/overad9658/tagherd/internal/scan"
+)
+
+// providers returns the discovery adapters: the fake provider for a
+// fixture, else one adapter per cloud that tagherd.yaml has a scopes block
+// for, limited by --cloud.
+func (a *app) providers(ctx context.Context, fixture string) (map[model.Cloud]provider.Provider, scan.OverrideRunner, error) {
+	if fixture != "" {
+		env, err := fake.Load(fixture)
+		if err != nil {
+			return nil, nil, output.Usagef("--fixture: %v", err)
+		}
+		out := map[model.Cloud]provider.Provider{}
+		for c, p := range env.Providers {
+			out[c] = p
+		}
+		if env.Wiz == nil {
+			return out, nil, nil
+		}
+		return out, env.Wiz, nil
+	}
+
+	sc := a.cfg.Scopes
+	configured := map[model.Cloud]bool{model.AWS: sc.AWS != nil, model.Azure: sc.Azure != nil, model.GCP: sc.GCP != nil}
+	var missing []string
+	for _, c := range a.clouds {
+		if !configured[c] {
+			missing = append(missing, "scopes."+strings.ToLower(string(c)))
+		}
+	}
+	where := "tagherd.yaml"
+	if a.cfg.Path != "" {
+		where = a.cfg.Path
+	}
+	if len(missing) > 0 {
+		return nil, nil, &output.ExitError{Code: output.ExitUsage, Err: fmt.Errorf("--cloud: %s has no %s", where, strings.Join(missing, " or "))}
+	}
+
+	out := map[model.Cloud]provider.Provider{}
+	var errs []error
+	for _, c := range model.Clouds {
+		if !configured[c] || !a.wantCloud(c) {
+			continue
+		}
+		if err := a.cfg.Require("scopes." + strings.ToLower(string(c))); err != nil {
+			errs = append(errs, err)
+			continue
+		}
+		var (
+			p   provider.Provider
+			err error
+		)
+		switch c {
+		case model.AWS:
+			p, err = awsprovider.New(ctx, awsprovider.Options{Scopes: *sc.AWS, Profile: a.g.profile, Log: a.log})
+		case model.Azure:
+			p, err = azureprovider.New(azureprovider.Options{Scopes: *sc.Azure, Log: a.log})
+		case model.GCP:
+			p, err = gcpprovider.New(ctx, gcpprovider.Options{Scopes: *sc.GCP, Log: a.log})
+		}
+		if err != nil {
+			errs = append(errs, err)
+			continue
+		}
+		out[c] = p
+	}
+	if len(errs) > 0 {
+		return nil, nil, &output.ExitError{Code: output.ExitUsage, Err: errors.Join(errs...)}
+	}
+	if len(out) == 0 {
+		return nil, nil, &output.ExitError{Code: output.ExitUsage, Err: fmt.Errorf(
+			"no clouds to scan: %s has no scopes.aws, scopes.azure or scopes.gcp (run `tagherd init` for an example)", where)}
+	}
+	// The Wiz override client arrives with phase 7; until then overrides
+	// fall back to the default tag test.
+	return out, nil, nil
+}
+
+// scanOptions are the discovery settings shared by scan and inventory.
+func (a *app) scanOptions(overrides scan.OverrideRunner) scan.Options {
+	return scan.Options{
+		Clouds: a.clouds,
+		ScopePatterns: map[model.Cloud][]string{
+			model.AWS: a.g.accounts, model.Azure: a.g.subscriptions, model.GCP: a.g.projects,
+		},
+		Types:       a.g.types,
+		Concurrency: a.g.concurrency,
+		Overrides:   overrides,
+		Log:         a.log,
+	}
+}

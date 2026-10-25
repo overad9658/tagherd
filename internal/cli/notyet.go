@@ -12,7 +12,6 @@ import (
 // and fail clearly instead of as unknown commands.
 func (a *app) notYetCmds() []*cobra.Command {
 	pending := []struct{ use, short, phase string }{
-		{"inventory", "List discovered resources with their current tags", "phase 3"},
 		{"plan", "Run a scan and write a plan file of proposed tag changes", "phase 4"},
 		{"apply", "Execute a plan: direct tag writes, or Terraform changes", "phase 5"},
 	}

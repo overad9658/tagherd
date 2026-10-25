@@ -1,4 +1,19 @@
 cloud,scope,region,group,type,id,name,finding,tag,current,proposed,fixable
+AWS,*,,Compute (w/o machines and machine images),AWS Batch Job Definition,,,UNMAPPED_TYPE,,,,false
+AWS,*,,Machine Learning,AWS Comprehend Document Classifier Version,,,UNMAPPED_TYPE,,,,false
+AWS,*,,Machine Learning,AWS Comprehend Entity Recognizer Version,,,UNMAPPED_TYPE,,,,false
+AWS,*,,Database,AWS Elastic DocumentDB Cluster,,,UNMAPPED_TYPE,,,,false
+AWS,*,,Analytics,AWS Glue Crawler,,,UNMAPPED_TYPE,,,,false
+AWS,*,,"Security, Identity, & Compliance",AWS IAM Root User Policy,,,UNMAPPED_TYPE,,,,false
+AWS,*,,Integration & Messaging,AWS MQ Configuration,,,UNMAPPED_TYPE,,,,false
+AWS,*,,Compute (w/o machines and machine images),AWS MediaConvert Queue,,,UNMAPPED_TYPE,,,,false
+AWS,*,,Database,AWS Redshift Datashare,,,UNMAPPED_TYPE,,,,false
+AWS,*,,Machine Learning,AWS Rekognition Stream Processor,,,UNMAPPED_TYPE,,,,false
+AWS,*,,"Networking & Content Delivery (w/o subnet, SG and route tables)",AWS Route 53 Health Check,,,UNMAPPED_TYPE,,,,false
+AWS,*,,"Networking & Content Delivery (w/o subnet, SG and route tables)",AWS Route53 Registered Domain,,,UNMAPPED_TYPE,,,,false
+AWS,*,,Storage (w/o network access),AWS S3 Glacier Vault,,,UNMAPPED_TYPE,,,,false
+AWS,*,,"Security, Identity, & Compliance",AWS SES Domain Identity,,,UNMAPPED_TYPE,,,,false
+AWS,*,,"Security, Identity, & Compliance",AWS SES Email Address Identity,,,UNMAPPED_TYPE,,,,false
 AWS,111122223333,,Machine Learning,AWS Comprehend Flywheel,,,UNMAPPED_TYPE,,,,false
 AWS,111122223333,us-east-1,Compute (only machines),AWS EC2 Instance,arn:aws:ec2:us-east-1:111122223333:instance/i-0abc,web-1,DUPLICATE_KEY,Environment,"Environment=Production, environment=Staging",,false
 AWS,111122223333,,"Security, Identity, & Compliance",AWS IAM AWS Managed Policy,arn:aws:iam::aws:policy/ReadOnlyAccess,ReadOnlyAccess,NOT_TAGGABLE,,,,false
@@ -10,6 +25,20 @@ AWS,111122223333,us-east-1,Storage,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-log
 AWS,111122223333,us-east-1,Storage,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,EMPTY_VALUE,Brand,"  ",,false
 AWS,111122223333,us-east-1,Storage,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,MISSING_TAG,DeploymentType,,Manual,true
 AWS,111122223333,us-east-1,Storage,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,INVALID_VALUE,Exposure,Public,,false
+Azure,*,,Containers & Kubernetes,Azure ACI Container,,,UNMAPPED_TYPE,,,,false
+Azure,*,,Storage,Azure Blob Storage Container,,,UNMAPPED_TYPE,,,,false
+Azure,*,,Database,Azure Databricks Catalog,,,UNMAPPED_TYPE,,,,false
+Azure,*,,Management & Governance,Azure Diagnostic Settings,,,UNMAPPED_TYPE,,,,false
+Azure,*,,Storage,Azure File Share,,,UNMAPPED_TYPE,,,,false
+Azure,*,,"Security, Identity, & Compliance",Azure Key Vault Certificate,,,UNMAPPED_TYPE,,,,false
+Azure,*,,Management & Governance,Azure Management Group,,,UNMAPPED_TYPE,,,,false
+Azure,*,,"Security, Identity, & Compliance",Azure Microsoft Entra ID Group,,,UNMAPPED_TYPE,,,,false
+Azure,*,,"Security, Identity, & Compliance",Azure Microsoft Entra ID Role,,,UNMAPPED_TYPE,,,,false
+Azure,*,,Management & Governance,Azure Microsoft Entra ID Tenant,,,UNMAPPED_TYPE,,,,false
+Azure,*,,"Security, Identity, & Compliance",Azure Microsoft Entra ID User,,,UNMAPPED_TYPE,,,,false
+Azure,*,,Machine Learning,Azure OpenAI Fine Tuning Job,,,UNMAPPED_TYPE,,,,false
+Azure,*,,Machine Learning,Azure OpenAI Model,,,UNMAPPED_TYPE,,,,false
+Azure,*,,Containers & Kubernetes,Azure Scale Set Virtual Machine,,,UNMAPPED_TYPE,,,,false
 Azure,00000000-0000-0000-0000-000000000001,eastus,Compute (only machines),Azure Compute Virtual Machine,/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-app/providers/Microsoft.Compute/virtualMachines/vm-app,vm-app,CASE_MISMATCH,EndpointType,server,Server,true
 GCP,acme-prod,us-central1,Compute (only machines),GCP Compute Instance,//compute.googleapis.com/projects/acme-prod/zones/us-central1-a/instances/batch-1,batch-1,MISSING_TAG,AdminEmail,,,false
 GCP,acme-prod,us-central1,Compute (only machines),GCP Compute Instance,//compute.googleapis.com/projects/acme-prod/zones/us-central1-a/instances/batch-1,batch-1,INVALID_VALUE,Environment,prod,,false

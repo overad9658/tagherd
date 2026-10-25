@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"slices"
 	"sync"
+	"time"
 
 	"github.com/overad9658/tagherd/internal/catalog"
 	"github.com/overad9658/tagherd/internal/engine"
@@ -34,6 +35,14 @@ type Options struct {
 
 // Run discovers every selected scope and evaluates the result.
 func Run(ctx context.Context, set *policy.Set, providers map[model.Cloud]provider.Provider, opts Options) engine.Result {
+	in := Discover(ctx, set, providers, opts)
+	return engine.Evaluate(set, in, engine.Options{Groups: opts.Groups, Types: opts.Types})
+}
+
+// Discover lists the selected scopes of every cloud, reads them through one
+// pool of opts.Concurrency workers, and runs the selected groups' overrides.
+// The result is in a fixed order whatever the concurrency.
+func Discover(ctx context.Context, set *policy.Set, providers map[model.Cloud]provider.Provider, opts Options) engine.Input {
 	if opts.Log == nil {
 		opts.Log = slog.New(slog.DiscardHandler)
 	}
@@ -42,6 +51,8 @@ func Run(ctx context.Context, set *policy.Set, providers map[model.Cloud]provide
 		groups = set.Groups
 	}
 	in := engine.Input{Overrides: map[engine.OverrideKey]*engine.OverrideResult{}}
+	var jobs []job
+	scopesByCloud := map[model.Cloud][]provider.Scope{}
 	for _, cloud := range model.Clouds {
 		if len(opts.Clouds) > 0 && !slices.Contains(opts.Clouds, cloud) {
 			continue
@@ -60,10 +71,34 @@ func Run(ctx context.Context, set *policy.Set, providers map[model.Cloud]provide
 			in.Unreadable = append(in.Unreadable, model.UnreadableScope{Cloud: cloud, Scope: "*", Error: "listing scopes: " + err.Error()})
 			continue
 		}
-		discover(ctx, p, scopes, types, max(opts.Concurrency, 1), &in, opts.Log)
-		runOverrides(ctx, groups, cloud, scopes, opts, &in)
+		// A type with no adapter in the catalog is a gap on the whole cloud,
+		// reported once rather than once per scope.
+		types = slices.DeleteFunc(types, func(e *catalog.Entry) bool {
+			if mode, _ := e.DiscoveryMode(); mode == catalog.DiscoverNone {
+				in.Unmapped = append(in.Unmapped, model.CoverageGap{Cloud: cloud, Scope: "*", Type: e.Display})
+				return true
+			}
+			return false
+		})
+		opts.Log.Info("discovering", "cloud", cloud, "scopes", len(scopes), "types", len(types))
+		scopesByCloud[cloud] = scopes
+		for _, s := range scopes {
+			jobs = append(jobs, job{p: p, scope: s, types: types})
+		}
 	}
-	return engine.Evaluate(set, in, engine.Options{Groups: opts.Groups, Types: opts.Types})
+	discover(ctx, jobs, max(opts.Concurrency, 1), &in, opts.Log)
+	for _, cloud := range model.Clouds {
+		if scopes, ok := scopesByCloud[cloud]; ok {
+			runOverrides(ctx, groups, cloud, scopes, opts, &in)
+		}
+	}
+	return in
+}
+
+type job struct {
+	p     provider.Provider
+	scope provider.Scope
+	types []*catalog.Entry
 }
 
 // typesFor returns the canonical catalog entries the selected groups name
@@ -83,33 +118,39 @@ func typesFor(groups []*policy.Group, cloud model.Cloud, patterns []string) []*c
 	return out
 }
 
-// discover reads each scope in parallel. Results are kept in scope order so
+// discover reads each scope in parallel. Results are kept in job order so
 // the engine always sees the same input.
-func discover(ctx context.Context, p provider.Provider, scopes []provider.Scope, types []*catalog.Entry, workers int, in *engine.Input, log *slog.Logger) {
+func discover(ctx context.Context, jobs []job, workers int, in *engine.Input, log *slog.Logger) {
 	type outcome struct {
 		d   provider.Discovery
 		err error
 	}
-	results := make([]outcome, len(scopes))
+	results := make([]outcome, len(jobs))
 	sem := make(chan struct{}, workers)
 	var wg sync.WaitGroup
-	for i, s := range scopes {
+	for i, j := range jobs {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			sem <- struct{}{}
 			defer func() { <-sem }()
-			d, err := p.Discover(ctx, s, types)
+			start := time.Now()
+			d, err := j.p.Discover(ctx, j.scope, j.types)
+			log.Debug("scope read", "cloud", j.scope.Cloud, "scope", j.scope.ID, "resources", len(d.Resources), "took", time.Since(start).Round(time.Millisecond))
 			results[i] = outcome{d, err}
 		}()
 	}
 	wg.Wait()
-	for i, s := range scopes {
-		r := results[i]
+	for i, j := range jobs {
+		s, r := j.scope, results[i]
 		if r.err != nil {
 			log.Warn("scope could not be read", "cloud", s.Cloud, "scope", s.ID, "error", r.err)
 			in.Unreadable = append(in.Unreadable, model.UnreadableScope{Cloud: s.Cloud, Scope: s.ID, Error: r.err.Error()})
 			continue
+		}
+		for _, err := range r.d.Errors {
+			log.Warn("part of a scope could not be read", "cloud", s.Cloud, "scope", s.ID, "error", err)
+			in.Unreadable = append(in.Unreadable, model.UnreadableScope{Cloud: s.Cloud, Scope: s.ID, Error: err.Error()})
 		}
 		in.Resources = append(in.Resources, r.d.Resources...)
 		for _, e := range r.d.Uncovered {

@@ -334,3 +334,26 @@ func MatchAny(patterns []string, name string) bool {
 	}
 	return false
 }
+
+// Classify sets each resource's display type from the catalog, for listing
+// without evaluation. With --type patterns, only resources of a matching
+// type are kept; without them, resources of no catalog type are kept with
+// an empty Type. Ambiguous matches are returned as warnings.
+func Classify(cat *catalog.Catalog, rs []model.Resource, types []string) ([]model.Resource, []string) {
+	out := make([]model.Resource, 0, len(rs))
+	var warnings []string
+	for _, r := range rs {
+		entry, err := cat.Classify(r.Cloud, r.NativeType, r.Attrs)
+		if err != nil {
+			warnings = append(warnings, fmt.Sprintf("%s: %v", r.ID, err))
+		}
+		if entry != nil {
+			r.Type = entry.Display
+		}
+		if len(types) > 0 && (entry == nil || !MatchAny(types, entry.Display)) {
+			continue
+		}
+		out = append(out, r)
+	}
+	return out, warnings
+}
