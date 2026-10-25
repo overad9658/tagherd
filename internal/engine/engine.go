@@ -119,8 +119,17 @@ type evaluation struct {
 func (e *evaluation) resource(r *model.Resource) {
 	e.sum.Resources.Discovered++
 
-	// 1. Classify.
-	entry, err := e.set.Catalog.Classify(r.Cloud, r.NativeType, r.Attrs)
+	// 1. Classify. A resource that already has its display type (apply's
+	// --verify builds them from the plan) keeps it.
+	var entry *catalog.Entry
+	var err error
+	if r.Type != "" {
+		if found, ok := e.set.Catalog.Lookup(r.Cloud, r.Type); ok {
+			entry = e.set.Catalog.Canonical(found)
+		}
+	} else {
+		entry, err = e.set.Catalog.Classify(r.Cloud, r.NativeType, r.Attrs)
+	}
 	if err != nil {
 		if errors.Is(err, catalog.ErrAmbiguous) {
 			e.sum.Warnings = append(e.sum.Warnings, fmt.Sprintf("%s: %v", r.ID, err))

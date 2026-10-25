@@ -50,6 +50,7 @@ type globals struct {
 
 type app struct {
 	g      globals
+	stdin  io.Reader
 	stdout io.Writer
 	stderr io.Writer
 	getenv func(string) (string, bool)
@@ -61,8 +62,8 @@ type app struct {
 }
 
 // Execute runs tagherd with args and returns the process exit code.
-func Execute(args []string, stdout, stderr io.Writer, getenv func(string) (string, bool)) int {
-	a := &app{stdout: stdout, stderr: stderr, getenv: getenv}
+func Execute(args []string, stdin io.Reader, stdout, stderr io.Writer, getenv func(string) (string, bool)) int {
+	a := &app{stdin: stdin, stdout: stdout, stderr: stderr, getenv: getenv}
 	root := a.rootCmd()
 	root.SetArgs(args)
 	err := root.Execute()
@@ -115,10 +116,10 @@ apply writes: nothing changes in a cloud account unless apply runs.`,
 		a.catalogCmd(),
 		a.scanCmd(),
 		a.planCmd(),
+		a.applyCmd(),
 		a.inventoryCmd(),
 		a.versionCmd(),
 	)
-	root.AddCommand(a.notYetCmds()...)
 	return root
 }
 
@@ -264,8 +265,8 @@ func (a *app) write(fn func(io.Writer) error) (err error) {
 	return fn(f)
 }
 
-func isTerminal(w io.Writer) bool {
-	f, ok := w.(*os.File)
+func isTerminal(v any) bool {
+	f, ok := v.(*os.File)
 	return ok && term.IsTerminal(int(f.Fd()))
 }
 

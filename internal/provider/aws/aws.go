@@ -84,6 +84,19 @@ type backend interface {
 	Select(ctx context.Context, account, region, expr string) ([]string, error)
 	List(ctx context.Context, adapter string, req listRequest) ([]model.Resource, error)
 	AccountTags(ctx context.Context, account string) ([]model.Tag, error)
+
+	// WriteCaller assumes the write role in an account and returns its ARN.
+	WriteCaller(ctx context.Context, account string) (string, error)
+	// TaggedResources reads tags through the Resource Groups Tagging API.
+	// ARNs it does not return have never had a tag.
+	TaggedResources(ctx context.Context, account, region string, arns []string) (map[string][]model.Tag, error)
+	// TagResources writes the same tags to up to 20 ARNs and returns the
+	// ones that failed.
+	TagResources(ctx context.Context, account, region string, arns []string, tags map[string]string) (map[string]error, error)
+	// ServiceTags and TagService read and write through IAM or
+	// Organizations, for types the Tagging API does not cover.
+	ServiceTags(ctx context.Context, account, service, id string) ([]model.Tag, error)
+	TagService(ctx context.Context, account, service, id string, tags map[string]string) error
 }
 
 // New returns the adapter with SDK clients from the standard credential
@@ -359,9 +372,4 @@ func (p *Provider) ParentTags(ctx context.Context, r model.Resource) ([]model.Ta
 	p.tags[r.Scope] = t
 	p.mu.Unlock()
 	return t, nil
-}
-
-// Writer is not implemented until phase 5.
-func (p *Provider) Writer(context.Context, provider.Scope) (provider.TagWriter, error) {
-	return nil, provider.ErrWritesNotYet
 }

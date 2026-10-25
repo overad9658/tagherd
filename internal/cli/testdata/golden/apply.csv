@@ -1,0 +1,9 @@
+cloud,scope,type,id,name,tag,action,old,new,route,outcome,detail
+AWS,111122223333,AWS Machine Image (AMI),arn:aws:ec2:us-east-1:111122223333:image/ami-0001,base-2026-09,OwningOrg,ADD,,Platform,terraform,pending,the Terraform route arrives in phase 6
+AWS,111122223333,AWS RDS PostgreSQL Instance,arn:aws:rds:us-east-1:111122223333:db:orders,orders,Environment,UPDATE,production,Production,direct,written,
+AWS,111122223333,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,Brand,UPDATE,"  ",Acme,direct,written,
+AWS,111122223333,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,DeploymentType,ADD,,Manual,direct,written,
+AWS,111122223333,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,Exposure,UPDATE,Public,External,direct,written,
+Azure,00000000-0000-0000-0000-000000000001,Azure Compute Virtual Machine,/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-app/providers/Microsoft.Compute/virtualMachines/vm-app,vm-app,EndpointType,UPDATE,server,Server,direct,written,
+GCP,acme-prod,GCP Compute Instance,//compute.googleapis.com/projects/acme-prod/zones/us-central1-a/instances/batch-1,batch-1,AdminEmail,ADD,,ops@example.com,terraform,pending,the Terraform route arrives in phase 6
+GCP,acme-prod,GCP Compute Instance,//compute.googleapis.com/projects/acme-prod/zones/us-central1-a/instances/batch-1,batch-1,environment,UPDATE,prod,Production,terraform,pending,the Terraform route arrives in phase 6

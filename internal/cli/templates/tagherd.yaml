@@ -19,7 +19,7 @@ scopes:
     accounts: ["*"]
     exclude_accounts: []
     read_role_name: tagherd-read  # assumed in each account; empty: base credentials
-    write_role_name: tagherd-write
+    write_role_name: tagherd-write # assumed by apply; Organizations resources use it in the management account
     # profile: security-audit     # base credential profile (or --profile)
     # regions: [us-east-1, us-west-2]   # default: each account's enabled regions
     # config_aggregator:          # one AWS Config query per account instead of
@@ -33,6 +33,7 @@ scopes:
     # folders: ["123456789012"]
     projects: ["*"]
     # credentials_file: "${GOOGLE_APPLICATION_CREDENTIALS}"   # default: ADC
+    # tag_namespace: "${GCP_ORG_ID}"   # where Resource Manager tag keys live; default: organization_id, else each project
 
 terraform:
   allowed_repositories: []        # e.g. { scm: GitHub, org: example-org, repo: "*" }

@@ -31,6 +31,7 @@ type Options struct {
 type Provider struct {
 	opts Options
 	b    backend
+	w    writeBackend // nil in discovery-only tests
 
 	mu     sync.Mutex
 	labels map[string][]model.Tag // project labels by project ID
@@ -52,7 +53,13 @@ func New(ctx context.Context, opts Options) (*Provider, error) {
 	if err != nil {
 		return nil, err
 	}
-	return newProvider(opts, b), nil
+	w, err := newSDKWriter(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
+	p := newProvider(opts, b)
+	p.w = w
+	return p, nil
 }
 
 func newProvider(opts Options, b backend) *Provider {
@@ -253,11 +260,6 @@ func (p *Provider) ParentTags(ctx context.Context, r model.Resource) ([]model.Ta
 	p.labels[r.Scope] = t
 	p.mu.Unlock()
 	return t, nil
-}
-
-// Writer is not implemented until phase 5.
-func (p *Provider) Writer(context.Context, provider.Scope) (provider.TagWriter, error) {
-	return nil, provider.ErrWritesNotYet
 }
 
 func lastSegment(s string) string { return s[strings.LastIndex(s, "/")+1:] }

@@ -36,6 +36,13 @@ type stub struct {
 	lists     map[string][]model.Resource
 	listErr   map[string]error // by adapter/region
 	calls     []string
+
+	// Writes.
+	writeErr map[string]error             // WriteCaller, by account
+	tagged   map[string][]model.Tag       // Tagging API tags by ARN
+	failARN  map[string]error             // TagResources per-ARN failures
+	svcTags  map[string][]model.Tag       // IAM and Organizations tags by ID
+	written  map[string]map[string]string // every write, by ID
 }
 
 func (s *stub) record(c string) {
@@ -283,9 +290,6 @@ func TestParentTagsCached(t *testing.T) {
 		if err != nil || len(tags) != 1 {
 			t.Fatalf("tags = %v, %v", tags, err)
 		}
-	}
-	if _, err := p.Writer(context.Background(), provider.Scope{}); !errors.Is(err, provider.ErrWritesNotYet) {
-		t.Errorf("writer err = %v", err)
 	}
 }
 

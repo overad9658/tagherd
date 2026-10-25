@@ -4,7 +4,6 @@ package provider
 
 import (
 	"context"
-	"errors"
 	"path"
 	"slices"
 	"sort"
@@ -33,9 +32,6 @@ type Discovery struct {
 	Errors []error
 }
 
-// ErrWritesNotYet is returned by Writer until the tag writers land.
-var ErrWritesNotYet = errors.New("tag writes are not implemented yet; they arrive in phase 5")
-
 // Provider is one cloud's adapter.
 type Provider interface {
 	Cloud() model.Cloud
@@ -48,17 +44,37 @@ type Provider interface {
 	// ParentTags returns the tags of the resource's parent: AWS account tags,
 	// Azure resource group tags or GCP project labels (used from phase 4).
 	ParentTags(ctx context.Context, r model.Resource) ([]model.Tag, error)
-	// Writer returns a tag writer for a scope, with write credentials (phase 5).
+	// Writer returns a tag writer for a scope, with write credentials.
 	Writer(ctx context.Context, s Scope) (TagWriter, error)
 }
 
-// TagWriter reads and writes tags on resources in one scope.
+// Target is one resource to read or write tags on.
+type Target struct {
+	ID         string // ARN, ARM ID or CAI full name
+	NativeType string
+	Region     string // AWS region or GCP location; empty for global
+}
+
+// TagWrite merges tags into one resource. On GCP each tag's Kind says
+// whether it is a label (already lowercase) or a Resource Manager tag.
+type TagWrite struct {
+	Target Target
+	Tags   []model.Tag
+}
+
+// TagWriter reads and writes tags on resources in one scope, with write
+// credentials. Calls take many resources so adapters can batch them.
 type TagWriter interface {
-	// Read returns the current values of keys, matched ignoring case. A key
-	// that is absent is missing from the map.
-	Read(ctx context.Context, id string, keys []string) (map[string]string, error)
-	// Write merges tags into the resource. It never removes a tag.
-	Write(ctx context.Context, id string, tags []model.Tag) error
+	// Actor is the identity writes are made as, for the audit log.
+	Actor(ctx context.Context) (string, error)
+	// Read returns every tag on each target, by ID, as discovery reports
+	// them (GCP: labels and effective Resource Manager tags). A target
+	// that could not be read has an entry in errs instead.
+	Read(ctx context.Context, targets []Target) (tags map[string][]model.Tag, errs map[string]error)
+	// Write merges the tags into each resource and returns an error per
+	// write that failed, by ID. It never removes a tag; a GCP Resource
+	// Manager binding with another value for the same key is replaced.
+	Write(ctx context.Context, writes []TagWrite) map[string]error
 }
 
 // TypeSplit is a discovery request divided by how each type is listed.

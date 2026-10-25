@@ -26,11 +26,13 @@ const defaultRegion = "us-east-1"
 
 // sdkBackend implements backend with the AWS SDK.
 type sdkBackend struct {
-	base     aws.Config
-	readRole string
+	base      aws.Config
+	readRole  string
+	writeRole string
 
 	mu       sync.Mutex
 	accounts map[string]aws.Config // read-role credentials by account
+	writers  map[string]aws.Config // write-role credentials by account
 	caller   *identity
 
 	// APIs that every account's reads share are rate-limited client-side;
@@ -62,11 +64,13 @@ func newSDKBackend(ctx context.Context, opts Options) (*sdkBackend, error) {
 		base.Region = defaultRegion
 	}
 	return &sdkBackend{
-		base:     base,
-		readRole: opts.Scopes.ReadRoleName,
-		accounts: map[string]aws.Config{},
-		orgLimit: rate.NewLimiter(2, 2),
-		aggLimit: rate.NewLimiter(5, 5),
+		base:      base,
+		readRole:  opts.Scopes.ReadRoleName,
+		writeRole: opts.Scopes.WriteRoleName,
+		accounts:  map[string]aws.Config{},
+		writers:   map[string]aws.Config{},
+		orgLimit:  rate.NewLimiter(2, 2),
+		aggLimit:  rate.NewLimiter(5, 5),
 	}, nil
 }
 
@@ -90,22 +94,33 @@ func (b *sdkBackend) Caller(ctx context.Context) (identity, error) {
 
 // account returns read-role credentials for an account, in region.
 func (b *sdkBackend) account(ctx context.Context, account, region string) (aws.Config, error) {
+	return b.assumed(ctx, b.accounts, b.readRole, "tagherd-read", account, region)
+}
+
+// writer returns write-role credentials for an account, in region.
+func (b *sdkBackend) writer(ctx context.Context, account, region string) (aws.Config, error) {
+	return b.assumed(ctx, b.writers, b.writeRole, "tagherd-write", account, region)
+}
+
+// assumed returns cached credentials for role in account; an empty role
+// means the base credentials.
+func (b *sdkBackend) assumed(ctx context.Context, cache map[string]aws.Config, role, session, account, region string) (aws.Config, error) {
 	b.mu.Lock()
-	cfg, ok := b.accounts[account]
+	cfg, ok := cache[account]
 	b.mu.Unlock()
 	if !ok {
 		cfg = b.base.Copy()
-		if b.readRole != "" {
+		if role != "" {
 			id, err := b.Caller(ctx)
 			if err != nil {
 				return aws.Config{}, err
 			}
-			role := fmt.Sprintf("arn:%s:iam::%s:role/%s", id.Partition, account, b.readRole)
-			cfg.Credentials = aws.NewCredentialsCache(stscreds.NewAssumeRoleProvider(sts.NewFromConfig(b.base), role,
-				func(o *stscreds.AssumeRoleOptions) { o.RoleSessionName = "tagherd-read" }))
+			roleARN := fmt.Sprintf("arn:%s:iam::%s:role/%s", id.Partition, account, role)
+			cfg.Credentials = aws.NewCredentialsCache(stscreds.NewAssumeRoleProvider(sts.NewFromConfig(b.base), roleARN,
+				func(o *stscreds.AssumeRoleOptions) { o.RoleSessionName = session }))
 		}
 		b.mu.Lock()
-		b.accounts[account] = cfg
+		cache[account] = cfg
 		b.mu.Unlock()
 	}
 	c := cfg.Copy()

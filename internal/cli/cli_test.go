@@ -29,9 +29,15 @@ type result struct {
 func run(t *testing.T, env map[string]string, args ...string) result {
 	t.Helper()
 	t.Chdir(t.TempDir())
+	return runIn(t, env, "", args...)
+}
+
+// runIn runs in the current directory with stdin, which is never a terminal.
+func runIn(t *testing.T, env map[string]string, stdin string, args ...string) result {
+	t.Helper()
 	var out, errb bytes.Buffer
 	getenv := func(k string) (string, bool) { v, ok := env[k]; return v, ok }
-	code := Execute(args, &out, &errb, getenv)
+	code := Execute(args, strings.NewReader(stdin), &out, &errb, getenv)
 	return result{code, out.String(), errb.String()}
 }
 
@@ -191,13 +197,6 @@ func TestInit(t *testing.T) {
 	}
 	if r := run(t, nil, "init", "--dir", dir); !strings.Contains(r.stdout, "kept") {
 		t.Errorf("existing files should be kept: %s", r.stdout)
-	}
-}
-
-func TestNotYetImplemented(t *testing.T) {
-	r := run(t, nil, "apply", "--plan", "plan.json")
-	if r.code != output.ExitUsage || !strings.Contains(r.stderr, "phase 5") {
-		t.Errorf("exit %d, stderr %q", r.code, r.stderr)
 	}
 }
 
