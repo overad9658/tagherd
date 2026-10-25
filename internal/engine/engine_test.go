@@ -168,3 +168,26 @@ func TestUnclassified(t *testing.T) {
 		t.Errorf("%+v", r.Summary)
 	}
 }
+
+func TestClassify(t *testing.T) {
+	cat, err := catalog.Default()
+	if err != nil {
+		t.Fatal(err)
+	}
+	rs := []model.Resource{
+		{Cloud: model.AWS, NativeType: "AWS::RDS::DBInstance", ID: "a", Attrs: map[string]string{"engine": "postgres", "cluster_member": "false"}},
+		{Cloud: model.AWS, NativeType: "AWS::RDS::DBInstance", ID: "b", Attrs: map[string]string{"engine": "custom-oracle-ee"}},
+		{Cloud: model.AWS, NativeType: "AWS::S3::Bucket", ID: "c"},
+	}
+	all, warnings := Classify(cat, rs, nil)
+	if len(all) != 3 || all[0].Type != "AWS RDS PostgreSQL Instance" || all[1].Type != "AWS RDS Oracle Instance" || len(warnings) != 0 {
+		t.Errorf("all = %+v, warnings %v", all, warnings)
+	}
+	if rs[0].Type != "" {
+		t.Error("Classify must not modify its input")
+	}
+	some, _ := Classify(cat, rs, []string{"*bucket*"})
+	if len(some) != 1 || some[0].ID != "c" {
+		t.Errorf("--type *bucket* = %+v", some)
+	}
+}

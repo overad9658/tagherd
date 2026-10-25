@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"errors"
 	"fmt"
 	"io"
 
@@ -9,8 +8,6 @@ import (
 
 	"github.com/overad9658/tagherd/internal/model"
 	"github.com/overad9658/tagherd/internal/output"
-	"github.com/overad9658/tagherd/internal/provider"
-	"github.com/overad9658/tagherd/internal/provider/fake"
 	"github.com/overad9658/tagherd/internal/scan"
 )
 
@@ -55,21 +52,13 @@ any = both; none = never exit 1.`,
 			if err != nil {
 				return output.Usagef("--group: %v", err)
 			}
-			providers, overrides, err := a.providers(fixture)
+			providers, overrides, err := a.providers(cmd.Context(), fixture)
 			if err != nil {
 				return err
 			}
-			res := scan.Run(cmd.Context(), set, providers, scan.Options{
-				Clouds: a.clouds,
-				ScopePatterns: map[model.Cloud][]string{
-					model.AWS: a.g.accounts, model.Azure: a.g.subscriptions, model.GCP: a.g.projects,
-				},
-				Groups:      groups,
-				Types:       a.g.types,
-				Concurrency: a.g.concurrency,
-				Overrides:   overrides,
-				Log:         a.log,
-			})
+			opts := a.scanOptions(overrides)
+			opts.Groups = groups
+			res := scan.Run(cmd.Context(), set, providers, opts)
 			for _, w := range res.Summary.Warnings {
 				a.log.Warn(w)
 			}
@@ -88,29 +77,6 @@ any = both; none = never exit 1.`,
 	cmd.Flags().StringVar(&fixture, "fixture", "", "scan a fake-provider YAML fixture instead of the clouds (testing)")
 	_ = cmd.Flags().MarkHidden("fixture")
 	return cmd
-}
-
-// providers returns the discovery adapters. Until the cloud adapters land in
-// phase 3, only the fake provider exists.
-func (a *app) providers(fixture string) (map[model.Cloud]provider.Provider, scan.OverrideRunner, error) {
-	if fixture == "" {
-		return nil, nil, &output.ExitError{
-			Code: output.ExitUsage,
-			Err:  errors.New("cloud adapters arrive in phase 3; scan a fake-provider fixture with --fixture <file>"),
-		}
-	}
-	env, err := fake.Load(fixture)
-	if err != nil {
-		return nil, nil, output.Usagef("--fixture: %v", err)
-	}
-	out := map[model.Cloud]provider.Provider{}
-	for c, p := range env.Providers {
-		out[c] = p
-	}
-	if env.Wiz == nil {
-		return out, nil, nil
-	}
-	return out, env.Wiz, nil
 }
 
 // scanExit returns the exit code for a finished scan: 3 for unreadable

@@ -10,18 +10,29 @@ ownership_file: ./ownership.yaml # scope -> OwningOrg
 defaults_file: ./defaults.yaml   # optional scope-level tag defaults
 synonyms_file: ./synonyms.yaml   # invalid value -> dictionary value
 
+# Scopes to scan. Lists are globs on ID or name that filter the scopes
+# found; without an organization (AWS) or organization_id and folders (GCP)
+# they are the literal IDs to scan.
 scopes:
   aws:
-    organization: true
-    read_role_name: tagherd-read
-    write_role_name: tagherd-write
+    organization: true            # list accounts with AWS Organizations
+    accounts: ["*"]
     exclude_accounts: []
+    read_role_name: tagherd-read  # assumed in each account; empty: base credentials
+    write_role_name: tagherd-write
+    # profile: security-audit     # base credential profile (or --profile)
+    # regions: [us-east-1, us-west-2]   # default: each account's enabled regions
+    # config_aggregator:          # one AWS Config query per account instead of
+    #   name: org-aggregator      # one per account and region
+    #   region: us-east-1
   azure:
     tenant_id: "${AZURE_TENANT_ID}"
     subscriptions: ["*"]
   gcp:
     organization_id: "${GCP_ORG_ID}"
+    # folders: ["123456789012"]
     projects: ["*"]
+    # credentials_file: "${GOOGLE_APPLICATION_CREDENTIALS}"   # default: ADC
 
 terraform:
   allowed_repositories: []        # e.g. { scm: GitHub, org: example-org, repo: "*" }

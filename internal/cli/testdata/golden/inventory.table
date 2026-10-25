@@ -1,0 +1,19 @@
+CLOUD  SCOPE                                 REGION       TYPE                           NAME                                    TAGS
+AWS    111122223333                          us-east-1    AWS::RDS::DBInstance           legacy                                  
+AWS    111122223333                          us-east-1    AWS DynamoDB Table             sessions                                AdminEmail=dba@example.com, AppCategory=Payments, Brand=Acme, DataClassification=Internal, DeploymentType=Automation, Environment=Production, Exposure=Internal, OwningOrg=Platform
+AWS    111122223333                          us-east-1    AWS EC2 Instance               web-1                                   AdminEmail=web@example.com, AppCategory=Web, Brand=Acme, DeploymentType=Manual, EndpointType=Server, Environment=Production, Exposure=External, OwningOrg=Platform, environment=Staging
+AWS    111122223333                                       AWS IAM AWS Managed Policy     ReadOnlyAccess                          
+AWS    111122223333                          us-east-1    AWS Lambda Function            aws-controltower-NotificationForwarder  
+AWS    111122223333                          us-east-1    AWS Lambda Function            billing-api                             AdminEmail=billing@example.com, AppCategory=Billing, DeploymentType=Scripted, Environment=Production, Exposure=External, OwningOrg=Finance, brand=Acme
+AWS    111122223333                          us-east-1    AWS Machine Image (AMI)        base-2026-09                            AdminEmail=images@example.com, DeploymentType=Automation
+AWS    111122223333                          us-east-1    AWS Machine Image (AMI)        base-2026-10                            DeploymentType=Automation, OwningOrg=Platform
+AWS    111122223333                          us-east-1    AWS RDS PostgreSQL Instance    orders                                  AdminEmail=dba@example.com, AppCategory=Payments, Brand=Acme, DataClassification=Confidential, DeploymentType=Manual, Environment=production, Exposure=Internal, OwningOrg=Platform
+AWS    111122223333                          us-east-1    AWS S3 Bucket                  acme-logs                               AdminEmail=not-an-email, AppCategory=Logging, Brand=  , DataClassification=Internal, Environment=Production, Exposure=Public, OwningOrg=ITOps
+Azure  00000000-0000-0000-0000-000000000001  eastus       Azure Compute Virtual Machine  vm-app                                  AdminEmail=app@example.com, AppCategory=Web, Brand=Acme, DeploymentType=Manual, EndpointType=server, Exposure=Internal, OwningOrg=DevOps, environment=Production
+Azure  00000000-0000-0000-0000-000000000001  eastus       Azure Function                 fn-orders                               AdminEmail=app@example.com, AppCategory=Payments, Brand=Acme, DeploymentType=Automation, Environment=Production, Exposure=Internal, OwningOrg=DevOps
+GCP    acme-prod                             us           GCP Bucket                     acme-assets                             appcategory=web, brand=acme, dataclassification=public, deploymenttype=manual, environment=production, exposure=external, owningorg=platform, tag:AdminEmail=web@example.com
+GCP    acme-prod                             us-central1  GCP Compute Instance           batch-1                                 appcategory=batch, brand=acme, deploymenttype=automation, endpointtype=server, environment=prod, exposure=internal, owningorg=platform
+
+unreadable: AWS 444455556666: AccessDenied: not authorized to assume tagherd-read
+
+14 resource(s) in 3 scope(s). 1 scope(s) unreadable. 30 coverage gap(s).

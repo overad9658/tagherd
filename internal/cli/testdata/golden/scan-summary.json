@@ -108,7 +108,7 @@
       "INVALID_VALUE": 3,
       "MISSING_TAG": 3,
       "NOT_TAGGABLE": 1,
-      "UNMAPPED_TYPE": 1
+      "UNMAPPED_TYPE": 30
     },
     "unreadable_scopes": [
       {
@@ -120,8 +120,153 @@
     "unmapped_types": [
       {
         "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS Batch Job Definition"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS Comprehend Document Classifier Version"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS Comprehend Entity Recognizer Version"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS Elastic DocumentDB Cluster"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS Glue Crawler"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS IAM Root User Policy"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS MQ Configuration"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS MediaConvert Queue"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS Redshift Datashare"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS Rekognition Stream Processor"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS Route 53 Health Check"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS Route53 Registered Domain"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS S3 Glacier Vault"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS SES Domain Identity"
+      },
+      {
+        "cloud": "AWS",
+        "scope": "*",
+        "type": "AWS SES Email Address Identity"
+      },
+      {
+        "cloud": "AWS",
         "scope": "111122223333",
         "type": "AWS Comprehend Flywheel"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure ACI Container"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Blob Storage Container"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Databricks Catalog"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Diagnostic Settings"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure File Share"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Key Vault Certificate"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Management Group"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Microsoft Entra ID Group"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Microsoft Entra ID Role"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Microsoft Entra ID Tenant"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Microsoft Entra ID User"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure OpenAI Fine Tuning Job"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure OpenAI Model"
+      },
+      {
+        "cloud": "Azure",
+        "scope": "*",
+        "type": "Azure Scale Set Virtual Machine"
       }
     ]
   }

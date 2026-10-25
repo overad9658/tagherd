@@ -1,0 +1,680 @@
+{
+  "resources": [
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "native_type": "AWS::RDS::DBInstance",
+      "id": "arn:aws:rds:us-east-1:111122223333:db:legacy",
+      "name": "legacy",
+      "tags": []
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS DynamoDB Table",
+      "native_type": "AWS::DynamoDB::Table",
+      "id": "arn:aws:dynamodb:us-east-1:111122223333:table/sessions",
+      "name": "sessions",
+      "tags": [
+        {
+          "key": "AdminEmail",
+          "value": "dba@example.com",
+          "kind": "tag"
+        },
+        {
+          "key": "AppCategory",
+          "value": "Payments",
+          "kind": "tag"
+        },
+        {
+          "key": "Brand",
+          "value": "Acme",
+          "kind": "tag"
+        },
+        {
+          "key": "DataClassification",
+          "value": "Internal",
+          "kind": "tag"
+        },
+        {
+          "key": "DeploymentType",
+          "value": "Automation",
+          "kind": "tag"
+        },
+        {
+          "key": "Environment",
+          "value": "Production",
+          "kind": "tag"
+        },
+        {
+          "key": "Exposure",
+          "value": "Internal",
+          "kind": "tag"
+        },
+        {
+          "key": "OwningOrg",
+          "value": "Platform",
+          "kind": "tag"
+        }
+      ]
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS EC2 Instance",
+      "native_type": "AWS::EC2::Instance",
+      "id": "arn:aws:ec2:us-east-1:111122223333:instance/i-0abc",
+      "name": "web-1",
+      "tags": [
+        {
+          "key": "AdminEmail",
+          "value": "web@example.com",
+          "kind": "tag"
+        },
+        {
+          "key": "AppCategory",
+          "value": "Web",
+          "kind": "tag"
+        },
+        {
+          "key": "Brand",
+          "value": "Acme",
+          "kind": "tag"
+        },
+        {
+          "key": "DeploymentType",
+          "value": "Manual",
+          "kind": "tag"
+        },
+        {
+          "key": "EndpointType",
+          "value": "Server",
+          "kind": "tag"
+        },
+        {
+          "key": "Environment",
+          "value": "Production",
+          "kind": "tag"
+        },
+        {
+          "key": "Exposure",
+          "value": "External",
+          "kind": "tag"
+        },
+        {
+          "key": "OwningOrg",
+          "value": "Platform",
+          "kind": "tag"
+        },
+        {
+          "key": "environment",
+          "value": "Staging",
+          "kind": "tag"
+        }
+      ]
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "type": "AWS IAM AWS Managed Policy",
+      "native_type": "AWS::IAM::Policy",
+      "id": "arn:aws:iam::aws:policy/ReadOnlyAccess",
+      "name": "ReadOnlyAccess",
+      "tags": []
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS Lambda Function",
+      "native_type": "AWS::Lambda::Function",
+      "id": "arn:aws:lambda:us-east-1:111122223333:function:aws-controltower-NotificationForwarder",
+      "name": "aws-controltower-NotificationForwarder",
+      "tags": []
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS Lambda Function",
+      "native_type": "AWS::Lambda::Function",
+      "id": "arn:aws:lambda:us-east-1:111122223333:function:billing-api",
+      "name": "billing-api",
+      "tags": [
+        {
+          "key": "AdminEmail",
+          "value": "billing@example.com",
+          "kind": "tag"
+        },
+        {
+          "key": "AppCategory",
+          "value": "Billing",
+          "kind": "tag"
+        },
+        {
+          "key": "DeploymentType",
+          "value": "Scripted",
+          "kind": "tag"
+        },
+        {
+          "key": "Environment",
+          "value": "Production",
+          "kind": "tag"
+        },
+        {
+          "key": "Exposure",
+          "value": "External",
+          "kind": "tag"
+        },
+        {
+          "key": "OwningOrg",
+          "value": "Finance",
+          "kind": "tag"
+        },
+        {
+          "key": "brand",
+          "value": "Acme",
+          "kind": "tag"
+        }
+      ]
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS Machine Image (AMI)",
+      "native_type": "AWS::EC2::Image",
+      "id": "arn:aws:ec2:us-east-1:111122223333:image/ami-0001",
+      "name": "base-2026-09",
+      "tags": [
+        {
+          "key": "AdminEmail",
+          "value": "images@example.com",
+          "kind": "tag"
+        },
+        {
+          "key": "DeploymentType",
+          "value": "Automation",
+          "kind": "tag"
+        }
+      ]
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS Machine Image (AMI)",
+      "native_type": "AWS::EC2::Image",
+      "id": "arn:aws:ec2:us-east-1:111122223333:image/ami-0002",
+      "name": "base-2026-10",
+      "tags": [
+        {
+          "key": "DeploymentType",
+          "value": "Automation",
+          "kind": "tag"
+        },
+        {
+          "key": "OwningOrg",
+          "value": "Platform",
+          "kind": "tag"
+        }
+      ]
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS RDS PostgreSQL Instance",
+      "native_type": "AWS::RDS::DBInstance",
+      "id": "arn:aws:rds:us-east-1:111122223333:db:orders",
+      "name": "orders",
+      "tags": [
+        {
+          "key": "AdminEmail",
+          "value": "dba@example.com",
+          "kind": "tag"
+        },
+        {
+          "key": "AppCategory",
+          "value": "Payments",
+          "kind": "tag"
+        },
+        {
+          "key": "Brand",
+          "value": "Acme",
+          "kind": "tag"
+        },
+        {
+          "key": "DataClassification",
+          "value": "Confidential",
+          "kind": "tag"
+        },
+        {
+          "key": "DeploymentType",
+          "value": "Manual",
+          "kind": "tag"
+        },
+        {
+          "key": "Environment",
+          "value": "production",
+          "kind": "tag"
+        },
+        {
+          "key": "Exposure",
+          "value": "Internal",
+          "kind": "tag"
+        },
+        {
+          "key": "OwningOrg",
+          "value": "Platform",
+          "kind": "tag"
+        }
+      ]
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS S3 Bucket",
+      "native_type": "AWS::S3::Bucket",
+      "id": "arn:aws:s3:::acme-logs",
+      "name": "acme-logs",
+      "created": "2026-10-01T12:00:00Z",
+      "tags": [
+        {
+          "key": "AdminEmail",
+          "value": "not-an-email",
+          "kind": "tag"
+        },
+        {
+          "key": "AppCategory",
+          "value": "Logging",
+          "kind": "tag"
+        },
+        {
+          "key": "Brand",
+          "value": "  ",
+          "kind": "tag"
+        },
+        {
+          "key": "DataClassification",
+          "value": "Internal",
+          "kind": "tag"
+        },
+        {
+          "key": "Environment",
+          "value": "Production",
+          "kind": "tag"
+        },
+        {
+          "key": "Exposure",
+          "value": "Public",
+          "kind": "tag"
+        },
+        {
+          "key": "OwningOrg",
+          "value": "ITOps",
+          "kind": "tag"
+        }
+      ]
+    },
+    {
+      "cloud": "Azure",
+      "scope": "00000000-0000-0000-0000-000000000001",
+      "region": "eastus",
+      "type": "Azure Compute Virtual Machine",
+      "native_type": "microsoft.compute/virtualmachines",
+      "id": "/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-app/providers/Microsoft.Compute/virtualMachines/vm-app",
+      "name": "vm-app",
+      "tags": [
+        {
+          "key": "AdminEmail",
+          "value": "app@example.com",
+          "kind": "tag"
+        },
+        {
+          "key": "AppCategory",
+          "value": "Web",
+          "kind": "tag"
+        },
+        {
+          "key": "Brand",
+          "value": "Acme",
+          "kind": "tag"
+        },
+        {
+          "key": "DeploymentType",
+          "value": "Manual",
+          "kind": "tag"
+        },
+        {
+          "key": "EndpointType",
+          "value": "server",
+          "kind": "tag"
+        },
+        {
+          "key": "Exposure",
+          "value": "Internal",
+          "kind": "tag"
+        },
+        {
+          "key": "OwningOrg",
+          "value": "DevOps",
+          "kind": "tag"
+        },
+        {
+          "key": "environment",
+          "value": "Production",
+          "kind": "tag"
+        }
+      ],
+      "parent": "rg-app"
+    },
+    {
+      "cloud": "Azure",
+      "scope": "00000000-0000-0000-0000-000000000001",
+      "region": "eastus",
+      "type": "Azure Function",
+      "native_type": "microsoft.web/sites",
+      "id": "/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-app/providers/Microsoft.Web/sites/fn-orders",
+      "name": "fn-orders",
+      "tags": [
+        {
+          "key": "AdminEmail",
+          "value": "app@example.com",
+          "kind": "tag"
+        },
+        {
+          "key": "AppCategory",
+          "value": "Payments",
+          "kind": "tag"
+        },
+        {
+          "key": "Brand",
+          "value": "Acme",
+          "kind": "tag"
+        },
+        {
+          "key": "DeploymentType",
+          "value": "Automation",
+          "kind": "tag"
+        },
+        {
+          "key": "Environment",
+          "value": "Production",
+          "kind": "tag"
+        },
+        {
+          "key": "Exposure",
+          "value": "Internal",
+          "kind": "tag"
+        },
+        {
+          "key": "OwningOrg",
+          "value": "DevOps",
+          "kind": "tag"
+        }
+      ],
+      "parent": "rg-app"
+    },
+    {
+      "cloud": "GCP",
+      "scope": "acme-prod",
+      "region": "us",
+      "type": "GCP Bucket",
+      "native_type": "storage.googleapis.com/Bucket",
+      "id": "//storage.googleapis.com/projects/_/buckets/acme-assets",
+      "name": "acme-assets",
+      "tags": [
+        {
+          "key": "appcategory",
+          "value": "web",
+          "kind": "label"
+        },
+        {
+          "key": "brand",
+          "value": "acme",
+          "kind": "label"
+        },
+        {
+          "key": "dataclassification",
+          "value": "public",
+          "kind": "label"
+        },
+        {
+          "key": "deploymenttype",
+          "value": "manual",
+          "kind": "label"
+        },
+        {
+          "key": "environment",
+          "value": "production",
+          "kind": "label"
+        },
+        {
+          "key": "exposure",
+          "value": "external",
+          "kind": "label"
+        },
+        {
+          "key": "owningorg",
+          "value": "platform",
+          "kind": "label"
+        },
+        {
+          "key": "AdminEmail",
+          "value": "web@example.com",
+          "kind": "rmtag"
+        }
+      ]
+    },
+    {
+      "cloud": "GCP",
+      "scope": "acme-prod",
+      "region": "us-central1",
+      "type": "GCP Compute Instance",
+      "native_type": "compute.googleapis.com/Instance",
+      "id": "//compute.googleapis.com/projects/acme-prod/zones/us-central1-a/instances/batch-1",
+      "name": "batch-1",
+      "tags": [
+        {
+          "key": "appcategory",
+          "value": "batch",
+          "kind": "label"
+        },
+        {
+          "key": "brand",
+          "value": "acme",
+          "kind": "label"
+        },
+        {
+          "key": "deploymenttype",
+          "value": "automation",
+          "kind": "label"
+        },
+        {
+          "key": "endpointtype",
+          "value": "server",
+          "kind": "label"
+        },
+        {
+          "key": "environment",
+          "value": "prod",
+          "kind": "label"
+        },
+        {
+          "key": "exposure",
+          "value": "internal",
+          "kind": "label"
+        },
+        {
+          "key": "owningorg",
+          "value": "platform",
+          "kind": "label"
+        }
+      ]
+    }
+  ],
+  "unreadable_scopes": [
+    {
+      "cloud": "AWS",
+      "scope": "444455556666",
+      "error": "AccessDenied: not authorized to assume tagherd-read"
+    }
+  ],
+  "unmapped_types": [
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "type": "AWS Glue Crawler"
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "type": "AWS Batch Job Definition"
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "type": "AWS MediaConvert Queue"
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "type": "AWS Redshift Datashare"
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "type": "AWS Elastic DocumentDB Cluster"
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "type": "AWS MQ Configuration"
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "type": "AWS Comprehend Entity Recognizer Version"
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "type": "AWS Comprehend Document Classifier Version"
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "type": "AWS Rekognition Stream Processor"
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "type": "AWS Route53 Registered Domain"
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "type": "AWS Route 53 Health Check"
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "type": "AWS IAM Root User Policy"
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "type": "AWS SES Domain Identity"
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "type": "AWS SES Email Address Identity"
+    },
+    {
+      "cloud": "AWS",
+      "scope": "*",
+      "type": "AWS S3 Glacier Vault"
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "type": "Azure ACI Container"
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "type": "Azure Scale Set Virtual Machine"
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "type": "Azure Databricks Catalog"
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "type": "Azure OpenAI Fine Tuning Job"
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "type": "Azure OpenAI Model"
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "type": "Azure Microsoft Entra ID Tenant"
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "type": "Azure Management Group"
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "type": "Azure Diagnostic Settings"
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "type": "Azure Microsoft Entra ID Role"
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "type": "Azure Microsoft Entra ID User"
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "type": "Azure Microsoft Entra ID Group"
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "type": "Azure Key Vault Certificate"
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "type": "Azure Blob Storage Container"
+    },
+    {
+      "cloud": "Azure",
+      "scope": "*",
+      "type": "Azure File Share"
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "type": "AWS Comprehend Flywheel"
+    }
+  ]
+}

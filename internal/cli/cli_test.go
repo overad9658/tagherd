@@ -132,6 +132,14 @@ func TestCatalog(t *testing.T) {
 	if r.code != 0 || len(lines) != 11 { // header + 10 Vertex AI entries
 		t.Fatalf("exit %d, %d lines:\n%s", r.code, len(lines), r.stdout)
 	}
+	r = run(t, nil, "catalog", "--gaps", "--cloud", "aws", "-o", "csv")
+	if r.code != 0 || !strings.Contains(r.stdout, "AWS Glue Crawler") || strings.Contains(r.stdout, "AWS S3 Bucket") {
+		t.Errorf("--gaps: exit %d\n%s", r.code, r.stdout)
+	}
+	r = run(t, nil, "catalog", "--type", "AWS Machine Image (AMI)", "-o", "csv")
+	if !strings.Contains(r.stdout, ",list:ec2,") {
+		t.Errorf("discovery column: %s", r.stdout)
+	}
 	if r := run(t, nil, "catalog", "--cloud", "oci"); r.code != output.ExitUsage {
 		t.Errorf("bad --cloud: exit %d", r.code)
 	}

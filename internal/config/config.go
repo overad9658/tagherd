@@ -52,6 +52,17 @@ type AWSScopes struct {
 	ReadRoleName    string   `yaml:"read_role_name"`
 	WriteRoleName   string   `yaml:"write_role_name"`
 	Profile         string   `yaml:"profile"`
+	// Regions to read; default: the regions enabled in each account.
+	Regions []string `yaml:"regions"`
+	// ConfigAggregator is queried for every account when set; without it,
+	// AWS Config is queried in each account and region.
+	ConfigAggregator *AWSAggregator `yaml:"config_aggregator"`
+}
+
+// AWSAggregator names an AWS Config aggregator, read with the base credentials.
+type AWSAggregator struct {
+	Name   string `yaml:"name"`
+	Region string `yaml:"region"`
 }
 
 type AzureScopes struct {
@@ -63,6 +74,9 @@ type GCPScopes struct {
 	OrganizationID string   `yaml:"organization_id"`
 	Folders        []string `yaml:"folders"`
 	Projects       []string `yaml:"projects"`
+	// CredentialsFile is a service account key; default: Application
+	// Default Credentials.
+	CredentialsFile string `yaml:"credentials_file"`
 }
 
 type Terraform struct {

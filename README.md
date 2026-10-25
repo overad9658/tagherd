@@ -9,16 +9,18 @@ reviewable plan of tag changes, and applies it. `scan` reads, `plan` decides,
 
 ## Status
 
-Phases 1 and 2 (milestone 1) are implemented and run offline:
+Phases 1 to 3 are implemented:
 
 - Config, policy loading and validation, and the type catalog
 - The evaluation engine: classification, group matching, every finding code,
   compliance summaries and `--fail-on` exit codes
-- `scan`, against a fake-provider fixture until the cloud adapters land in
-  phase 3
+- Discovery adapters for AWS (Organizations, AWS Config, per-service list
+  calls), Azure (Resource Graph) and GCP (Cloud Asset Inventory, labels and
+  Resource Manager tags), behind `scan` and `inventory`
 
-`inventory`, `plan` and `apply` are registered but report the phase they
-arrive in.
+The adapters are unit-tested against stubs; they have not yet run against
+real accounts (the pilot in the backlog). `plan` and `apply` are registered
+but report the phase they arrive in.
 
 ## Build and test
 
@@ -38,19 +40,40 @@ tagherd policy validate --strict        # warnings fail too
 tagherd policy list                     # groups with tag and type counts
 tagherd policy show database            # by group name or file stem; globs allowed
 tagherd catalog --cloud aws --type '*rds*'
+tagherd catalog --gaps                  # types with no discovery adapter yet
 tagherd init                            # tagherd.yaml, value files, policy scaffold
 
-# Until phase 3, scan runs against a fake-provider fixture
+# Scan the clouds configured under scopes: in tagherd.yaml
+tagherd scan --cloud aws --account '1111*' --group Database
+tagherd scan --fail-on missing --summary -o markdown
+tagherd inventory --cloud gcp --type 'GCP Compute*' -o csv
+
+# The fake-provider fixture, for development without cloud access
 tagherd scan --fixture testdata/fixtures/scan.yaml
-tagherd scan --fixture testdata/fixtures/scan.yaml --cloud azure --fail-on missing
-tagherd scan --fixture testdata/fixtures/scan.yaml --summary -o markdown
+tagherd inventory --fixture testdata/fixtures/scan.yaml --cloud azure
 ```
 
 `scan` exits 0 when there are no findings in the `--fail-on` classes, 1 when
-there are, 2 on usage, config or policy errors, and 3 when a scope could not
-be read. Golden output for every format lives in
-`internal/cli/testdata/golden`; refresh it with
+there are, 2 on usage, config or policy errors, and 3 when a scope (or part
+of one, such as one region) could not be read. `inventory` exits 0, 2 or 3.
+Golden output for every format lives in `internal/cli/testdata/golden`;
+refresh it with
 `go test ./internal/cli -update` after checking a change.
+
+## Cloud access
+
+Each cloud uses its own credential chain; tagherd stores no secrets.
+
+| Cloud | Credentials | Read access |
+| --- | --- | --- |
+| AWS | Default chain or `--profile`, then `read_role_name` assumed in each account | ReadOnlyAccess plus Config query access; Organizations read in the management or delegated admin account |
+| Azure | `az login`, a service principal or managed identity | Reader on the subscriptions |
+| GCP | Application Default Credentials, or `credentials_file` | Cloud Asset Viewer on the organization, folders or projects |
+
+AWS reads AWS Config in every account and region unless
+`scopes.aws.config_aggregator` names an aggregator, which turns that into one
+query per account. Types Config does not record use per-service list calls
+(`discovery: list:<adapter>` in the catalog).
 
 Global flags work on every command. Each also reads `TAGHERD_<FLAG>` (for
 example `TAGHERD_POLICY_DIR`), with precedence flag, then environment, then
@@ -69,6 +92,7 @@ internal/wiz/         Wiz override query validation
 internal/engine/      classify, match and evaluate resources (pure)
 internal/scan/        discovery across scopes, then the engine
 internal/provider/    provider interfaces; fake/ for tests and fixtures
+  aws/ azure/ gcp/    discovery adapters, each behind a stub-able backend
 internal/output/      renderers and exit codes
 internal/model/       shared types
 policy/               the tagging policy

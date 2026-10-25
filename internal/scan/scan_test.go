@@ -3,6 +3,8 @@ package scan
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"slices"
 	"testing"
 
 	"github.com/overad9658/tagherd/internal/catalog"
@@ -46,7 +48,9 @@ func TestFixture(t *testing.T) {
 
 	wantCodes := map[model.Code]int{
 		model.MissingTag: 3, model.EmptyValue: 1, model.InvalidValue: 3, model.CaseMismatch: 3,
-		model.DuplicateKey: 1, model.InvalidDeploymentType: 1, model.NotTaggable: 1, model.UnmappedType: 1,
+		model.DuplicateKey: 1, model.InvalidDeploymentType: 1, model.NotTaggable: 1,
+		// The fixture's one uncovered type, plus each catalog gap once per cloud.
+		model.UnmappedType: 1 + len(catalogGaps(set, nil)),
 	}
 	for c, n := range wantCodes {
 		if r.Summary.ByCode[c] != n {
@@ -80,6 +84,66 @@ func TestFixture(t *testing.T) {
 	if !found {
 		t.Errorf("spec example finding missing")
 	}
+}
+
+// catalogGaps returns the types with no discovery adapter that the groups name.
+func catalogGaps(set *policy.Set, clouds []model.Cloud) []string {
+	var out []string
+	for _, cloud := range model.Clouds {
+		if clouds != nil && !slices.Contains(clouds, cloud) {
+			continue
+		}
+		for _, e := range typesFor(set.Groups, cloud, nil) {
+			if mode, _ := e.DiscoveryMode(); mode == catalog.DiscoverNone {
+				out = append(out, e.Display)
+			}
+		}
+	}
+	return out
+}
+
+func TestCatalogGapsOncePerCloud(t *testing.T) {
+	set, env := setup(t)
+	in := Discover(context.Background(), set, providers(env), Options{Clouds: []model.Cloud{model.AWS}})
+	gaps := catalogGaps(set, []model.Cloud{model.AWS})
+	if len(gaps) == 0 {
+		t.Fatal("expected AWS catalog gaps")
+	}
+	n := 0
+	for _, u := range in.Unmapped {
+		if u.Scope == "*" {
+			n++
+			if u.Cloud != model.AWS {
+				t.Errorf("gap for %s with --cloud aws", u.Cloud)
+			}
+		}
+	}
+	if n != len(gaps) {
+		t.Errorf("%d cloud-wide gaps, want %d (one per type, not per scope)", n, len(gaps))
+	}
+}
+
+func TestPartialErrors(t *testing.T) {
+	set, _ := setup(t)
+	p := &partial{}
+	in := Discover(context.Background(), set, map[model.Cloud]provider.Provider{model.GCP: p}, Options{Clouds: []model.Cloud{model.GCP}})
+	if len(in.Resources) != 1 || len(in.Unreadable) != 1 || in.Unreadable[0].Scope != "proj-a" {
+		t.Errorf("resources %d, unreadable %+v", len(in.Resources), in.Unreadable)
+	}
+}
+
+// partial is a provider whose one scope reads with a per-type error.
+type partial struct{ provider.Provider }
+
+func (*partial) Scopes(context.Context, []string) ([]provider.Scope, error) {
+	return []provider.Scope{{Cloud: model.GCP, ID: "proj-a"}}, nil
+}
+
+func (*partial) Discover(context.Context, provider.Scope, []*catalog.Entry) (provider.Discovery, error) {
+	return provider.Discovery{
+		Resources: []model.Resource{{Cloud: model.GCP, Scope: "proj-a", NativeType: "storage.googleapis.com/Bucket", ID: "b", Name: "b"}},
+		Errors:    []error{errors.New("GCP Cloud SQL Instance: permission denied")},
+	}, nil
 }
 
 func TestDeterministic(t *testing.T) {
