@@ -17,6 +17,7 @@ type stub struct {
 	rows    map[string][]map[string]any // by table
 	failing string                      // table whose query fails
 	queries []string
+	tags    map[string]map[string]string // Tags API, by scope
 }
 
 func (s *stub) Subscriptions(context.Context) ([]subscription, error) { return s.subs, nil }

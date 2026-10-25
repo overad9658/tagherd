@@ -1,0 +1,11 @@
+CLOUD  SCOPE                                 TYPE                           NAME          TAG             NEW              OUTCOME  DETAIL
+AWS    111122223333                          AWS Machine Image (AMI)        base-2026-09  OwningOrg       Platform         pending  the Terraform route arrives in phase 6
+AWS    111122223333                          AWS RDS PostgreSQL Instance    orders        Environment     Production       written  
+AWS    111122223333                          AWS S3 Bucket                  acme-logs     Brand           Acme             written  
+AWS    111122223333                          AWS S3 Bucket                  acme-logs     DeploymentType  Manual           written  
+AWS    111122223333                          AWS S3 Bucket                  acme-logs     Exposure        External         written  
+Azure  00000000-0000-0000-0000-000000000001  Azure Compute Virtual Machine  vm-app        EndpointType    Server           written  
+GCP    acme-prod                             GCP Compute Instance           batch-1       tag:AdminEmail  ops@example.com  pending  the Terraform route arrives in phase 6
+GCP    acme-prod                             GCP Compute Instance           batch-1       environment     Production       pending  the Terraform route arrives in phase 6
+
+5 written, 0 already set, 0 stale, 0 failed. 3 Terraform change(s) not applied (the Terraform route arrives in phase 6).

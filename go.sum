@@ -28,10 +28,12 @@ github.com/Azure/azure-sdk-for-go/sdk/internal v1.13.0 h1:Terj1CMW4+NY5CpWjSRkqL
 github.com/Azure/azure-sdk-for-go/sdk/internal v1.13.0/go.mod h1:7Ut2Qw9vcwpLW5Q4MBy43uSxXS7tK2yjs94OJ6j5thE=
 github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/internal/v2 v2.0.0 h1:PTFGRSlMKCQelWwxUyYVEUqseBJVemLyqWJjvMyt0do=
 github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/internal/v2 v2.0.0/go.mod h1:LRr2FzBTQlONPPa5HREE5+RjSCTXl7BwOvYOaWTqCaI=
+github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/managementgroups/armmanagementgroups v1.0.0 h1:pPvTJ1dY0sA35JOeFq6TsY2xj6Z85Yo23Pj4wCCvu4o=
+github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/managementgroups/armmanagementgroups v1.0.0/go.mod h1:mLfWfj8v3jfWKsL9G4eoBoXVcsqcIUTapmdKy7uGOp0=
 github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resourcegraph/armresourcegraph v0.10.0 h1:+1fJwTilk/X7inNqwREnYEOgFCdg8ut7GULxARDbu34=
 github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resourcegraph/armresourcegraph v0.10.0/go.mod h1:EGwSLlGqrrfYQhtCi9JcIkPQKl9WxsL6ZPJd+63Vy1A=
-github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources v1.1.1 h1:7CBQ+Ei8SP2c6ydQTGCCrS35bDxgTMfoP2miAwK++OU=
-github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources v1.1.1/go.mod h1:c/wcGeGx5FUPbM/JltUYHZcKmigwyVLJlDq+4HdtXaw=
+github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources v1.2.0 h1:Dd+RhdJn0OTtVGaeDLZpcumkIVCtA/3/Fo42+eoYvVM=
+github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources v1.2.0/go.mod h1:5kakwfW5CjC9KK+Q4wjXAg+ShuIm2mBMua0ZFj2C8PE=
 github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armsubscriptions v1.3.0 h1:wxQx2Bt4xzPIKvW59WQf1tJNx/ZZKPfN+EhPX3Z6CYY=
 github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armsubscriptions v1.3.0/go.mod h1:TpiwjwnW/khS0LKs4vW5UmmT9OWcxaveS8U7+tlknzo=
 github.com/AzureAD/microsoft-authentication-extensions-for-go/cache v0.1.1 h1:WJTmL004Abzc5wDB5VtZG2PJk5ndYDgVacGqfirKxjM=
@@ -66,6 +68,8 @@ github.com/aws/aws-sdk-go-v2/service/elasticache v1.64.1 h1:Gc1RndXvd1uV39tiG3H1
 github.com/aws/aws-sdk-go-v2/service/elasticache v1.64.1/go.mod h1:i8wdFEO3CCJH/XorR+8DfVOzeSNJm2BrRRh6MQqCE38=
 github.com/aws/aws-sdk-go-v2/service/fsx v1.74.6 h1:2hK757axqfJSaRhOfWRS8dYDeSP6ytFaqmyZN+8mv5c=
 github.com/aws/aws-sdk-go-v2/service/fsx v1.74.6/go.mod h1:gGauzi63/6v7DrQY1i+R4Y1rqESezu/u7HNvLjD4L80=
+github.com/aws/aws-sdk-go-v2/service/iam v1.64.5 h1:14GZ+z05ntZkgfUT/snvrs+hE+SODOflfQPugMAzOlU=
+github.com/aws/aws-sdk-go-v2/service/iam v1.64.5/go.mod h1:YWSLkwCkgNF2N/2nGgkGDCiDg1wEVZvJWVZgPu14FbQ=
 github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.22 h1:qHfXn1Tm2Rh8kic/DvdKaiSVlHQRSr5C+rMuBR29D44=
 github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.22/go.mod h1:D4ytxJbGXu82l+2XF0q60bibysf+KkIbWfAOldAQwf8=
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.14.7 h1:6MSlRo7aiUVBftQ8XmW7XIh3EZqCbkN9zI0YlGW8nl0=
@@ -74,6 +78,8 @@ github.com/aws/aws-sdk-go-v2/service/lightsail v1.67.1 h1:w1jXllVS+1cUth+3DHsWUb
 github.com/aws/aws-sdk-go-v2/service/lightsail v1.67.1/go.mod h1:fbzUREgID6s3xUXUlrskfsJ8VtFNq/ehvf3Ro3Xo6kA=
 github.com/aws/aws-sdk-go-v2/service/organizations v1.62.2 h1:X5tj7X0DVjs3BuFLeRXilnjMYur9KANyhsFnLFeZkD8=
 github.com/aws/aws-sdk-go-v2/service/organizations v1.62.2/go.mod h1:NeeqgmO9OuZqxYS2QhN1gP5xsuWnbQRx1nmKeHyxELA=
+github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.41.6 h1:ZMySWNHkihJu488vPyznAGJKBLGlwWz6jdIhtV9MWc4=
+github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.41.6/go.mod h1:RWkVkNPBvo5jVV8TGbCPRvAnCQpo4QKL0XP6AMmghhQ=
 github.com/aws/aws-sdk-go-v2/service/sagemaker v1.284.2 h1:x2Q56fxrHV3eDciLqMMFHvWoYzV/HGVKfEIxTmBXNQc=
 github.com/aws/aws-sdk-go-v2/service/sagemaker v1.284.2/go.mod h1:DVZ8QRMUfV85MqG3JhhG01GnMIq5eEfngiIPIQMUkMY=
 github.com/aws/aws-sdk-go-v2/service/signin v1.10.5 h1:oFsZ3u5PPFSO1YZDGKFgyDuwgpbv/sTmVShEZfRnyaE=

@@ -32,6 +32,7 @@ import (
 //	    parents:                       # parent tags by resource parent, instead
 //	      rg-app: {Brand: Contoso}
 //	    parent_fail: "AccessDenied"    # optional: ParentTags fails with this error
+//	    writer_fail: "AccessDenied"    # optional: Writer fails with this error
 //	    uncovered: ["AWS Comprehend Flywheel"]
 //	    resources:
 //	      - native_type: AWS::RDS::DBInstance
@@ -43,6 +44,7 @@ import (
 //	        tags: {Environment: production}
 //	        labels: {}                 # GCP labels
 //	        rm_tags: {}                # GCP Resource Manager tags
+//	        write_fail: "Throttling"   # optional: writes to it fail
 type Fixture struct {
 	Scopes []FixtureScope `yaml:"scopes"`
 	Wiz    *FixtureWiz    `yaml:"wiz"`
@@ -67,6 +69,7 @@ type FixtureScope struct {
 	Tags       map[string]string            `yaml:"tags"`
 	Parents    map[string]map[string]string `yaml:"parents"`
 	ParentFail string                       `yaml:"parent_fail"`
+	WriterFail string                       `yaml:"writer_fail"`
 	Uncovered  []string                     `yaml:"uncovered"`
 	Resources  []FixtureResource            `yaml:"resources"`
 }
@@ -82,6 +85,7 @@ type FixtureResource struct {
 	Tags       map[string]string `yaml:"tags"`
 	Labels     map[string]string `yaml:"labels"`
 	RMTags     map[string]string `yaml:"rm_tags"`
+	WriteFail  string            `yaml:"write_fail"`
 }
 
 // Env is a loaded fixture: one provider per cloud it mentions, and the Wiz
@@ -237,8 +241,12 @@ func (p *Provider) ParentTags(_ context.Context, r model.Resource) ([]model.Tag,
 }
 
 func (p *Provider) Writer(_ context.Context, sc provider.Scope) (provider.TagWriter, error) {
-	if _, err := p.scope(sc.ID); err != nil {
+	s, err := p.scope(sc.ID)
+	if err != nil {
 		return nil, err
+	}
+	if s.WriterFail != "" {
+		return nil, errors.New(s.WriterFail)
 	}
 	return &writer{p: p, scope: sc.ID}, nil
 }
@@ -264,41 +272,57 @@ type writer struct {
 	scope string
 }
 
-func (w *writer) Read(_ context.Context, id string, keys []string) (map[string]string, error) {
+func (w *writer) Actor(context.Context) (string, error) {
+	return "fake:" + strings.ToLower(string(w.p.cloud)), nil
+}
+
+func (w *writer) Read(_ context.Context, targets []provider.Target) (map[string][]model.Tag, map[string]error) {
 	w.p.mu.Lock()
 	defer w.p.mu.Unlock()
-	r, err := w.find(id)
-	if err != nil {
-		return nil, err
-	}
-	out := map[string]string{}
-	for _, k := range keys {
-		for tk, v := range r.Tags {
-			if strings.EqualFold(tk, k) {
-				out[k] = v
-			}
+	out, errs := map[string][]model.Tag{}, map[string]error{}
+	for _, t := range targets {
+		r, err := w.find(t.ID)
+		if err != nil {
+			errs[t.ID] = err
+			continue
 		}
+		res := w.p.resource(&FixtureScope{ID: w.scope}, *r)
+		out[t.ID] = res.Tags
 	}
-	return out, nil
+	return out, errs
 }
 
 // Write records the call and merges the tags into the fixture, so a second
-// scan sees them.
-func (w *writer) Write(_ context.Context, id string, tags []model.Tag) error {
+// read or scan sees them.
+func (w *writer) Write(_ context.Context, writes []provider.TagWrite) map[string]error {
 	w.p.mu.Lock()
 	defer w.p.mu.Unlock()
-	r, err := w.find(id)
-	if err != nil {
-		return err
+	errs := map[string]error{}
+	for _, wr := range writes {
+		r, err := w.find(wr.Target.ID)
+		if err == nil && r.WriteFail != "" {
+			err = errors.New(r.WriteFail)
+		}
+		if err != nil {
+			errs[wr.Target.ID] = err
+			continue
+		}
+		for _, t := range wr.Tags {
+			m := &r.Tags
+			switch t.Kind {
+			case model.KindLabel:
+				m = &r.Labels
+			case model.KindRMTag:
+				m = &r.RMTags
+			}
+			if *m == nil {
+				*m = map[string]string{}
+			}
+			(*m)[t.Key] = t.Value
+		}
+		w.p.writes = append(w.p.writes, Write{Scope: w.scope, ID: wr.Target.ID, Tags: slices.Clone(wr.Tags)})
 	}
-	if r.Tags == nil {
-		r.Tags = map[string]string{}
-	}
-	for _, t := range tags {
-		r.Tags[t.Key] = t.Value
-	}
-	w.p.writes = append(w.p.writes, Write{Scope: w.scope, ID: id, Tags: slices.Clone(tags)})
-	return nil
+	return errs
 }
 
 func (w *writer) find(id string) (*FixtureResource, error) {

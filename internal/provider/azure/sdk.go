@@ -2,13 +2,18 @@ package azure
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"strings"
 
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resourcegraph/armresourcegraph"
+	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armsubscriptions"
 	"golang.org/x/time/rate"
 )
@@ -18,11 +23,16 @@ const pageSize = 1000
 
 // sdkBackend implements backend with the Azure SDK.
 type sdkBackend struct {
+	cred  azcore.TokenCredential
 	subs  *armsubscriptions.Client
 	graph *armresourcegraph.Client
+	tags  *armresources.TagsClient
 	// Resource Graph allows 15 queries per 5 seconds per user; every scope
 	// shares this limiter.
 	limit *rate.Limiter
+	// Tag writes are rate-limited client-side to stay well under ARM's
+	// write throttling.
+	writeLimit *rate.Limiter
 }
 
 func newSDKBackend(opts Options) (*sdkBackend, error) {
@@ -39,7 +49,11 @@ func newSDKBackend(opts Options) (*sdkBackend, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &sdkBackend{subs: subs, graph: graph, limit: rate.NewLimiter(2.5, 5)}, nil
+	tags, err := armresources.NewTagsClient("", cred, clientOpts)
+	if err != nil {
+		return nil, err
+	}
+	return &sdkBackend{cred: cred, subs: subs, graph: graph, tags: tags, limit: rate.NewLimiter(2.5, 5), writeLimit: rate.NewLimiter(5, 5)}, nil
 }
 
 func (b *sdkBackend) Subscriptions(ctx context.Context) ([]subscription, error) {
@@ -90,6 +104,79 @@ func (b *sdkBackend) Query(ctx context.Context, subscriptionID, query string) ([
 		}
 		req.Options.SkipToken = resp.SkipToken
 	}
+}
+
+// Caller reads the object ID (and user or app name) from an ARM token.
+func (b *sdkBackend) Caller(ctx context.Context) (string, error) {
+	tok, err := b.cred.GetToken(ctx, policy.TokenRequestOptions{Scopes: []string{"https://management.azure.com/.default"}})
+	if err != nil {
+		return "", err
+	}
+	return tokenActor(tok.Token)
+}
+
+// tokenActor names the identity in a JWT: "upn (oid)", or the oid alone.
+func tokenActor(jwt string) (string, error) {
+	parts := strings.Split(jwt, ".")
+	if len(parts) != 3 {
+		return "", fmt.Errorf("unexpected token format")
+	}
+	payload, err := base64.RawURLEncoding.DecodeString(parts[1])
+	if err != nil {
+		return "", err
+	}
+	var claims struct {
+		OID   string `json:"oid"`
+		UPN   string `json:"upn"`
+		AppID string `json:"appid"`
+	}
+	if err := json.Unmarshal(payload, &claims); err != nil {
+		return "", err
+	}
+	if claims.OID == "" {
+		return "", fmt.Errorf("token has no oid claim")
+	}
+	if name := firstNonEmpty(claims.UPN, claims.AppID); name != "" {
+		return fmt.Sprintf("%s (oid %s)", name, claims.OID), nil
+	}
+	return "oid " + claims.OID, nil
+}
+
+func (b *sdkBackend) Tags(ctx context.Context, scope string) (map[string]string, error) {
+	resp, err := b.tags.GetAtScope(ctx, scope, nil)
+	if err != nil {
+		return nil, err
+	}
+	out := map[string]string{}
+	if resp.Properties != nil {
+		for k, v := range resp.Properties.Tags {
+			out[k] = str(v)
+		}
+	}
+	return out, nil
+}
+
+func (b *sdkBackend) MergeTags(ctx context.Context, scope string, tags map[string]string) error {
+	if err := b.writeLimit.Wait(ctx); err != nil {
+		return err
+	}
+	props := &armresources.Tags{Tags: map[string]*string{}}
+	for k, v := range tags {
+		props.Tags[k] = to.Ptr(v)
+	}
+	_, err := b.tags.UpdateAtScope(ctx, scope, armresources.TagsPatchResource{
+		Operation: to.Ptr(armresources.TagsPatchOperationMerge), Properties: props,
+	}, nil)
+	return err
+}
+
+func firstNonEmpty(ss ...string) string {
+	for _, s := range ss {
+		if s != "" {
+			return s
+		}
+	}
+	return ""
 }
 
 func str(p *string) string {

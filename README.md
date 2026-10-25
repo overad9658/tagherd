@@ -9,7 +9,7 @@ reviewable plan of tag changes, and applies it. `scan` reads, `plan` decides,
 
 ## Status
 
-Phases 1 to 4 are implemented:
+Phases 1 to 5 are implemented:
 
 - Config, policy loading and validation, and the type catalog
 - The evaluation engine: classification, group matching, every finding code,
@@ -20,10 +20,12 @@ Phases 1 to 4 are implemented:
 - `plan`: values from `--set`, `defaults.yaml`, parent tags and the built-in
   rules (`ownership.yaml`, `synonyms.yaml`), the write route by
   DeploymentType, the grace period, and the plan file
+- `apply` for the direct route: plan checks, confirmation, preconditions,
+  provider limits, tag writers for AWS, Azure and GCP, the audit log and
+  `--verify`. Terraform changes are listed as not applied until phase 6
 
 The adapters are unit-tested against stubs; they have not yet run against
-real accounts (the pilot in the backlog). `apply` is registered but reports
-the phase it arrives in.
+real accounts (the pilot in the backlog).
 
 ## Build and test
 
@@ -55,17 +57,26 @@ tagherd inventory --cloud gcp --type 'GCP Compute*' -o csv
 tagherd plan --set Brand=Acme --defaults defaults.yaml --out plan.json
 tagherd plan --grace 30m -o markdown
 
+# Write the plan's direct changes; every attempt goes to tagherd-audit.ndjson
+tagherd apply --plan plan.json            # asks for confirmation
+tagherd apply --plan plan.json --yes --verify -o markdown
+
 # The fake-provider fixture, for development without cloud access
 tagherd scan --fixture testdata/fixtures/scan.yaml
 tagherd inventory --fixture testdata/fixtures/scan.yaml --cloud azure
 tagherd plan --config testdata/fixtures/plan/tagherd.yaml \
   --fixture testdata/fixtures/scan.yaml --out /tmp/plan.json
+tagherd apply --config testdata/fixtures/plan/tagherd.yaml \
+  --fixture testdata/fixtures/scan.yaml --plan /tmp/plan.json --yes --verify
 ```
 
 `scan` exits 0 when there are no findings in the `--fail-on` classes, 1 when
 there are, 2 on usage, config or policy errors, and 3 when a scope (or part
 of one, such as one region) could not be read. `inventory` and `plan` exit 0,
-2 or 3; `plan` still writes the plan for the scopes it could read.
+2 or 3; `plan` still writes the plan for the scopes it could read. `apply`
+exits 0, 2 (including a plan made with another policy, a plan over 24 hours
+old without `--allow-stale`, or a cancelled confirmation) or 4 when a change
+failed or was stale.
 Golden output for every format lives in `internal/cli/testdata/golden`;
 refresh it with
 `go test ./internal/cli -update` after checking a change.
@@ -89,15 +100,27 @@ gets no changes. Catalog `partial` types, and GCP types outside the Compute,
 Database and Storage groups, route `unwritable`. `tagherd init` writes
 commented examples of the three value files.
 
+## Apply
+
+`apply` re-reads each resource's tags just before writing. A tag that
+changed since the plan is skipped as `stale`, one already holding the new
+value is left alone, and tags are never removed, so a second apply changes
+nothing. A resource whose tags would break the cloud's limits (AWS 50 tags
+and the `aws:` prefix, Azure 50, GCP 64 labels and label syntax) is not
+written at all. GCP labels are written lowercase; AdminEmail goes to a
+Resource Manager tag, whose value is created under the existing key when
+missing. `--verify` reads the changed resources back through the writer,
+not AWS Config, which can lag a write by minutes.
+
 ## Cloud access
 
 Each cloud uses its own credential chain; tagherd stores no secrets.
 
 | Cloud | Credentials | Read access |
 | --- | --- | --- |
-| AWS | Default chain or `--profile`, then `read_role_name` assumed in each account | ReadOnlyAccess plus Config query access; Organizations read in the management or delegated admin account |
-| Azure | `az login`, a service principal or managed identity | Reader on the subscriptions |
-| GCP | Application Default Credentials, or `credentials_file` | Cloud Asset Viewer on the organization, folders or projects |
+| AWS | Default chain or `--profile`, then `read_role_name` (and `write_role_name` for apply) assumed in each account | ReadOnlyAccess plus Config query access; Organizations read in the management or delegated admin account. Apply: `tag:TagResources`, `tag:GetResources` and the service tag permissions, IAM `Tag*`, and `organizations:TagResource` in the management account |
+| Azure | `az login`, a service principal or managed identity | Reader on the subscriptions. Apply: Tag Contributor |
+| GCP | Application Default Credentials, or `credentials_file` | Cloud Asset Viewer on the organization, folders or projects. Apply: each service's update permission for labels, Tag User, and Tag Admin to create tag values |
 
 AWS reads AWS Config in every account and region unless
 `scopes.aws.config_aggregator` names an aggregator, which turns that into one
@@ -121,8 +144,9 @@ internal/wiz/         Wiz override query validation
 internal/engine/      classify, match, evaluate and plan (pure)
 internal/values/      defaults, ownership and synonyms files; --set
 internal/scan/        discovery across scopes, then the engine; parent tags for plan
+internal/apply/       plan checks, preconditions, limits, audit log, verify
 internal/provider/    provider interfaces; fake/ for tests and fixtures
-  aws/ azure/ gcp/    discovery adapters, each behind a stub-able backend
+  aws/ azure/ gcp/    discovery adapters and tag writers, each behind a stub-able backend
 internal/output/      renderers and exit codes
 internal/model/       shared types
 internal/ulid/        plan IDs

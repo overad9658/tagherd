@@ -45,6 +45,13 @@ type backend interface {
 	// Query runs a Resource Graph query against one subscription and
 	// returns every row, following skip tokens.
 	Query(ctx context.Context, subscriptionID, query string) ([]map[string]any, error)
+
+	// Caller names the credential's identity from its token.
+	Caller(ctx context.Context) (string, error)
+	// Tags reads the tags at a resource, resource group or subscription.
+	Tags(ctx context.Context, scope string) (map[string]string, error)
+	// MergeTags merges tags into that scope through the Tags API.
+	MergeTags(ctx context.Context, scope string, tags map[string]string) error
 }
 
 // New returns the adapter with the Azure default credential chain.
@@ -214,7 +221,52 @@ func (p *Provider) ParentTags(ctx context.Context, r model.Resource) ([]model.Ta
 	return t, nil
 }
 
-// Writer is not implemented until phase 5.
-func (p *Provider) Writer(context.Context, provider.Scope) (provider.TagWriter, error) {
-	return nil, provider.ErrWritesNotYet
+// Writer returns a tag writer with the same credential as discovery,
+// which needs Tag Contributor on the subscription.
+func (p *Provider) Writer(ctx context.Context, s provider.Scope) (provider.TagWriter, error) {
+	actor, err := p.b.Caller(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("reading the Azure caller identity: %w", err)
+	}
+	return &writer{b: p.b, actor: actor}, nil
+}
+
+type writer struct {
+	b     backend
+	actor string
+}
+
+func (w *writer) Actor(context.Context) (string, error) { return w.actor, nil }
+
+func (w *writer) Read(ctx context.Context, targets []provider.Target) (map[string][]model.Tag, map[string]error) {
+	out, errs := map[string][]model.Tag{}, map[string]error{}
+	for _, t := range targets {
+		tags, err := w.b.Tags(ctx, t.ID)
+		if err != nil {
+			errs[t.ID] = err
+			continue
+		}
+		m := make(map[string]any, len(tags))
+		for k, v := range tags {
+			m[k] = v
+		}
+		out[t.ID] = tagsOf(m)
+	}
+	return out, errs
+}
+
+// Write merges each resource's tags with one Tags API call. Tag names
+// ignore case, so the merge updates a key in whatever case it has.
+func (w *writer) Write(ctx context.Context, writes []provider.TagWrite) map[string]error {
+	errs := map[string]error{}
+	for _, wr := range writes {
+		tags := make(map[string]string, len(wr.Tags))
+		for _, t := range wr.Tags {
+			tags[t.Key] = t.Value
+		}
+		if err := w.b.MergeTags(ctx, wr.Target.ID, tags); err != nil {
+			errs[wr.Target.ID] = err
+		}
+	}
+	return errs
 }

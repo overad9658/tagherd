@@ -52,17 +52,18 @@ func TestDiscoverAndWrite(t *testing.T) {
 	}
 
 	w, _ := p.Writer(ctx, scopes[0])
-	if err := w.Write(ctx, "b1", []model.Tag{{Key: "DeploymentType", Value: "Manual"}}); err != nil {
-		t.Fatal(err)
+	target := provider.Target{ID: "b1"}
+	if errs := w.Write(ctx, []provider.TagWrite{{Target: target, Tags: []model.Tag{{Key: "DeploymentType", Value: "Manual", Kind: model.KindTag}}}}); len(errs) != 0 {
+		t.Fatal(errs)
 	}
-	got, _ := w.Read(ctx, "b1", []string{"deploymenttype", "Environment", "Owner"})
-	if got["deploymenttype"] != "Manual" || got["Environment"] != "Production" || len(got) != 2 {
-		t.Errorf("read = %v", got)
+	got, errs := w.Read(ctx, []provider.Target{target, {ID: "nope"}})
+	if len(got["b1"]) != 2 || errs["nope"] == nil {
+		t.Errorf("read = %v, %v", got, errs)
 	}
 	if ws := p.Writes(); len(ws) != 1 || ws[0].ID != "b1" {
 		t.Errorf("writes = %+v", ws)
 	}
-	if err := w.Write(ctx, "nope", nil); err == nil {
+	if errs := w.Write(ctx, []provider.TagWrite{{Target: provider.Target{ID: "nope"}}}); errs["nope"] == nil {
 		t.Error("unknown resource should fail")
 	}
 }

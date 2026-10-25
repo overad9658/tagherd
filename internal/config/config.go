@@ -77,6 +77,9 @@ type GCPScopes struct {
 	// CredentialsFile is a service account key; default: Application
 	// Default Credentials.
 	CredentialsFile string `yaml:"credentials_file"`
+	// TagNamespace holds the Resource Manager tag keys: an organization ID
+	// or a project ID. Default: OrganizationID, else each project.
+	TagNamespace string `yaml:"tag_namespace"`
 }
 
 type Terraform struct {
