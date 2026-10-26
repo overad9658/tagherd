@@ -108,11 +108,18 @@ func TestRun(t *testing.T) {
 	if len(lines) != 9 {
 		t.Fatalf("audit lines = %d:\n%s", len(lines), audit.String())
 	}
+	// Scopes run concurrently, so lines are in no fixed order. b1's scope
+	// has a writer, so its lines name the actor.
 	var rec model.AuditRecord
-	if err := json.Unmarshal([]byte(lines[0]), &rec); err != nil {
-		t.Fatal(err)
+	for _, l := range lines {
+		if err := json.Unmarshal([]byte(l), &rec); err != nil {
+			t.Fatal(err)
+		}
+		if rec.ResourceID == "b1" {
+			break
+		}
 	}
-	if rec.PlanID != "P1" || rec.Actor == "" || !rec.Time.Equal(now) {
+	if rec.ResourceID != "b1" || rec.PlanID != "P1" || rec.Actor == "" || !rec.Time.Equal(now) {
 		t.Errorf("audit = %+v", rec)
 	}
 
