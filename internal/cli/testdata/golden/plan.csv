@@ -1,9 +1,17 @@
 cloud,scope,region,type,id,name,tag,kind,action,old,new,rule,route
+AWS,111122223333,us-east-1,AWS DynamoDB Table,arn:aws:dynamodb:us-east-1:111122223333:table/audit,audit,OwningOrg,,ADD,,Platform,builtin:ownership,terraform
+AWS,111122223333,us-east-1,AWS DynamoDB Table,arn:aws:dynamodb:us-east-1:111122223333:table/ledger,ledger,Exposure,,UPDATE,public,External,builtin:synonym,terraform
+AWS,111122223333,us-east-1,AWS EC2 Instance,arn:aws:ec2:us-east-1:111122223333:instance/i-0etl,etl-1,OwningOrg,,ADD,,Platform,builtin:ownership,terraform
+AWS,111122223333,us-east-1,AWS Lambda Function,arn:aws:lambda:us-east-1:111122223333:function:report-gen,report-gen,OwningOrg,,ADD,,Platform,builtin:ownership,terraform
 AWS,111122223333,us-east-1,AWS Machine Image (AMI),arn:aws:ec2:us-east-1:111122223333:image/ami-0001,base-2026-09,OwningOrg,,ADD,,Platform,builtin:ownership,terraform
 AWS,111122223333,us-east-1,AWS RDS PostgreSQL Instance,arn:aws:rds:us-east-1:111122223333:db:orders,orders,Environment,,UPDATE,production,Production,builtin:case,direct
+AWS,111122223333,us-east-1,AWS S3 Bucket,arn:aws:s3:::acme-data,acme-data,Brand,,ADD,,Acme,parent,terraform
+AWS,111122223333,us-east-1,AWS S3 Bucket,arn:aws:s3:::acme-data,acme-data,Environment,,UPDATE,prod,Production,builtin:synonym,terraform
+AWS,111122223333,us-east-1,AWS S3 Bucket,arn:aws:s3:::acme-data,acme-data,OwningOrg,,ADD,,Platform,builtin:ownership,terraform
 AWS,111122223333,us-east-1,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,Brand,,UPDATE,"  ",Acme,parent,direct
 AWS,111122223333,us-east-1,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,DeploymentType,,ADD,,Manual,builtin:deploymenttype,direct
 AWS,111122223333,us-east-1,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,Exposure,,UPDATE,Public,External,builtin:synonym,direct
+AWS,111122223333,us-east-1,AWS S3 Bucket,arn:aws:s3:::acme-tmp,acme-tmp,OwningOrg,,ADD,,Platform,builtin:ownership,terraform
 Azure,00000000-0000-0000-0000-000000000001,eastus,Azure Compute Virtual Machine,/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-app/providers/Microsoft.Compute/virtualMachines/vm-app,vm-app,EndpointType,,UPDATE,server,Server,builtin:case,direct
 GCP,acme-prod,us-central1,GCP Compute Instance,//compute.googleapis.com/projects/acme-prod/zones/us-central1-a/instances/batch-1,batch-1,AdminEmail,rmtag,ADD,,ops@example.com,defaults:scope,terraform
 GCP,acme-prod,us-central1,GCP Compute Instance,//compute.googleapis.com/projects/acme-prod/zones/us-central1-a/instances/batch-1,batch-1,environment,label,UPDATE,prod,Production,builtin:synonym,terraform

@@ -1,19 +1,19 @@
 {
   "summary": {
     "resources": {
-      "discovered": 14,
+      "discovered": 20,
       "out_of_scope": 1,
       "filtered": 1,
       "not_taggable": 1,
-      "evaluated": 11,
+      "evaluated": 17,
       "compliant": 4
     },
     "compliance": {
       "overall": {
         "key": "all",
-        "evaluated": 11,
+        "evaluated": 17,
         "compliant": 4,
-        "percent": 36.4
+        "percent": 23.5
       },
       "by_group": [
         {
@@ -24,35 +24,35 @@
         },
         {
           "key": "Compute (only machines)",
-          "evaluated": 3,
+          "evaluated": 4,
           "compliant": 0,
           "percent": 0
         },
         {
           "key": "Compute (w/o machines and machine images)",
-          "evaluated": 2,
+          "evaluated": 3,
           "compliant": 1,
-          "percent": 50
+          "percent": 33.3
         },
         {
           "key": "Database",
-          "evaluated": 2,
+          "evaluated": 4,
           "compliant": 1,
-          "percent": 50
+          "percent": 25
         },
         {
           "key": "Storage",
-          "evaluated": 2,
+          "evaluated": 4,
           "compliant": 1,
-          "percent": 50
+          "percent": 25
         }
       ],
       "by_cloud": [
         {
           "key": "AWS",
-          "evaluated": 7,
+          "evaluated": 13,
           "compliant": 2,
-          "percent": 28.6
+          "percent": 15.4
         },
         {
           "key": "Azure",
@@ -71,9 +71,9 @@
         {
           "key": "111122223333",
           "cloud": "AWS",
-          "evaluated": 7,
+          "evaluated": 13,
           "compliant": 2,
-          "percent": 28.6
+          "percent": 15.4
         },
         {
           "key": "00000000-0000-0000-0000-000000000001",
@@ -93,20 +93,20 @@
     },
     "findings_by_tag": {
       "AdminEmail": 2,
-      "Brand": 2,
+      "Brand": 3,
       "DeploymentType": 2,
       "EndpointType": 1,
-      "Environment": 3,
-      "Exposure": 1,
-      "OwningOrg": 1
+      "Environment": 4,
+      "Exposure": 2,
+      "OwningOrg": 6
     },
     "findings_by_code": {
       "CASE_MISMATCH": 3,
       "DUPLICATE_KEY": 1,
       "EMPTY_VALUE": 1,
       "INVALID_DEPLOYMENT_TYPE": 1,
-      "INVALID_VALUE": 3,
-      "MISSING_TAG": 3,
+      "INVALID_VALUE": 5,
+      "MISSING_TAG": 9,
       "NOT_TAGGABLE": 1,
       "UNMAPPED_TYPE": 30
     },
@@ -403,6 +403,31 @@
       "cloud": "AWS",
       "scope": "111122223333",
       "region": "us-east-1",
+      "group": "Database",
+      "type": "AWS DynamoDB Table",
+      "id": "arn:aws:dynamodb:us-east-1:111122223333:table/audit",
+      "name": "audit",
+      "finding": "MISSING_TAG",
+      "tag": "OwningOrg",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "group": "Database",
+      "type": "AWS DynamoDB Table",
+      "id": "arn:aws:dynamodb:us-east-1:111122223333:table/ledger",
+      "name": "ledger",
+      "finding": "INVALID_VALUE",
+      "tag": "Exposure",
+      "current": "public",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
       "group": "Compute (only machines)",
       "type": "AWS EC2 Instance",
       "id": "arn:aws:ec2:us-east-1:111122223333:instance/i-0abc",
@@ -410,6 +435,18 @@
       "finding": "DUPLICATE_KEY",
       "tag": "Environment",
       "current": "Environment=Production, environment=Staging",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "group": "Compute (only machines)",
+      "type": "AWS EC2 Instance",
+      "id": "arn:aws:ec2:us-east-1:111122223333:instance/i-0etl",
+      "name": "etl-1",
+      "finding": "MISSING_TAG",
+      "tag": "OwningOrg",
       "fixable": false
     },
     {
@@ -453,6 +490,18 @@
       "cloud": "AWS",
       "scope": "111122223333",
       "region": "us-east-1",
+      "group": "Compute (w/o machines and machine images)",
+      "type": "AWS Lambda Function",
+      "id": "arn:aws:lambda:us-east-1:111122223333:function:report-gen",
+      "name": "report-gen",
+      "finding": "MISSING_TAG",
+      "tag": "OwningOrg",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
       "group": "Compute (only machine images)",
       "type": "AWS Machine Image (AMI)",
       "id": "arn:aws:ec2:us-east-1:111122223333:image/ami-0001",
@@ -474,6 +523,43 @@
       "current": "production",
       "proposed": "Production",
       "fixable": true
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "group": "Storage",
+      "type": "AWS S3 Bucket",
+      "id": "arn:aws:s3:::acme-data",
+      "name": "acme-data",
+      "finding": "MISSING_TAG",
+      "tag": "Brand",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "group": "Storage",
+      "type": "AWS S3 Bucket",
+      "id": "arn:aws:s3:::acme-data",
+      "name": "acme-data",
+      "finding": "INVALID_VALUE",
+      "tag": "Environment",
+      "current": "prod",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "group": "Storage",
+      "type": "AWS S3 Bucket",
+      "id": "arn:aws:s3:::acme-data",
+      "name": "acme-data",
+      "finding": "MISSING_TAG",
+      "tag": "OwningOrg",
+      "fixable": false
     },
     {
       "cloud": "AWS",
@@ -525,6 +611,18 @@
       "finding": "INVALID_VALUE",
       "tag": "Exposure",
       "current": "Public",
+      "fixable": false
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "group": "Storage",
+      "type": "AWS S3 Bucket",
+      "id": "arn:aws:s3:::acme-tmp",
+      "name": "acme-tmp",
+      "finding": "MISSING_TAG",
+      "tag": "OwningOrg",
       "fixable": false
     },
     {

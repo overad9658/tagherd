@@ -15,6 +15,133 @@
       "region": "us-east-1",
       "type": "AWS DynamoDB Table",
       "native_type": "AWS::DynamoDB::Table",
+      "id": "arn:aws:dynamodb:us-east-1:111122223333:table/audit",
+      "name": "audit",
+      "tags": [
+        {
+          "key": "AdminEmail",
+          "value": "dba@example.com",
+          "kind": "tag"
+        },
+        {
+          "key": "AppCategory",
+          "value": "Payments",
+          "kind": "tag"
+        },
+        {
+          "key": "Brand",
+          "value": "Acme",
+          "kind": "tag"
+        },
+        {
+          "key": "DataClassification",
+          "value": "Internal",
+          "kind": "tag"
+        },
+        {
+          "key": "DeploymentType",
+          "value": "Automation",
+          "kind": "tag"
+        },
+        {
+          "key": "Environment",
+          "value": "Production",
+          "kind": "tag"
+        },
+        {
+          "key": "Exposure",
+          "value": "Internal",
+          "kind": "tag"
+        },
+        {
+          "key": "Org",
+          "value": "acme",
+          "kind": "tag"
+        },
+        {
+          "key": "Repo",
+          "value": "legacy-infra",
+          "kind": "tag"
+        },
+        {
+          "key": "SCM",
+          "value": "GitHub",
+          "kind": "tag"
+        }
+      ]
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS DynamoDB Table",
+      "native_type": "AWS::DynamoDB::Table",
+      "id": "arn:aws:dynamodb:us-east-1:111122223333:table/ledger",
+      "name": "ledger",
+      "tags": [
+        {
+          "key": "AdminEmail",
+          "value": "dba@example.com",
+          "kind": "tag"
+        },
+        {
+          "key": "AppCategory",
+          "value": "Payments",
+          "kind": "tag"
+        },
+        {
+          "key": "Brand",
+          "value": "Acme",
+          "kind": "tag"
+        },
+        {
+          "key": "DataClassification",
+          "value": "Internal",
+          "kind": "tag"
+        },
+        {
+          "key": "DeploymentType",
+          "value": "Automation",
+          "kind": "tag"
+        },
+        {
+          "key": "Environment",
+          "value": "Production",
+          "kind": "tag"
+        },
+        {
+          "key": "Exposure",
+          "value": "public",
+          "kind": "tag"
+        },
+        {
+          "key": "Org",
+          "value": "acme",
+          "kind": "tag"
+        },
+        {
+          "key": "OwningOrg",
+          "value": "Platform",
+          "kind": "tag"
+        },
+        {
+          "key": "Repo",
+          "value": "infra-aws",
+          "kind": "tag"
+        },
+        {
+          "key": "SCM",
+          "value": "GitHub",
+          "kind": "tag"
+        }
+      ]
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS DynamoDB Table",
+      "native_type": "AWS::DynamoDB::Table",
       "id": "arn:aws:dynamodb:us-east-1:111122223333:table/sessions",
       "name": "sessions",
       "tags": [
@@ -56,6 +183,67 @@
         {
           "key": "OwningOrg",
           "value": "Platform",
+          "kind": "tag"
+        }
+      ]
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS EC2 Instance",
+      "native_type": "AWS::EC2::Instance",
+      "id": "arn:aws:ec2:us-east-1:111122223333:instance/i-0etl",
+      "name": "etl-1",
+      "tags": [
+        {
+          "key": "AdminEmail",
+          "value": "data@example.com",
+          "kind": "tag"
+        },
+        {
+          "key": "AppCategory",
+          "value": "Data",
+          "kind": "tag"
+        },
+        {
+          "key": "Brand",
+          "value": "Acme",
+          "kind": "tag"
+        },
+        {
+          "key": "DeploymentType",
+          "value": "Automation",
+          "kind": "tag"
+        },
+        {
+          "key": "EndpointType",
+          "value": "Server",
+          "kind": "tag"
+        },
+        {
+          "key": "Environment",
+          "value": "Production",
+          "kind": "tag"
+        },
+        {
+          "key": "Exposure",
+          "value": "Internal",
+          "kind": "tag"
+        },
+        {
+          "key": "Org",
+          "value": "acme",
+          "kind": "tag"
+        },
+        {
+          "key": "Repo",
+          "value": "infra-aws",
+          "kind": "tag"
+        },
+        {
+          "key": "SCM",
+          "value": "GitHub",
           "kind": "tag"
         }
       ]
@@ -185,6 +373,62 @@
       "cloud": "AWS",
       "scope": "111122223333",
       "region": "us-east-1",
+      "type": "AWS Lambda Function",
+      "native_type": "AWS::Lambda::Function",
+      "id": "arn:aws:lambda:us-east-1:111122223333:function:report-gen",
+      "name": "report-gen",
+      "tags": [
+        {
+          "key": "AdminEmail",
+          "value": "reports@example.com",
+          "kind": "tag"
+        },
+        {
+          "key": "AppCategory",
+          "value": "Reporting",
+          "kind": "tag"
+        },
+        {
+          "key": "Brand",
+          "value": "Acme",
+          "kind": "tag"
+        },
+        {
+          "key": "DeploymentType",
+          "value": "Automation",
+          "kind": "tag"
+        },
+        {
+          "key": "Environment",
+          "value": "Production",
+          "kind": "tag"
+        },
+        {
+          "key": "Exposure",
+          "value": "Internal",
+          "kind": "tag"
+        },
+        {
+          "key": "Org",
+          "value": "acme",
+          "kind": "tag"
+        },
+        {
+          "key": "Repo",
+          "value": "infra-aws",
+          "kind": "tag"
+        },
+        {
+          "key": "SCM",
+          "value": "GitHub",
+          "kind": "tag"
+        }
+      ]
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
       "type": "AWS Machine Image (AMI)",
       "native_type": "AWS::EC2::Image",
       "id": "arn:aws:ec2:us-east-1:111122223333:image/ami-0001",
@@ -280,6 +524,62 @@
       "region": "us-east-1",
       "type": "AWS S3 Bucket",
       "native_type": "AWS::S3::Bucket",
+      "id": "arn:aws:s3:::acme-data",
+      "name": "acme-data",
+      "tags": [
+        {
+          "key": "AdminEmail",
+          "value": "data@example.com",
+          "kind": "tag"
+        },
+        {
+          "key": "AppCategory",
+          "value": "Data",
+          "kind": "tag"
+        },
+        {
+          "key": "DataClassification",
+          "value": "Internal",
+          "kind": "tag"
+        },
+        {
+          "key": "DeploymentType",
+          "value": "Automation",
+          "kind": "tag"
+        },
+        {
+          "key": "Environment",
+          "value": "prod",
+          "kind": "tag"
+        },
+        {
+          "key": "Exposure",
+          "value": "Internal",
+          "kind": "tag"
+        },
+        {
+          "key": "Org",
+          "value": "acme",
+          "kind": "tag"
+        },
+        {
+          "key": "Repo",
+          "value": "infra-aws",
+          "kind": "tag"
+        },
+        {
+          "key": "SCM",
+          "value": "GitHub",
+          "kind": "tag"
+        }
+      ]
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS S3 Bucket",
+      "native_type": "AWS::S3::Bucket",
       "id": "arn:aws:s3:::acme-logs",
       "name": "acme-logs",
       "created": "2026-10-01T12:00:00Z",
@@ -317,6 +617,67 @@
         {
           "key": "OwningOrg",
           "value": "ITOps",
+          "kind": "tag"
+        }
+      ]
+    },
+    {
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS S3 Bucket",
+      "native_type": "AWS::S3::Bucket",
+      "id": "arn:aws:s3:::acme-tmp",
+      "name": "acme-tmp",
+      "tags": [
+        {
+          "key": "AdminEmail",
+          "value": "data@example.com",
+          "kind": "tag"
+        },
+        {
+          "key": "AppCategory",
+          "value": "Data",
+          "kind": "tag"
+        },
+        {
+          "key": "Brand",
+          "value": "Acme",
+          "kind": "tag"
+        },
+        {
+          "key": "DataClassification",
+          "value": "Internal",
+          "kind": "tag"
+        },
+        {
+          "key": "DeploymentType",
+          "value": "Automation",
+          "kind": "tag"
+        },
+        {
+          "key": "Environment",
+          "value": "Production",
+          "kind": "tag"
+        },
+        {
+          "key": "Exposure",
+          "value": "Internal",
+          "kind": "tag"
+        },
+        {
+          "key": "Org",
+          "value": "acme",
+          "kind": "tag"
+        },
+        {
+          "key": "Repo",
+          "value": "infra-aws",
+          "kind": "tag"
+        },
+        {
+          "key": "SCM",
+          "value": "GitHub",
           "kind": "tag"
         }
       ]
@@ -511,8 +872,23 @@
           "kind": "label"
         },
         {
+          "key": "org",
+          "value": "acme-ws",
+          "kind": "label"
+        },
+        {
           "key": "owningorg",
           "value": "platform",
+          "kind": "label"
+        },
+        {
+          "key": "repo",
+          "value": "infra-gcp",
+          "kind": "label"
+        },
+        {
+          "key": "scm",
+          "value": "bitbucket",
           "kind": "label"
         }
       ]

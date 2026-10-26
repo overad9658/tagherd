@@ -35,10 +35,19 @@ func RenderApply(w io.Writer, opts Options, rep model.ApplyReport) error {
 		return enc.Encode(applyTrailer{PlanID: rep.PlanID, Summary: rep.Summary, Verify: rep.Verify})
 	case CSV:
 		cw := csv.NewWriter(w)
-		_ = cw.Write([]string{"cloud", "scope", "type", "id", "name", "tag", "action", "old", "new", "route", "outcome", "detail"})
+		_ = cw.Write([]string{"cloud", "scope", "type", "id", "name", "tag", "action", "old", "new", "route", "outcome", "detail",
+			"repo", "address", "file", "patch", "pull_url"})
 		for _, r := range rep.Results {
+			var repo string
+			if r.Repo != nil {
+				repo = r.Repo.String()
+			}
+			tf := r.Terraform
+			if tf == nil {
+				tf = &model.TerraformTarget{}
+			}
 			_ = cw.Write([]string{string(r.Cloud), r.Scope, r.Type, r.ResourceID, r.Name, r.Tag, string(r.Action),
-				r.Old, r.New, string(r.Route), string(r.Outcome), r.Detail})
+				r.Old, r.New, string(r.Route), string(r.Outcome), r.Detail, repo, tf.Address, tf.File, tf.Patch, tf.PullURL})
 		}
 		cw.Flush()
 		return cw.Error()
@@ -100,8 +109,11 @@ func verifyRows(fs []model.Finding) [][]string {
 func applyTotals(rep model.ApplyReport) string {
 	s := rep.Summary
 	line := fmt.Sprintf("%d written, %d already set, %d stale, %d failed.", s.Written, s.Noop, s.Stale, s.Failed)
+	if s.Proposed > 0 || s.Unroutable > 0 {
+		line += fmt.Sprintf(" Terraform: %d proposed, %d unroutable.", s.Proposed, s.Unroutable)
+	}
 	if s.Pending > 0 {
-		line += fmt.Sprintf(" %d Terraform change(s) not applied (the Terraform route arrives in phase 6).", s.Pending)
+		line += fmt.Sprintf(" %d Terraform change(s) not run.", s.Pending)
 	}
 	if s.Skipped > 0 {
 		line += fmt.Sprintf(" %d unwritable change(s) skipped.", s.Skipped)

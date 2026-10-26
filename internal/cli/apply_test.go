@@ -36,8 +36,17 @@ func makePlan(t *testing.T, edit func(*model.Plan)) {
 	}
 }
 
+var terraformFixture = func() string {
+	a, err := filepath.Abs("../../testdata/fixtures/terraform")
+	if err != nil {
+		panic(err)
+	}
+	return a
+}()
+
 func applyArgs(plan string, extra ...string) []string {
-	return append([]string{"apply", "--config", planConfig, "--fixture", scanFixture, "--plan", plan}, extra...)
+	return append([]string{"apply", "--config", planConfig, "--fixture", scanFixture, "--terraform-fixture", terraformFixture,
+		"--plan", plan}, extra...)
 }
 
 func TestApplyGolden(t *testing.T) {
@@ -77,7 +86,7 @@ func TestApplyAudit(t *testing.T) {
 	if err := json.Unmarshal([]byte(r.stdout), &rep); err != nil {
 		t.Fatal(err)
 	}
-	if rep.Summary.Written != 5 || rep.Summary.Pending != 3 {
+	if rep.Summary != (model.ApplySummary{Written: 5, Proposed: 6, Unroutable: 5}) {
 		t.Errorf("summary = %+v", rep.Summary)
 	}
 	// The bucket's invalid AdminEmail had no fix, so verify still sees it.
@@ -98,13 +107,13 @@ func TestApplyAudit(t *testing.T) {
 		t.Fatal(err)
 	}
 	data, _ := os.ReadFile(defaultAuditLog)
-	if lines := strings.Count(string(data), "\n"); lines != 5 || info.Mode().Perm() != 0o600 {
+	if lines := strings.Count(string(data), "\n"); lines != 11 || info.Mode().Perm() != 0o600 {
 		t.Errorf("audit: %d lines, mode %v", lines, info.Mode().Perm())
 	}
 	// The audit log is appended to, never truncated.
 	runIn(t, nil, "", applyArgs(plan, "--yes", "--cloud", "azure", "-o", "json")...)
 	data, _ = os.ReadFile(defaultAuditLog)
-	if lines := strings.Count(string(data), "\n"); lines != 6 {
+	if lines := strings.Count(string(data), "\n"); lines != 12 {
 		t.Errorf("audit after a second apply: %d lines", lines)
 	}
 }
@@ -142,12 +151,12 @@ func TestApplyGates(t *testing.T) {
 	}{
 		{"no plan", []string{"apply"}, "--plan is required"},
 		{"bad only", applyArgs(old, "--only", "both"), "--only must be"},
-		{"terraform", applyArgs(old, "--only", "terraform"), "phase 6"},
-		{"pr", applyArgs(old, "--pr"), "phase 6"},
+		{"pr with direct", applyArgs(old, "--only", "direct", "--pr"), "--only direct"},
 		{"not a plan", applyArgs(filepath.Join(dir, "junk.json")), "not a plan file"},
 		{"too old", applyArgs(old, "--yes"), "--allow-stale"},
 		{"policy changed", applyArgs(changed, "--yes", "--allow-stale"), "policy changed"},
 		{"no terminal", applyArgs(old, "--allow-stale"), "pass --yes"},
+		{"no terminal for pull requests", applyArgs(old, "--allow-stale", "--only", "terraform", "--pr"), "pass --yes"},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -159,5 +168,43 @@ func TestApplyGates(t *testing.T) {
 	}
 	if r := runIn(t, nil, "", applyArgs(old, "--yes", "--allow-stale", "-o", "json")...); r.code != output.ExitOK {
 		t.Errorf("--allow-stale: exit %d: %s", r.code, r.stderr)
+	}
+}
+
+func TestApplyTerraform(t *testing.T) {
+	makePlan(t, nil)
+	// Patch files need no confirmation; only cloud writes and pull requests do.
+	r := runIn(t, nil, "", applyArgs(defaultPlanFile, "--only", "terraform", "--patch-dir", "out", "-o", "json")...)
+	if r.code != output.ExitOK {
+		t.Fatalf("exit %d: %s", r.code, r.stderr)
+	}
+	var rep model.ApplyReport
+	if err := json.Unmarshal([]byte(r.stdout), &rep); err != nil {
+		t.Fatal(err)
+	}
+	if rep.Summary != (model.ApplySummary{Proposed: 6, Unroutable: 5}) {
+		t.Errorf("summary = %+v", rep.Summary)
+	}
+	for _, name := range []string{"github-acme-infra-aws.patch", "bitbucket-acme-ws-infra-gcp.patch"} {
+		if _, err := os.Stat(filepath.Join("out", name)); err != nil {
+			t.Error(err)
+		}
+	}
+	reasons := map[string]bool{}
+	for _, res := range rep.Results {
+		if res.Outcome == model.OutcomeUnroutable {
+			reason, _, _ := strings.Cut(res.Detail, ":")
+			reasons[reason] = true
+		}
+	}
+	for _, want := range []string{model.UnroutableMissingRepoTags, model.UnroutableNotAllowlisted, model.UnroutableNotInState, model.UnroutableUnsupported} {
+		if !reasons[want] {
+			t.Errorf("no change unroutable for %s: %v", want, reasons)
+		}
+	}
+
+	r = runIn(t, nil, "", applyArgs(defaultPlanFile, "--only", "terraform", "--pr", "--yes", "-o", "json")...)
+	if r.code != output.ExitOK || !strings.Contains(r.stdout, `"pull_url": "https://github.example/acme/infra-aws/pull/`) {
+		t.Errorf("--pr: exit %d\n%s\n%s", r.code, r.stdout, r.stderr)
 	}
 }

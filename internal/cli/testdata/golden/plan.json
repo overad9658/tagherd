@@ -10,14 +10,14 @@
     "GCP/acme-prod"
   ],
   "summary": {
-    "resources": 5,
-    "changes": 8,
+    "resources": 11,
+    "changes": 16,
     "changes_by_route": {
       "direct": 5,
-      "terraform": 3
+      "terraform": 11
     },
     "changes_by_cloud": {
-      "AWS": 5,
+      "AWS": 13,
       "Azure": 1,
       "GCP": 2
     },
@@ -32,6 +32,87 @@
     ]
   },
   "changes": [
+    {
+      "resource_id": "arn:aws:dynamodb:us-east-1:111122223333:table/audit",
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS DynamoDB Table",
+      "native_type": "AWS::DynamoDB::Table",
+      "name": "audit",
+      "tag": "OwningOrg",
+      "action": "ADD",
+      "new": "Platform",
+      "rule": "builtin:ownership",
+      "route": "terraform",
+      "expect": "",
+      "repo": {
+        "scm": "GitHub",
+        "org": "acme",
+        "repo": "legacy-infra"
+      }
+    },
+    {
+      "resource_id": "arn:aws:dynamodb:us-east-1:111122223333:table/ledger",
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS DynamoDB Table",
+      "native_type": "AWS::DynamoDB::Table",
+      "name": "ledger",
+      "tag": "Exposure",
+      "action": "UPDATE",
+      "old": "public",
+      "new": "External",
+      "rule": "builtin:synonym",
+      "route": "terraform",
+      "expect": "public",
+      "repo": {
+        "scm": "GitHub",
+        "org": "acme",
+        "repo": "infra-aws"
+      }
+    },
+    {
+      "resource_id": "arn:aws:ec2:us-east-1:111122223333:instance/i-0etl",
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS EC2 Instance",
+      "native_type": "AWS::EC2::Instance",
+      "name": "etl-1",
+      "tag": "OwningOrg",
+      "action": "ADD",
+      "new": "Platform",
+      "rule": "builtin:ownership",
+      "route": "terraform",
+      "expect": "",
+      "repo": {
+        "scm": "GitHub",
+        "org": "acme",
+        "repo": "infra-aws"
+      }
+    },
+    {
+      "resource_id": "arn:aws:lambda:us-east-1:111122223333:function:report-gen",
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS Lambda Function",
+      "native_type": "AWS::Lambda::Function",
+      "name": "report-gen",
+      "tag": "OwningOrg",
+      "action": "ADD",
+      "new": "Platform",
+      "rule": "builtin:ownership",
+      "route": "terraform",
+      "expect": "",
+      "repo": {
+        "scm": "GitHub",
+        "org": "acme",
+        "repo": "infra-aws"
+      }
+    },
     {
       "resource_id": "arn:aws:ec2:us-east-1:111122223333:image/ami-0001",
       "cloud": "AWS",
@@ -62,6 +143,67 @@
       "rule": "builtin:case",
       "route": "direct",
       "expect": "production"
+    },
+    {
+      "resource_id": "arn:aws:s3:::acme-data",
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS S3 Bucket",
+      "native_type": "AWS::S3::Bucket",
+      "name": "acme-data",
+      "tag": "Brand",
+      "action": "ADD",
+      "new": "Acme",
+      "rule": "parent",
+      "route": "terraform",
+      "expect": "",
+      "repo": {
+        "scm": "GitHub",
+        "org": "acme",
+        "repo": "infra-aws"
+      }
+    },
+    {
+      "resource_id": "arn:aws:s3:::acme-data",
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS S3 Bucket",
+      "native_type": "AWS::S3::Bucket",
+      "name": "acme-data",
+      "tag": "Environment",
+      "action": "UPDATE",
+      "old": "prod",
+      "new": "Production",
+      "rule": "builtin:synonym",
+      "route": "terraform",
+      "expect": "prod",
+      "repo": {
+        "scm": "GitHub",
+        "org": "acme",
+        "repo": "infra-aws"
+      }
+    },
+    {
+      "resource_id": "arn:aws:s3:::acme-data",
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS S3 Bucket",
+      "native_type": "AWS::S3::Bucket",
+      "name": "acme-data",
+      "tag": "OwningOrg",
+      "action": "ADD",
+      "new": "Platform",
+      "rule": "builtin:ownership",
+      "route": "terraform",
+      "expect": "",
+      "repo": {
+        "scm": "GitHub",
+        "org": "acme",
+        "repo": "infra-aws"
+      }
     },
     {
       "resource_id": "arn:aws:s3:::acme-logs",
@@ -111,6 +253,26 @@
       "expect": "Public"
     },
     {
+      "resource_id": "arn:aws:s3:::acme-tmp",
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS S3 Bucket",
+      "native_type": "AWS::S3::Bucket",
+      "name": "acme-tmp",
+      "tag": "OwningOrg",
+      "action": "ADD",
+      "new": "Platform",
+      "rule": "builtin:ownership",
+      "route": "terraform",
+      "expect": "",
+      "repo": {
+        "scm": "GitHub",
+        "org": "acme",
+        "repo": "infra-aws"
+      }
+    },
+    {
       "resource_id": "/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-app/providers/Microsoft.Compute/virtualMachines/vm-app",
       "cloud": "Azure",
       "scope": "00000000-0000-0000-0000-000000000001",
@@ -140,7 +302,12 @@
       "new": "ops@example.com",
       "rule": "defaults:scope",
       "route": "terraform",
-      "expect": ""
+      "expect": "",
+      "repo": {
+        "scm": "bitbucket",
+        "org": "acme-ws",
+        "repo": "infra-gcp"
+      }
     },
     {
       "resource_id": "//compute.googleapis.com/projects/acme-prod/zones/us-central1-a/instances/batch-1",
@@ -157,7 +324,12 @@
       "new": "Production",
       "rule": "builtin:synonym",
       "route": "terraform",
-      "expect": "prod"
+      "expect": "prod",
+      "repo": {
+        "scm": "bitbucket",
+        "org": "acme-ws",
+        "repo": "infra-gcp"
+      }
     }
   ],
   "unresolved": [

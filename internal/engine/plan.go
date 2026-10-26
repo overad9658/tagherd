@@ -211,10 +211,28 @@ func (b *planner) resource(r *model.Resource, fs []model.Finding) {
 	if !b.writable(r, fs[0]) {
 		route = model.RouteUnwritable
 	}
+	var repo *model.RepoRef
+	if route == model.RouteTerraform {
+		repo = repoOf(r)
+	}
 	for i := range planned {
-		planned[i].Route = route
+		planned[i].Route, planned[i].Repo = route, repo
 	}
 	b.changes = append(b.changes, planned...)
+}
+
+// repoOf is the repository named by the resource's SCM, Org and Repo
+// tags, or nil unless all three have a value.
+func repoOf(r *model.Resource) *model.RepoRef {
+	var vals [3]string
+	for i, name := range []string{"SCM", "Org", "Repo"} {
+		t, ok := currentTag(r, name)
+		if !ok || strings.TrimSpace(t.Value) == "" {
+			return nil
+		}
+		vals[i] = strings.TrimSpace(t.Value)
+	}
+	return &model.RepoRef{SCM: vals[0], Org: vals[1], Repo: vals[2]}
 }
 
 // currentDeployment is the resource's DeploymentType in dictionary

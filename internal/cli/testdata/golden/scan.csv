@@ -15,16 +15,24 @@ AWS,*,,Storage (w/o network access),AWS S3 Glacier Vault,,,UNMAPPED_TYPE,,,,fals
 AWS,*,,"Security, Identity, & Compliance",AWS SES Domain Identity,,,UNMAPPED_TYPE,,,,false
 AWS,*,,"Security, Identity, & Compliance",AWS SES Email Address Identity,,,UNMAPPED_TYPE,,,,false
 AWS,111122223333,,Machine Learning,AWS Comprehend Flywheel,,,UNMAPPED_TYPE,,,,false
+AWS,111122223333,us-east-1,Database,AWS DynamoDB Table,arn:aws:dynamodb:us-east-1:111122223333:table/audit,audit,MISSING_TAG,OwningOrg,,,false
+AWS,111122223333,us-east-1,Database,AWS DynamoDB Table,arn:aws:dynamodb:us-east-1:111122223333:table/ledger,ledger,INVALID_VALUE,Exposure,public,,false
 AWS,111122223333,us-east-1,Compute (only machines),AWS EC2 Instance,arn:aws:ec2:us-east-1:111122223333:instance/i-0abc,web-1,DUPLICATE_KEY,Environment,"Environment=Production, environment=Staging",,false
+AWS,111122223333,us-east-1,Compute (only machines),AWS EC2 Instance,arn:aws:ec2:us-east-1:111122223333:instance/i-0etl,etl-1,MISSING_TAG,OwningOrg,,,false
 AWS,111122223333,,"Security, Identity, & Compliance",AWS IAM AWS Managed Policy,arn:aws:iam::aws:policy/ReadOnlyAccess,ReadOnlyAccess,NOT_TAGGABLE,,,,false
 AWS,111122223333,us-east-1,Compute (w/o machines and machine images),AWS Lambda Function,arn:aws:lambda:us-east-1:111122223333:function:billing-api,billing-api,CASE_MISMATCH,Brand,brand=Acme,Brand=Acme,true
 AWS,111122223333,us-east-1,Compute (w/o machines and machine images),AWS Lambda Function,arn:aws:lambda:us-east-1:111122223333:function:billing-api,billing-api,INVALID_DEPLOYMENT_TYPE,DeploymentType,Scripted,,false
+AWS,111122223333,us-east-1,Compute (w/o machines and machine images),AWS Lambda Function,arn:aws:lambda:us-east-1:111122223333:function:report-gen,report-gen,MISSING_TAG,OwningOrg,,,false
 AWS,111122223333,us-east-1,Compute (only machine images),AWS Machine Image (AMI),arn:aws:ec2:us-east-1:111122223333:image/ami-0001,base-2026-09,MISSING_TAG,OwningOrg,,,false
 AWS,111122223333,us-east-1,Database,AWS RDS PostgreSQL Instance,arn:aws:rds:us-east-1:111122223333:db:orders,orders,CASE_MISMATCH,Environment,production,Production,true
+AWS,111122223333,us-east-1,Storage,AWS S3 Bucket,arn:aws:s3:::acme-data,acme-data,MISSING_TAG,Brand,,,false
+AWS,111122223333,us-east-1,Storage,AWS S3 Bucket,arn:aws:s3:::acme-data,acme-data,INVALID_VALUE,Environment,prod,,false
+AWS,111122223333,us-east-1,Storage,AWS S3 Bucket,arn:aws:s3:::acme-data,acme-data,MISSING_TAG,OwningOrg,,,false
 AWS,111122223333,us-east-1,Storage,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,INVALID_VALUE,AdminEmail,not-an-email,,false
 AWS,111122223333,us-east-1,Storage,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,EMPTY_VALUE,Brand,"  ",,false
 AWS,111122223333,us-east-1,Storage,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,MISSING_TAG,DeploymentType,,Manual,true
 AWS,111122223333,us-east-1,Storage,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,INVALID_VALUE,Exposure,Public,,false
+AWS,111122223333,us-east-1,Storage,AWS S3 Bucket,arn:aws:s3:::acme-tmp,acme-tmp,MISSING_TAG,OwningOrg,,,false
 Azure,*,,Containers & Kubernetes,Azure ACI Container,,,UNMAPPED_TYPE,,,,false
 Azure,*,,Storage,Azure Blob Storage Container,,,UNMAPPED_TYPE,,,,false
 Azure,*,,Database,Azure Databricks Catalog,,,UNMAPPED_TYPE,,,,false

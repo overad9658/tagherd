@@ -48,7 +48,19 @@ type Change struct {
 	// Expect is the value seen at plan time, the write precondition. With
 	// ADD the tag was absent.
 	Expect string `json:"expect"`
+	// Repo is the repository the resource's SCM, Org and Repo tags name,
+	// set on Terraform changes when all three are present.
+	Repo *RepoRef `json:"repo,omitempty"`
 }
+
+// RepoRef names a Terraform repository, as the resource's tags give it.
+type RepoRef struct {
+	SCM  string `json:"scm"`
+	Org  string `json:"org"`
+	Repo string `json:"repo"`
+}
+
+func (r RepoRef) String() string { return r.SCM + "/" + r.Org + "/" + r.Repo }
 
 // Unresolved is a finding the plan leaves open, and why.
 type Unresolved struct {

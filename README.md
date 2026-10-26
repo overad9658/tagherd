@@ -9,7 +9,7 @@ reviewable plan of tag changes, and applies it. `scan` reads, `plan` decides,
 
 ## Status
 
-Phases 1 to 5 are implemented:
+Phases 1 to 6 are implemented:
 
 - Config, policy loading and validation, and the type catalog
 - The evaluation engine: classification, group matching, every finding code,
@@ -22,10 +22,14 @@ Phases 1 to 5 are implemented:
   DeploymentType, the grace period, and the plan file
 - `apply` for the direct route: plan checks, confirmation, preconditions,
   provider limits, tag writers for AWS, Azure and GCP, the audit log and
-  `--verify`. Terraform changes are listed as not applied until phase 6
+  `--verify`
+- `apply` for the Terraform route: repository allowlist, state lookup, HCL
+  edits, one patch per repository, and pull requests on GitHub and
+  Bitbucket Cloud with `--pr`
 
-The adapters are unit-tested against stubs; they have not yet run against
-real accounts (the pilot in the backlog).
+The adapters are unit-tested against stubs, and the Terraform route against
+local git repositories; none has yet run against real accounts or SCMs (the
+pilot in the backlog).
 
 ## Build and test
 
@@ -57,9 +61,12 @@ tagherd inventory --cloud gcp --type 'GCP Compute*' -o csv
 tagherd plan --set Brand=Acme --defaults defaults.yaml --out plan.json
 tagherd plan --grace 30m -o markdown
 
-# Write the plan's direct changes; every attempt goes to tagherd-audit.ndjson
+# Write the plan's direct changes and Terraform patches; every attempt goes
+# to tagherd-audit.ndjson
 tagherd apply --plan plan.json            # asks for confirmation
 tagherd apply --plan plan.json --yes --verify -o markdown
+tagherd apply --plan plan.json --only terraform --patch-dir patches
+tagherd apply --plan plan.json --only terraform --pr
 
 # The fake-provider fixture, for development without cloud access
 tagherd scan --fixture testdata/fixtures/scan.yaml
@@ -67,7 +74,8 @@ tagherd inventory --fixture testdata/fixtures/scan.yaml --cloud azure
 tagherd plan --config testdata/fixtures/plan/tagherd.yaml \
   --fixture testdata/fixtures/scan.yaml --out /tmp/plan.json
 tagherd apply --config testdata/fixtures/plan/tagherd.yaml \
-  --fixture testdata/fixtures/scan.yaml --plan /tmp/plan.json --yes --verify
+  --fixture testdata/fixtures/scan.yaml --plan /tmp/plan.json --yes --verify \
+  --terraform-fixture testdata/fixtures/terraform --pr
 ```
 
 `scan` exits 0 when there are no findings in the `--fail-on` classes, 1 when
@@ -76,7 +84,8 @@ of one, such as one region) could not be read. `inventory` and `plan` exit 0,
 2 or 3; `plan` still writes the plan for the scopes it could read. `apply`
 exits 0, 2 (including a plan made with another policy, a plan over 24 hours
 old without `--allow-stale`, or a cancelled confirmation) or 4 when a change
-failed or was stale.
+failed or was stale. Unroutable Terraform changes do not change the exit
+code.
 Golden output for every format lives in `internal/cli/testdata/golden`;
 refresh it with
 `go test ./internal/cli -update` after checking a change.
@@ -112,6 +121,36 @@ Resource Manager tag, whose value is created under the existing key when
 missing. `--verify` reads the changed resources back through the writer,
 not AWS Config, which can lag a write by minutes.
 
+## Terraform route
+
+Automation resources are changed in code, never through the cloud API, and
+tagherd never runs `terraform plan` or `apply`. For each repository named by
+a resource's `SCM`, `Org` and `Repo` tags, `apply`:
+
+1. Checks it against `terraform.allowed_repositories` (globs, ignoring case)
+2. Makes a shallow clone of the default branch, with the token from
+   `terraform.scm_tokens` sent as an HTTP header, never in the URL
+3. Finds the roots (directories with a `backend` or `cloud` block), runs
+   `terraform init` and `terraform show -json` in each until the resource's
+   ARN or ID turns up. Backend credentials come from the environment;
+   `module_registries` tokens are passed as `TF_TOKEN_<host>`
+4. Edits the tags where the code sets them: a literal `tags = {...}` map,
+   the last object in `merge(local.common_tags, {...})` (or a new last
+   argument), or, for a resource in a module, the root's module call. GCP
+   edits `labels`, lowercase
+5. Writes `<patch-dir>/<scm>-<org>-<repo>.patch`; with `--pr` it pushes
+   `<branch_prefix><plan-id>` and opens a pull request listing every change
+
+Only the edited lines change, and a file already in `terraform fmt` style is
+kept that way. A change that cannot be placed is `unroutable`, with a
+reason: `missing_repo_tags`, `not_allowlisted`, `not_in_state`,
+`not_in_code`, or `unsupported_expression` (tags from a variable, a data
+source or a non-literal value; a module call with no tags argument; GCP
+Resource Manager tags, which live in `google_tags_tag_binding` resources).
+A tag the code already sets is `noop`, so once the pull request is merged
+the same plan proposes nothing. `--pr` asks for confirmation like a direct
+write; patch files alone do not.
+
 ## Cloud access
 
 Each cloud uses its own credential chain; tagherd stores no secrets.
@@ -145,6 +184,7 @@ internal/engine/      classify, match, evaluate and plan (pure)
 internal/values/      defaults, ownership and synonyms files; --set
 internal/scan/        discovery across scopes, then the engine; parent tags for plan
 internal/apply/       plan checks, preconditions, limits, audit log, verify
+internal/terraform/   Terraform route: allowlist, clone, state lookup, HCL edits, patches, PRs
 internal/provider/    provider interfaces; fake/ for tests and fixtures
   aws/ azure/ gcp/    discovery adapters and tag writers, each behind a stub-able backend
 internal/output/      renderers and exit codes

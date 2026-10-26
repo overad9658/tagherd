@@ -123,6 +123,44 @@ func TestRun(t *testing.T) {
 	}
 }
 
+type stubTerraform struct{ outcomes []model.Outcome }
+
+func (s stubTerraform) Run(_ context.Context, _ string, cs []model.Change) []model.ChangeResult {
+	out := make([]model.ChangeResult, len(cs))
+	for i, c := range cs {
+		out[i] = model.ChangeResult{Change: c, Outcome: s.outcomes[i], Detail: string(s.outcomes[i]),
+			Terraform: &model.TerraformTarget{Address: "aws_s3_bucket." + c.ResourceID}}
+	}
+	return out
+}
+
+func (stubTerraform) Actor() string { return "local:test" }
+
+func TestRunTerraform(t *testing.T) {
+	var cs []model.Change
+	for _, id := range []string{"t1", "t2", "t3", "t4"} {
+		c := change(model.AWS, "1", id, "Brand", model.ActionAdd, "", "Acme")
+		c.Route = model.RouteTerraform
+		cs = append(cs, c)
+	}
+	var audit bytes.Buffer
+	stub := stubTerraform{[]model.Outcome{model.OutcomeProposed, model.OutcomeNoop, model.OutcomeUnroutable, model.OutcomeFailed}}
+	rep := Run(context.Background(), model.Plan{ID: "P", Changes: cs}, Options{Terraform: stub, Audit: &audit})
+	if rep.Summary != (model.ApplySummary{Proposed: 1, Noop: 1, Unroutable: 1, Failed: 1}) {
+		t.Errorf("summary = %+v", rep.Summary)
+	}
+	if rep.Results[0].Terraform == nil || rep.Results[0].Terraform.Address != "aws_s3_bucket.t1" {
+		t.Errorf("result = %+v", rep.Results[0])
+	}
+	// Edits in code are attempts; unroutable changes are not.
+	lines := strings.Split(strings.TrimSpace(audit.String()), "\n")
+	var rec model.AuditRecord
+	_ = json.Unmarshal([]byte(lines[0]), &rec)
+	if len(lines) != 3 || rec.Actor != "local:test" || rec.Route != model.RouteTerraform || rec.Outcome != model.OutcomeProposed {
+		t.Errorf("audit:\n%s", audit.String())
+	}
+}
+
 func TestCheck(t *testing.T) {
 	now := time.Date(2026, 10, 25, 0, 0, 0, 0, time.UTC)
 	p := model.Plan{PolicyHash: "abc", Created: now.Add(-25 * time.Hour)}
