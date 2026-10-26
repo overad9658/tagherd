@@ -6,6 +6,7 @@ import (
 	"context"
 	"log/slog"
 	"slices"
+	"strings"
 	"sync"
 	"time"
 
@@ -88,9 +89,10 @@ func Discover(ctx context.Context, set *policy.Set, providers map[model.Cloud]pr
 		}
 	}
 	discover(ctx, jobs, max(opts.Concurrency, 1), &in, opts.Log)
+	warned := false
 	for _, cloud := range model.Clouds {
 		if scopes, ok := scopesByCloud[cloud]; ok {
-			runOverrides(ctx, groups, cloud, scopes, opts, &in)
+			runOverrides(ctx, groups, cloud, scopes, opts, &in, &warned)
 		}
 	}
 	return in
@@ -161,22 +163,45 @@ func discover(ctx context.Context, jobs []job, workers int, in *engine.Input, lo
 }
 
 // runOverrides runs each selected group's override for the cloud once. A
-// failure leaves the result out, so the engine falls back to the default test.
-func runOverrides(ctx context.Context, groups []*policy.Group, cloud model.Cloud, scopes []provider.Scope, opts Options, in *engine.Input) {
+// failure leaves the result out, so the engine falls back to the default
+// test. The query's identifiers are joined to the discovered resources by
+// full ID or its last path segment (an ARN's ami-0abc), ignoring case.
+func runOverrides(ctx context.Context, groups []*policy.Group, cloud model.Cloud, scopes []provider.Scope, opts Options, in *engine.Input, warned *bool) {
 	for _, g := range groups {
 		o := g.Overrides[cloud]
 		if o == nil {
 			continue
 		}
 		if opts.Overrides == nil {
-			opts.Log.Warn("no Wiz connection; override falls back to the default tag test", "group", g.Name, "cloud", cloud)
+			if !*warned {
+				opts.Log.Warn("no Wiz connection; overrides fall back to the default tag test", "group", g.Name, "cloud", cloud)
+				*warned = true
+			}
 			continue
 		}
-		missing, err := opts.Overrides.Run(ctx, o.Missing, scopes)
+		ids, err := opts.Overrides.Run(ctx, o.Missing, scopes)
 		if err != nil {
 			opts.Log.Warn("override query failed; falling back to the default tag test", "group", g.Name, "cloud", cloud, "error", err)
 			continue
 		}
-		in.Overrides[engine.OverrideKey{Group: g.Name, Cloud: cloud}] = &engine.OverrideResult{Missing: missing}
+		in.Overrides[engine.OverrideKey{Group: g.Name, Cloud: cloud}] = &engine.OverrideResult{Missing: joinIDs(ids, cloud, in.Resources)}
 	}
+}
+
+func joinIDs(ids map[string]bool, cloud model.Cloud, resources []model.Resource) map[string]bool {
+	want := make(map[string]bool, len(ids))
+	for id := range ids {
+		want[strings.ToLower(id)] = true
+	}
+	out := map[string]bool{}
+	for _, r := range resources {
+		if r.Cloud != cloud {
+			continue
+		}
+		id := strings.ToLower(r.ID)
+		if want[id] || want[id[strings.LastIndexByte(id, '/')+1:]] {
+			out[r.ID] = true
+		}
+	}
+	return out
 }

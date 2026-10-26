@@ -9,7 +9,7 @@ reviewable plan of tag changes, and applies it. `scan` reads, `plan` decides,
 
 ## Status
 
-Phases 1 to 6 are implemented:
+All seven phases are implemented:
 
 - Config, policy loading and validation, and the type catalog
 - The evaluation engine: classification, group matching, every finding code,
@@ -26,10 +26,13 @@ Phases 1 to 6 are implemented:
 - `apply` for the Terraform route: repository allowlist, state lookup, HCL
   edits, one patch per repository, and pull requests on GitHub and
   Bitbucket Cloud with `--pr`
+- The Wiz override for machine images: the AMI group's graph query runs
+  through the Wiz API, with a safe fallback when Wiz is not available
 
 The adapters are unit-tested against stubs, and the Terraform route against
 local git repositories; none has yet run against real accounts or SCMs (the
-pilot in the backlog).
+pilot in the backlog). The same goes for the Wiz client, which is tested
+against a stub server.
 
 ## Build and test
 
@@ -151,6 +154,29 @@ A tag the code already sets is `noop`, so once the pull request is merged
 the same plan proposes nothing. `--pr` asks for confirmation like a direct
 write; patch files alone do not.
 
+## Wiz override
+
+The machine-image group's `override.AWS.missing` block is a Wiz graph query.
+`scan` and `plan` send it to Wiz unchanged, once per run whatever the number
+of accounts, and only the AMIs it returns can be reported as missing tags.
+Invalid values, case mismatches and duplicate keys still come from each
+AMI's own tags. Results are matched to the discovered AMIs by ARN or AMI
+ID.
+
+```yaml
+wiz:
+  api_url: https://api.<region>.app.wiz.io/graphql
+  client_id: "${WIZ_CLIENT_ID}"
+  client_secret: "${WIZ_CLIENT_SECRET}"
+  # auth_url: https://auth.app.wiz.io/oauth/token   # the default
+  # timeout: 60s                                    # the whole query, every page
+```
+
+Without the block, or when the secrets are unset, the call fails, it times
+out, or Wiz caps the result set, the group falls back to the default tag
+test. tagherd then logs one warning and the summary says
+`Override fallback`. The fallback reports more AMIs, never fewer.
+
 ## Cloud access
 
 Each cloud uses its own credential chain; tagherd stores no secrets.
@@ -179,7 +205,7 @@ internal/cli/         cobra commands
 internal/config/      tagherd.yaml loading and ${VAR} expansion
 internal/policy/      tags.json and group files: load, validate, select
 internal/catalog/     display name -> provider type catalog (catalog.yaml)
-internal/wiz/         Wiz override query validation
+internal/wiz/         Wiz override query validation and the GraphQL client
 internal/engine/      classify, match, evaluate and plan (pure)
 internal/values/      defaults, ownership and synonyms files; --set
 internal/scan/        discovery across scopes, then the engine; parent tags for plan

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/overad9658/tagherd/internal/model"
 	"github.com/overad9658/tagherd/internal/output"
@@ -14,6 +15,7 @@ import (
 	"github.com/overad9658/tagherd/internal/provider/fake"
 	gcpprovider "github.com/overad9658/tagherd/internal/provider/gcp"
 	"github.com/overad9658/tagherd/internal/scan"
+	"github.com/overad9658/tagherd/internal/wiz"
 )
 
 // providers returns the discovery adapters: the fake provider for a
@@ -86,9 +88,39 @@ func (a *app) providers(ctx context.Context, fixture string) (map[model.Cloud]pr
 		return nil, nil, &output.ExitError{Code: output.ExitUsage, Err: fmt.Errorf(
 			"no clouds to scan: %s has no scopes.aws, scopes.azure or scopes.gcp (run `tagherd init` for an example)", where)}
 	}
-	// The Wiz override client arrives with phase 7; until then overrides
-	// fall back to the default tag test.
-	return out, nil, nil
+	return out, a.wizClient(), nil
+}
+
+// wizClient is the override runner from the wiz block, or nil when there is
+// none or it is incomplete; overrides then fall back to the default tag test,
+// which reports more resources, never fewer.
+func (a *app) wizClient() scan.OverrideRunner {
+	w := a.cfg.Wiz
+	if w == nil {
+		return nil
+	}
+	fallback := func(err error) scan.OverrideRunner {
+		a.log.Warn("Wiz is not usable; overrides fall back to the default tag test", "error", err)
+		return nil
+	}
+	if err := a.cfg.Require("wiz"); err != nil {
+		return fallback(err)
+	}
+	var timeout time.Duration
+	if w.Timeout != "" {
+		d, err := time.ParseDuration(w.Timeout)
+		if err != nil || d <= 0 {
+			return fallback(fmt.Errorf("wiz.timeout %q is not a duration such as 60s", w.Timeout))
+		}
+		timeout = d
+	}
+	c, err := wiz.NewClient(wiz.Options{
+		APIURL: w.APIURL, AuthURL: w.AuthURL, ClientID: w.ClientID, ClientSecret: w.ClientSecret, Timeout: timeout,
+	})
+	if err != nil {
+		return fallback(err)
+	}
+	return c
 }
 
 // scanOptions are the discovery settings shared by scan and inventory.
