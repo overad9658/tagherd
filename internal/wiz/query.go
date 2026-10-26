@@ -1,5 +1,5 @@
-// Package wiz validates the Wiz graph queries used by policy overrides.
-// The GraphQL client that runs them arrives in phase 7.
+// Package wiz validates the Wiz graph queries used by policy overrides and
+// runs them through the Wiz GraphQL API.
 package wiz
 
 import (

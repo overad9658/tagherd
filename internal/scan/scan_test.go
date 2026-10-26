@@ -1,11 +1,14 @@
 package scan
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
+	"log/slog"
 	"reflect"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/overad9658/tagherd/internal/catalog"
@@ -13,6 +16,7 @@ import (
 	"github.com/overad9658/tagherd/internal/policy"
 	"github.com/overad9658/tagherd/internal/provider"
 	"github.com/overad9658/tagherd/internal/provider/fake"
+	"github.com/overad9658/tagherd/internal/wiz"
 )
 
 const fixture = "../../testdata/fixtures/scan.yaml"
@@ -196,7 +200,11 @@ func TestOverrideFallback(t *testing.T) {
 	set, env := setup(t)
 	// No runner: the AMI group falls back, so ami-0002's missing AdminEmail
 	// is reported too.
-	r := Run(context.Background(), set, providers(env), Options{})
+	var logs bytes.Buffer
+	r := Run(context.Background(), set, providers(env), Options{Log: slog.New(slog.NewTextHandler(&logs, nil))})
+	if n := strings.Count(logs.String(), "no Wiz connection"); n != 1 {
+		t.Errorf("the missing-Wiz warning was logged %d times, want once", n)
+	}
 	if r.Summary.ByCode[model.MissingTag] != 10 {
 		t.Errorf("missing = %d, want 10", r.Summary.ByCode[model.MissingTag])
 	}
@@ -211,5 +219,24 @@ func TestOverrideFallback(t *testing.T) {
 	r = Run(context.Background(), set, providers(env), Options{Overrides: failing.Wiz})
 	if len(r.Summary.OverrideFallback) != 1 {
 		t.Errorf("a failed query should fall back: %v", r.Summary.OverrideFallback)
+	}
+}
+
+// shortIDs reports the fixture's AMI as Wiz may: a bare, uppercase AMI ID.
+type shortIDs struct{}
+
+func (shortIDs) Run(context.Context, *wiz.Query, []provider.Scope) (map[string]bool, error) {
+	return map[string]bool{"AMI-0001": true, "sc-123": true}, nil
+}
+
+func TestOverrideJoinsByAMIID(t *testing.T) {
+	set, env := setup(t)
+	short := Run(context.Background(), set, providers(env), Options{Overrides: shortIDs{}})
+	full := Run(context.Background(), set, providers(env), Options{Overrides: env.Wiz})
+	if !reflect.DeepEqual(short.Findings, full.Findings) || len(short.Summary.OverrideFallback) != 0 {
+		t.Errorf("a bare AMI ID should match the discovered ARN: %d vs %d findings", len(short.Findings), len(full.Findings))
+	}
+	if got := joinIDs(map[string]bool{"ami-0001": true}, model.Azure, []model.Resource{{Cloud: model.AWS, ID: "arn:aws:ec2:r:1:image/ami-0001"}}); len(got) != 0 {
+		t.Errorf("ids join within one cloud only: %v", got)
 	}
 }

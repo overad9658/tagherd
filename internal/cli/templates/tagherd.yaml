@@ -48,6 +48,7 @@ terraform:
 # group falls back to the default tag test.
 # wiz:
 #   api_url: https://api.<region>.app.wiz.io/graphql
+#   auth_url: https://auth.app.wiz.io/oauth/token   # the default
 #   client_id: "${WIZ_CLIENT_ID}"
 #   client_secret: "${WIZ_CLIENT_SECRET}"
 #   timeout: 60s
