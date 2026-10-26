@@ -48,7 +48,7 @@ func TestFixture(t *testing.T) {
 	r := Run(context.Background(), set, providers(env), Options{Concurrency: 4, Overrides: env.Wiz})
 
 	wantCodes := map[model.Code]int{
-		model.MissingTag: 3, model.EmptyValue: 1, model.InvalidValue: 3, model.CaseMismatch: 3,
+		model.MissingTag: 9, model.EmptyValue: 1, model.InvalidValue: 5, model.CaseMismatch: 3,
 		model.DuplicateKey: 1, model.InvalidDeploymentType: 1, model.NotTaggable: 1,
 		// The fixture's one uncovered type, plus each catalog gap once per cloud.
 		model.UnmappedType: 1 + len(catalogGaps(set, nil)),
@@ -58,7 +58,7 @@ func TestFixture(t *testing.T) {
 			t.Errorf("%s = %d, want %d", c, r.Summary.ByCode[c], n)
 		}
 	}
-	wantCounts := model.Counts{Discovered: 14, OutOfScope: 1, Filtered: 1, NotTaggable: 1, Evaluated: 11, Compliant: 4}
+	wantCounts := model.Counts{Discovered: 20, OutOfScope: 1, Filtered: 1, NotTaggable: 1, Evaluated: 17, Compliant: 4}
 	if r.Summary.Resources != wantCounts {
 		t.Errorf("counts = %+v, want %+v", r.Summary.Resources, wantCounts)
 	}
@@ -174,19 +174,20 @@ func TestFilters(t *testing.T) {
 	}
 
 	r = Run(ctx, set, ps, Options{ScopePatterns: map[model.Cloud][]string{model.AWS: {"1111*"}}, Clouds: []model.Cloud{model.AWS}})
-	if len(r.Summary.Unreadable) != 0 || r.Summary.Resources.Discovered != 10 {
+	if len(r.Summary.Unreadable) != 0 || r.Summary.Resources.Discovered != 16 {
 		t.Errorf("--account 1111*: %+v %+v", r.Summary.Resources, r.Summary.Unreadable)
 	}
 
 	db, _ := set.Select([]string{"database"})
 	r = Run(ctx, set, ps, Options{Groups: db, Clouds: []model.Cloud{model.AWS}})
-	// Only RDS instances are requested from the provider: orders and legacy.
-	if r.Summary.Resources.Discovered != 3 || r.Summary.Resources.OutOfScope != 1 {
+	// Only the group's types are requested: three DynamoDB tables and the
+	// RDS instances orders and legacy.
+	if r.Summary.Resources.Discovered != 5 || r.Summary.Resources.OutOfScope != 1 {
 		t.Errorf("--group database: %+v", r.Summary.Resources)
 	}
 
 	r = Run(ctx, set, ps, Options{Types: []string{"AWS S3 Bucket"}})
-	if r.Summary.Resources.Evaluated != 1 || r.Summary.ByCode[model.UnmappedType] != 0 {
+	if r.Summary.Resources.Evaluated != 3 || r.Summary.ByCode[model.UnmappedType] != 0 {
 		t.Errorf("--type: %+v", r.Summary)
 	}
 }
@@ -196,8 +197,8 @@ func TestOverrideFallback(t *testing.T) {
 	// No runner: the AMI group falls back, so ami-0002's missing AdminEmail
 	// is reported too.
 	r := Run(context.Background(), set, providers(env), Options{})
-	if r.Summary.ByCode[model.MissingTag] != 4 {
-		t.Errorf("missing = %d, want 4", r.Summary.ByCode[model.MissingTag])
+	if r.Summary.ByCode[model.MissingTag] != 10 {
+		t.Errorf("missing = %d, want 10", r.Summary.ByCode[model.MissingTag])
 	}
 	if len(r.Summary.OverrideFallback) != 1 {
 		t.Errorf("fallback = %v", r.Summary.OverrideFallback)

@@ -1,2 +1,2 @@
 {"resource_id":"/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-app/providers/Microsoft.Compute/virtualMachines/vm-app","cloud":"Azure","scope":"00000000-0000-0000-0000-000000000001","region":"eastus","type":"Azure Compute Virtual Machine","native_type":"microsoft.compute/virtualmachines","name":"vm-app","tag":"EndpointType","action":"UPDATE","old":"server","new":"Server","rule":"builtin:case","route":"direct","expect":"server","outcome":"written"}
-{"id":"X","summary":{"written":1,"noop":0,"stale":0,"failed":0,"pending":0,"skipped":0}}
+{"id":"X","summary":{"written":1,"noop":0,"stale":0,"failed":0,"pending":0,"skipped":0,"proposed":0,"unroutable":0}}

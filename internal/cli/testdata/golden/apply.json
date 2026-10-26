@@ -5,10 +5,121 @@
     "noop": 0,
     "stale": 0,
     "failed": 0,
-    "pending": 3,
-    "skipped": 0
+    "pending": 0,
+    "skipped": 0,
+    "proposed": 6,
+    "unroutable": 5
   },
   "results": [
+    {
+      "resource_id": "arn:aws:dynamodb:us-east-1:111122223333:table/audit",
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS DynamoDB Table",
+      "native_type": "AWS::DynamoDB::Table",
+      "name": "audit",
+      "tag": "OwningOrg",
+      "action": "ADD",
+      "new": "Platform",
+      "rule": "builtin:ownership",
+      "route": "terraform",
+      "expect": "",
+      "repo": {
+        "scm": "GitHub",
+        "org": "acme",
+        "repo": "legacy-infra"
+      },
+      "outcome": "unroutable",
+      "detail": "not_allowlisted: GitHub/acme/legacy-infra is not in terraform.allowed_repositories"
+    },
+    {
+      "resource_id": "arn:aws:dynamodb:us-east-1:111122223333:table/ledger",
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS DynamoDB Table",
+      "native_type": "AWS::DynamoDB::Table",
+      "name": "ledger",
+      "tag": "Exposure",
+      "action": "UPDATE",
+      "old": "public",
+      "new": "External",
+      "rule": "builtin:synonym",
+      "route": "terraform",
+      "expect": "public",
+      "repo": {
+        "scm": "GitHub",
+        "org": "acme",
+        "repo": "infra-aws"
+      },
+      "outcome": "proposed",
+      "detail": "patches/github-acme-infra-aws.patch",
+      "terraform": {
+        "root": "live/prod",
+        "address": "aws_dynamodb_table.ledger",
+        "file": "live/prod/main.tf",
+        "block": "aws_dynamodb_table.ledger",
+        "patch": "patches/github-acme-infra-aws.patch"
+      }
+    },
+    {
+      "resource_id": "arn:aws:ec2:us-east-1:111122223333:instance/i-0etl",
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS EC2 Instance",
+      "native_type": "AWS::EC2::Instance",
+      "name": "etl-1",
+      "tag": "OwningOrg",
+      "action": "ADD",
+      "new": "Platform",
+      "rule": "builtin:ownership",
+      "route": "terraform",
+      "expect": "",
+      "repo": {
+        "scm": "GitHub",
+        "org": "acme",
+        "repo": "infra-aws"
+      },
+      "outcome": "unroutable",
+      "detail": "unsupported_expression: tags = var.etl_tags, which tagherd does not edit",
+      "terraform": {
+        "root": "live/prod",
+        "address": "aws_instance.etl",
+        "file": "live/prod/main.tf",
+        "block": "aws_instance.etl"
+      }
+    },
+    {
+      "resource_id": "arn:aws:lambda:us-east-1:111122223333:function:report-gen",
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS Lambda Function",
+      "native_type": "AWS::Lambda::Function",
+      "name": "report-gen",
+      "tag": "OwningOrg",
+      "action": "ADD",
+      "new": "Platform",
+      "rule": "builtin:ownership",
+      "route": "terraform",
+      "expect": "",
+      "repo": {
+        "scm": "GitHub",
+        "org": "acme",
+        "repo": "infra-aws"
+      },
+      "outcome": "proposed",
+      "detail": "patches/github-acme-infra-aws.patch",
+      "terraform": {
+        "root": "live/prod",
+        "address": "module.reports.aws_lambda_function.this",
+        "file": "live/prod/main.tf",
+        "block": "module.reports",
+        "patch": "patches/github-acme-infra-aws.patch"
+      }
+    },
     {
       "resource_id": "arn:aws:ec2:us-east-1:111122223333:image/ami-0001",
       "cloud": "AWS",
@@ -23,8 +134,8 @@
       "rule": "builtin:ownership",
       "route": "terraform",
       "expect": "",
-      "outcome": "pending",
-      "detail": "the Terraform route arrives in phase 6"
+      "outcome": "unroutable",
+      "detail": "missing_repo_tags: the resource needs SCM, Org and Repo tags"
     },
     {
       "resource_id": "arn:aws:rds:us-east-1:111122223333:db:orders",
@@ -42,6 +153,94 @@
       "route": "direct",
       "expect": "production",
       "outcome": "written"
+    },
+    {
+      "resource_id": "arn:aws:s3:::acme-data",
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS S3 Bucket",
+      "native_type": "AWS::S3::Bucket",
+      "name": "acme-data",
+      "tag": "Brand",
+      "action": "ADD",
+      "new": "Acme",
+      "rule": "parent",
+      "route": "terraform",
+      "expect": "",
+      "repo": {
+        "scm": "GitHub",
+        "org": "acme",
+        "repo": "infra-aws"
+      },
+      "outcome": "proposed",
+      "detail": "patches/github-acme-infra-aws.patch",
+      "terraform": {
+        "root": "live/prod",
+        "address": "aws_s3_bucket.data",
+        "file": "live/prod/main.tf",
+        "block": "aws_s3_bucket.data",
+        "patch": "patches/github-acme-infra-aws.patch"
+      }
+    },
+    {
+      "resource_id": "arn:aws:s3:::acme-data",
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS S3 Bucket",
+      "native_type": "AWS::S3::Bucket",
+      "name": "acme-data",
+      "tag": "Environment",
+      "action": "UPDATE",
+      "old": "prod",
+      "new": "Production",
+      "rule": "builtin:synonym",
+      "route": "terraform",
+      "expect": "prod",
+      "repo": {
+        "scm": "GitHub",
+        "org": "acme",
+        "repo": "infra-aws"
+      },
+      "outcome": "proposed",
+      "detail": "patches/github-acme-infra-aws.patch",
+      "terraform": {
+        "root": "live/prod",
+        "address": "aws_s3_bucket.data",
+        "file": "live/prod/main.tf",
+        "block": "aws_s3_bucket.data",
+        "patch": "patches/github-acme-infra-aws.patch"
+      }
+    },
+    {
+      "resource_id": "arn:aws:s3:::acme-data",
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS S3 Bucket",
+      "native_type": "AWS::S3::Bucket",
+      "name": "acme-data",
+      "tag": "OwningOrg",
+      "action": "ADD",
+      "new": "Platform",
+      "rule": "builtin:ownership",
+      "route": "terraform",
+      "expect": "",
+      "repo": {
+        "scm": "GitHub",
+        "org": "acme",
+        "repo": "infra-aws"
+      },
+      "outcome": "proposed",
+      "detail": "patches/github-acme-infra-aws.patch",
+      "terraform": {
+        "root": "live/prod",
+        "address": "aws_s3_bucket.data",
+        "file": "live/prod/main.tf",
+        "block": "aws_s3_bucket.data",
+        "patch": "patches/github-acme-infra-aws.patch"
+      }
     },
     {
       "resource_id": "arn:aws:s3:::acme-logs",
@@ -94,6 +293,28 @@
       "outcome": "written"
     },
     {
+      "resource_id": "arn:aws:s3:::acme-tmp",
+      "cloud": "AWS",
+      "scope": "111122223333",
+      "region": "us-east-1",
+      "type": "AWS S3 Bucket",
+      "native_type": "AWS::S3::Bucket",
+      "name": "acme-tmp",
+      "tag": "OwningOrg",
+      "action": "ADD",
+      "new": "Platform",
+      "rule": "builtin:ownership",
+      "route": "terraform",
+      "expect": "",
+      "repo": {
+        "scm": "GitHub",
+        "org": "acme",
+        "repo": "infra-aws"
+      },
+      "outcome": "unroutable",
+      "detail": "not_in_state: not in the state of 2 root(s): live/dev, live/prod"
+    },
+    {
       "resource_id": "/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-app/providers/Microsoft.Compute/virtualMachines/vm-app",
       "cloud": "Azure",
       "scope": "00000000-0000-0000-0000-000000000001",
@@ -125,8 +346,17 @@
       "rule": "defaults:scope",
       "route": "terraform",
       "expect": "",
-      "outcome": "pending",
-      "detail": "the Terraform route arrives in phase 6"
+      "repo": {
+        "scm": "bitbucket",
+        "org": "acme-ws",
+        "repo": "infra-gcp"
+      },
+      "outcome": "unroutable",
+      "detail": "unsupported_expression: Resource Manager tags are bound by google_tags_tag_binding resources, which tagherd does not edit",
+      "terraform": {
+        "root": ".",
+        "address": "google_compute_instance.batch"
+      }
     },
     {
       "resource_id": "//compute.googleapis.com/projects/acme-prod/zones/us-central1-a/instances/batch-1",
@@ -144,8 +374,20 @@
       "rule": "builtin:synonym",
       "route": "terraform",
       "expect": "prod",
-      "outcome": "pending",
-      "detail": "the Terraform route arrives in phase 6"
+      "repo": {
+        "scm": "bitbucket",
+        "org": "acme-ws",
+        "repo": "infra-gcp"
+      },
+      "outcome": "proposed",
+      "detail": "patches/bitbucket-acme-ws-infra-gcp.patch",
+      "terraform": {
+        "root": ".",
+        "address": "google_compute_instance.batch",
+        "file": "main.tf",
+        "block": "google_compute_instance.batch",
+        "patch": "patches/bitbucket-acme-ws-infra-gcp.patch"
+      }
     }
   ]
 }

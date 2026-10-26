@@ -1,9 +1,17 @@
-cloud,scope,type,id,name,tag,action,old,new,route,outcome,detail
-AWS,111122223333,AWS Machine Image (AMI),arn:aws:ec2:us-east-1:111122223333:image/ami-0001,base-2026-09,OwningOrg,ADD,,Platform,terraform,pending,the Terraform route arrives in phase 6
-AWS,111122223333,AWS RDS PostgreSQL Instance,arn:aws:rds:us-east-1:111122223333:db:orders,orders,Environment,UPDATE,production,Production,direct,written,
-AWS,111122223333,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,Brand,UPDATE,"  ",Acme,direct,written,
-AWS,111122223333,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,DeploymentType,ADD,,Manual,direct,written,
-AWS,111122223333,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,Exposure,UPDATE,Public,External,direct,written,
-Azure,00000000-0000-0000-0000-000000000001,Azure Compute Virtual Machine,/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-app/providers/Microsoft.Compute/virtualMachines/vm-app,vm-app,EndpointType,UPDATE,server,Server,direct,written,
-GCP,acme-prod,GCP Compute Instance,//compute.googleapis.com/projects/acme-prod/zones/us-central1-a/instances/batch-1,batch-1,AdminEmail,ADD,,ops@example.com,terraform,pending,the Terraform route arrives in phase 6
-GCP,acme-prod,GCP Compute Instance,//compute.googleapis.com/projects/acme-prod/zones/us-central1-a/instances/batch-1,batch-1,environment,UPDATE,prod,Production,terraform,pending,the Terraform route arrives in phase 6
+cloud,scope,type,id,name,tag,action,old,new,route,outcome,detail,repo,address,file,patch,pull_url
+AWS,111122223333,AWS DynamoDB Table,arn:aws:dynamodb:us-east-1:111122223333:table/audit,audit,OwningOrg,ADD,,Platform,terraform,unroutable,not_allowlisted: GitHub/acme/legacy-infra is not in terraform.allowed_repositories,GitHub/acme/legacy-infra,,,,
+AWS,111122223333,AWS DynamoDB Table,arn:aws:dynamodb:us-east-1:111122223333:table/ledger,ledger,Exposure,UPDATE,public,External,terraform,proposed,patches/github-acme-infra-aws.patch,GitHub/acme/infra-aws,aws_dynamodb_table.ledger,live/prod/main.tf,patches/github-acme-infra-aws.patch,
+AWS,111122223333,AWS EC2 Instance,arn:aws:ec2:us-east-1:111122223333:instance/i-0etl,etl-1,OwningOrg,ADD,,Platform,terraform,unroutable,"unsupported_expression: tags = var.etl_tags, which tagherd does not edit",GitHub/acme/infra-aws,aws_instance.etl,live/prod/main.tf,,
+AWS,111122223333,AWS Lambda Function,arn:aws:lambda:us-east-1:111122223333:function:report-gen,report-gen,OwningOrg,ADD,,Platform,terraform,proposed,patches/github-acme-infra-aws.patch,GitHub/acme/infra-aws,module.reports.aws_lambda_function.this,live/prod/main.tf,patches/github-acme-infra-aws.patch,
+AWS,111122223333,AWS Machine Image (AMI),arn:aws:ec2:us-east-1:111122223333:image/ami-0001,base-2026-09,OwningOrg,ADD,,Platform,terraform,unroutable,"missing_repo_tags: the resource needs SCM, Org and Repo tags",,,,,
+AWS,111122223333,AWS RDS PostgreSQL Instance,arn:aws:rds:us-east-1:111122223333:db:orders,orders,Environment,UPDATE,production,Production,direct,written,,,,,,
+AWS,111122223333,AWS S3 Bucket,arn:aws:s3:::acme-data,acme-data,Brand,ADD,,Acme,terraform,proposed,patches/github-acme-infra-aws.patch,GitHub/acme/infra-aws,aws_s3_bucket.data,live/prod/main.tf,patches/github-acme-infra-aws.patch,
+AWS,111122223333,AWS S3 Bucket,arn:aws:s3:::acme-data,acme-data,Environment,UPDATE,prod,Production,terraform,proposed,patches/github-acme-infra-aws.patch,GitHub/acme/infra-aws,aws_s3_bucket.data,live/prod/main.tf,patches/github-acme-infra-aws.patch,
+AWS,111122223333,AWS S3 Bucket,arn:aws:s3:::acme-data,acme-data,OwningOrg,ADD,,Platform,terraform,proposed,patches/github-acme-infra-aws.patch,GitHub/acme/infra-aws,aws_s3_bucket.data,live/prod/main.tf,patches/github-acme-infra-aws.patch,
+AWS,111122223333,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,Brand,UPDATE,"  ",Acme,direct,written,,,,,,
+AWS,111122223333,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,DeploymentType,ADD,,Manual,direct,written,,,,,,
+AWS,111122223333,AWS S3 Bucket,arn:aws:s3:::acme-logs,acme-logs,Exposure,UPDATE,Public,External,direct,written,,,,,,
+AWS,111122223333,AWS S3 Bucket,arn:aws:s3:::acme-tmp,acme-tmp,OwningOrg,ADD,,Platform,terraform,unroutable,"not_in_state: not in the state of 2 root(s): live/dev, live/prod",GitHub/acme/infra-aws,,,,
+Azure,00000000-0000-0000-0000-000000000001,Azure Compute Virtual Machine,/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-app/providers/Microsoft.Compute/virtualMachines/vm-app,vm-app,EndpointType,UPDATE,server,Server,direct,written,,,,,,
+GCP,acme-prod,GCP Compute Instance,//compute.googleapis.com/projects/acme-prod/zones/us-central1-a/instances/batch-1,batch-1,AdminEmail,ADD,,ops@example.com,terraform,unroutable,"unsupported_expression: Resource Manager tags are bound by google_tags_tag_binding resources, which tagherd does not edit",bitbucket/acme-ws/infra-gcp,google_compute_instance.batch,,,
+GCP,acme-prod,GCP Compute Instance,//compute.googleapis.com/projects/acme-prod/zones/us-central1-a/instances/batch-1,batch-1,environment,UPDATE,prod,Production,terraform,proposed,patches/bitbucket-acme-ws-infra-gcp.patch,bitbucket/acme-ws/infra-gcp,google_compute_instance.batch,main.tf,patches/bitbucket-acme-ws-infra-gcp.patch,

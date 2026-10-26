@@ -16,6 +16,7 @@ import (
 	"github.com/overad9658/tagherd/internal/model"
 	"github.com/overad9658/tagherd/internal/output"
 	"github.com/overad9658/tagherd/internal/provider"
+	"github.com/overad9658/tagherd/internal/terraform"
 )
 
 // defaultAuditLog is where every attempted write is recorded.
@@ -30,14 +31,23 @@ func (a *app) applyCmd() *cobra.Command {
 		verify     bool
 		allowStale bool
 		auditLog   string
+		patchDir   string
 		fixture    string
+		tfFixture  string
 	)
 	cmd := &cobra.Command{
 		Use:   "apply",
 		Short: "Execute a plan: direct tag writes, or Terraform changes",
 		Long: `Execute a plan file made by tagherd plan. Direct changes (Manual resources) are
-written through each cloud's tagging API; Terraform changes arrive in phase 6
-and are listed as not applied.
+written through each cloud's tagging API. Terraform changes (Automation
+resources) are made in code: tagherd finds the repository from the
+resource's SCM, Org and Repo tags, checks it against
+terraform.allowed_repositories, finds the resource's address in a root's
+state (terraform init and show -json, so backend credentials must be
+available), and edits the tags where the code sets them. It writes one patch
+per repository under --patch-dir and, with --pr, pushes a branch and opens a
+pull request. It never runs terraform apply. A change with no place in code
+is reported as unroutable, with a reason.
 
 Before writing, apply checks that the policy has not changed since the plan
 (exit 2 otherwise) and that the plan is under 24 hours old (or
@@ -49,9 +59,9 @@ that changed since the plan is skipped as stale, and one already holding the
 new value is left alone, so applying a plan twice changes nothing. Tags are
 never removed. Every attempt is appended to the audit log.
 
-Exit codes: 0 every change applied or already set; 2 usage, config or policy
-error, a plan that fails the checks, or a cancelled confirmation; 4 at least
-one change failed or was stale.`,
+Exit codes: 0 every change applied, proposed, already set or unroutable; 2
+usage, config or policy error, a plan that fails the checks, or a cancelled
+confirmation; 4 at least one change failed or was stale.`,
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			switch {
@@ -59,8 +69,8 @@ one change failed or was stale.`,
 				return output.Usagef("--plan is required")
 			case only != "" && only != "direct" && only != "terraform":
 				return output.Usagef("--only must be direct or terraform, got %q", only)
-			case only == "terraform" || pr:
-				return output.Usagef("the Terraform route arrives in phase 6; use --only direct")
+			case only == "direct" && pr:
+				return output.Usagef("--pr opens pull requests for Terraform changes; it cannot be used with --only direct")
 			}
 			plan, err := readPlan(planFile)
 			if err != nil {
@@ -75,15 +85,19 @@ one change failed or was stale.`,
 			}
 			plan.Changes = a.applicable(plan.Changes, only)
 
-			direct := 0
+			direct, terraform := 0, 0
 			for _, c := range plan.Changes {
-				if c.Route == model.RouteDirect {
+				switch c.Route {
+				case model.RouteDirect:
 					direct++
+				case model.RouteTerraform:
+					terraform++
 				}
 			}
 			a.confirmSummary(plan)
-			if direct > 0 && !yes {
-				if err := a.confirm(direct); err != nil {
+			// Patch files stay local; only cloud writes and pull requests ask.
+			if (direct > 0 || pr && terraform > 0) && !yes {
+				if err := a.confirm(direct, terraform, pr); err != nil {
 					return err
 				}
 			}
@@ -112,6 +126,14 @@ one change failed or was stale.`,
 			defer func() { _ = audit.Close() }()
 
 			opts := apply.Options{Providers: ps, Concurrency: a.g.concurrency, Audit: audit, Log: a.log}
+			if terraform > 0 && only != "direct" {
+				router, cleanup, err := a.terraformRouter(pr, patchDir, tfFixture)
+				if err != nil {
+					return err
+				}
+				defer cleanup()
+				opts.Terraform = router
+			}
 			rep := apply.Run(cmd.Context(), plan, opts)
 			if verify {
 				findings, warnings := apply.Verify(cmd.Context(), set, rep, opts)
@@ -139,12 +161,15 @@ one change failed or was stale.`,
 	f.StringVar(&planFile, "plan", "", "the plan file to execute (required)")
 	f.BoolVar(&yes, "yes", false, "skip the confirmation prompt (required without a terminal)")
 	f.StringVar(&only, "only", "", "execute one write path only: direct or terraform")
-	f.BoolVar(&pr, "pr", false, "open pull requests for Terraform changes (phase 6)")
+	f.BoolVar(&pr, "pr", false, "push a branch and open a pull request per repository, besides the patch files")
 	f.BoolVar(&verify, "verify", false, "re-read changed resources afterwards and report any still non-compliant")
 	f.BoolVar(&allowStale, "allow-stale", false, "accept a plan more than 24 hours old (never a policy change)")
 	f.StringVar(&auditLog, "audit-log", defaultAuditLog, "file every attempted write is appended to")
+	f.StringVar(&patchDir, "patch-dir", "patches", "directory Terraform patch files are written to, one per repository")
 	f.StringVar(&fixture, "fixture", "", "apply to a fake-provider YAML fixture instead of the clouds (testing)")
+	f.StringVar(&tfFixture, "terraform-fixture", "", "serve repositories, state and pull requests from a fixture directory (testing)")
 	_ = f.MarkHidden("fixture")
+	_ = f.MarkHidden("terraform-fixture")
 	return cmd
 }
 
@@ -167,7 +192,8 @@ func readPlan(path string) (model.Plan, error) {
 func (a *app) applicable(cs []model.Change, only string) []model.Change {
 	var out []model.Change
 	for _, c := range cs {
-		if !a.wantCloud(c.Cloud) || (only == "direct" && c.Route != model.RouteDirect) {
+		if !a.wantCloud(c.Cloud) || (only == "direct" && c.Route != model.RouteDirect) ||
+			(only == "terraform" && c.Route != model.RouteTerraform) {
 			continue
 		}
 		out = append(out, c)
@@ -210,12 +236,47 @@ func (a *app) confirmSummary(p model.Plan) {
 	_, _ = fmt.Fprintln(a.stderr)
 }
 
+// terraformRouter builds the Terraform route from the config. A fixture
+// directory replaces the SCMs, Terraform and the pull request APIs.
+func (a *app) terraformRouter(pr bool, patchDir, fixture string) (*terraform.Router, func(), error) {
+	tf := a.cfg.Terraform
+	opts := terraform.Options{
+		Allowed: tf.AllowedRepositories, Tokens: tf.SCMTokens, BranchPrefix: tf.PullRequests.BranchPrefix,
+		PullRequests: pr, PatchDir: patchDir, Concurrency: a.g.concurrency, Log: a.log,
+		States: terraform.CLI{Registries: tf.ModuleRegistries},
+	}
+	for path, name := range a.cfg.Unset {
+		if strings.HasPrefix(path, "terraform.") {
+			a.log.Warn("Terraform setting is empty because its variable is not set", "setting", path, "variable", name)
+		}
+	}
+	cleanup := func() {}
+	if fixture != "" {
+		work, err := os.MkdirTemp("", "tagherd-fixture-")
+		if err != nil {
+			return nil, nil, err
+		}
+		cleanup = func() { _ = os.RemoveAll(work) }
+		f := &terraform.Fixture{Dir: fixture, Work: work}
+		opts.RemoteURL, opts.States, opts.Pulls = f.RemoteURL, f, f
+	}
+	return terraform.New(opts), cleanup, nil
+}
+
 // confirm asks for "yes" on a terminal.
-func (a *app) confirm(direct int) error {
+func (a *app) confirm(direct, terraform int, pr bool) error {
 	if !isTerminal(a.stdin) {
 		return output.Usagef("stdin is not a terminal: pass --yes to apply without confirmation")
 	}
-	_, _ = fmt.Fprintf(a.stderr, "Write %d direct change(s)? Type yes to continue: ", direct)
+	var parts []string
+	if direct > 0 {
+		parts = append(parts, fmt.Sprintf("write %d direct change(s)", direct))
+	}
+	if pr && terraform > 0 {
+		parts = append(parts, fmt.Sprintf("open pull requests for %d Terraform change(s)", terraform))
+	}
+	q := strings.Join(parts, " and ")
+	_, _ = fmt.Fprintf(a.stderr, "%s%s? Type yes to continue: ", strings.ToUpper(q[:1]), q[1:])
 	line, _ := bufio.NewReader(a.stdin).ReadString('\n')
 	if strings.TrimSpace(line) != "yes" {
 		return output.Usagef("cancelled; nothing was written")

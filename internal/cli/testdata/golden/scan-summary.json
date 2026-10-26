@@ -1,19 +1,19 @@
 {
   "summary": {
     "resources": {
-      "discovered": 14,
+      "discovered": 20,
       "out_of_scope": 1,
       "filtered": 1,
       "not_taggable": 1,
-      "evaluated": 11,
+      "evaluated": 17,
       "compliant": 4
     },
     "compliance": {
       "overall": {
         "key": "all",
-        "evaluated": 11,
+        "evaluated": 17,
         "compliant": 4,
-        "percent": 36.4
+        "percent": 23.5
       },
       "by_group": [
         {
@@ -24,35 +24,35 @@
         },
         {
           "key": "Compute (only machines)",
-          "evaluated": 3,
+          "evaluated": 4,
           "compliant": 0,
           "percent": 0
         },
         {
           "key": "Compute (w/o machines and machine images)",
-          "evaluated": 2,
+          "evaluated": 3,
           "compliant": 1,
-          "percent": 50
+          "percent": 33.3
         },
         {
           "key": "Database",
-          "evaluated": 2,
+          "evaluated": 4,
           "compliant": 1,
-          "percent": 50
+          "percent": 25
         },
         {
           "key": "Storage",
-          "evaluated": 2,
+          "evaluated": 4,
           "compliant": 1,
-          "percent": 50
+          "percent": 25
         }
       ],
       "by_cloud": [
         {
           "key": "AWS",
-          "evaluated": 7,
+          "evaluated": 13,
           "compliant": 2,
-          "percent": 28.6
+          "percent": 15.4
         },
         {
           "key": "Azure",
@@ -71,9 +71,9 @@
         {
           "key": "111122223333",
           "cloud": "AWS",
-          "evaluated": 7,
+          "evaluated": 13,
           "compliant": 2,
-          "percent": 28.6
+          "percent": 15.4
         },
         {
           "key": "00000000-0000-0000-0000-000000000001",
@@ -93,20 +93,20 @@
     },
     "findings_by_tag": {
       "AdminEmail": 2,
-      "Brand": 2,
+      "Brand": 3,
       "DeploymentType": 2,
       "EndpointType": 1,
-      "Environment": 3,
-      "Exposure": 1,
-      "OwningOrg": 1
+      "Environment": 4,
+      "Exposure": 2,
+      "OwningOrg": 6
     },
     "findings_by_code": {
       "CASE_MISMATCH": 3,
       "DUPLICATE_KEY": 1,
       "EMPTY_VALUE": 1,
       "INVALID_DEPLOYMENT_TYPE": 1,
-      "INVALID_VALUE": 3,
-      "MISSING_TAG": 3,
+      "INVALID_VALUE": 5,
+      "MISSING_TAG": 9,
       "NOT_TAGGABLE": 1,
       "UNMAPPED_TYPE": 30
     },

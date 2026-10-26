@@ -84,7 +84,7 @@ func TestScanExitCodes(t *testing.T) {
 		{"fail-on missing: azure has only a case mismatch", []string{"--cloud", "azure", "--fail-on", "missing"}, output.ExitOK},
 		{"fail-on invalid", []string{"--cloud", "azure", "--fail-on", "invalid"}, output.ExitFindings},
 		{"not taggable and unmapped never fail", []string{"--account", "111*", "--type", "AWS IAM AWS Managed Policy"}, output.ExitOK},
-		{"compliant scope", []string{"--cloud", "aws", "--account", "111*", "--group", "database", "--type", "*dynamodb*"}, output.ExitOK},
+		{"compliant scope", []string{"--cloud", "gcp", "--project", "acme-*", "--group", "storage", "--type", "GCP Bucket"}, output.ExitOK},
 		{"bad fail-on", []string{"--fail-on", "some"}, output.ExitUsage},
 		{"unknown group", []string{"--group", "nope"}, output.ExitUsage},
 	}

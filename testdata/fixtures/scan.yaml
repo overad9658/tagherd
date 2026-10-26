@@ -126,6 +126,108 @@ scopes:
         region: us-east-1
         tags: {DeploymentType: Automation, OwningOrg: Platform}
 
+      # Terraform route, in github/acme/infra-aws (../terraform). A literal
+      # tags map: Brand and OwningOrg missing, Environment invalid.
+      - native_type: AWS::S3::Bucket
+        id: arn:aws:s3:::acme-data
+        name: acme-data
+        region: us-east-1
+        tags:
+          Environment: prod
+          DeploymentType: Automation
+          AppCategory: Data
+          Exposure: Internal
+          AdminEmail: data@example.com
+          DataClassification: Internal
+          SCM: GitHub
+          Org: acme
+          Repo: infra-aws
+
+      # merge(local.common_tags, {...}): Exposure invalid.
+      - native_type: AWS::DynamoDB::Table
+        id: arn:aws:dynamodb:us-east-1:111122223333:table/ledger
+        name: ledger
+        region: us-east-1
+        tags:
+          Environment: Production
+          DeploymentType: Automation
+          Brand: Acme
+          AppCategory: Payments
+          Exposure: public
+          AdminEmail: dba@example.com
+          OwningOrg: Platform
+          DataClassification: Internal
+          SCM: GitHub
+          Org: acme
+          Repo: infra-aws
+
+      # Inside module.reports: the edit goes at the module call.
+      - native_type: AWS::Lambda::Function
+        id: arn:aws:lambda:us-east-1:111122223333:function:report-gen
+        name: report-gen
+        region: us-east-1
+        tags:
+          Environment: Production
+          DeploymentType: Automation
+          Brand: Acme
+          AppCategory: Reporting
+          Exposure: Internal
+          AdminEmail: reports@example.com
+          SCM: GitHub
+          Org: acme
+          Repo: infra-aws
+
+      # Tags from var.etl_tags: unsupported_expression.
+      - native_type: AWS::EC2::Instance
+        id: arn:aws:ec2:us-east-1:111122223333:instance/i-0etl
+        name: etl-1
+        region: us-east-1
+        tags:
+          Environment: Production
+          DeploymentType: Automation
+          Brand: Acme
+          AppCategory: Data
+          Exposure: Internal
+          AdminEmail: data@example.com
+          EndpointType: Server
+          SCM: GitHub
+          Org: acme
+          Repo: infra-aws
+
+      # In an allowlisted repository but not in its state: not_in_state.
+      - native_type: AWS::S3::Bucket
+        id: arn:aws:s3:::acme-tmp
+        name: acme-tmp
+        region: us-east-1
+        tags:
+          Environment: Production
+          DeploymentType: Automation
+          Brand: Acme
+          AppCategory: Data
+          Exposure: Internal
+          AdminEmail: data@example.com
+          DataClassification: Internal
+          SCM: GitHub
+          Org: acme
+          Repo: infra-aws
+
+      # A repository outside the allowlist: not_allowlisted.
+      - native_type: AWS::DynamoDB::Table
+        id: arn:aws:dynamodb:us-east-1:111122223333:table/audit
+        name: audit
+        region: us-east-1
+        tags:
+          Environment: Production
+          DeploymentType: Automation
+          Brand: Acme
+          AppCategory: Payments
+          Exposure: Internal
+          AdminEmail: dba@example.com
+          DataClassification: Internal
+          SCM: GitHub
+          Org: acme
+          Repo: legacy-infra
+
   # Unreadable: the scan reports it and exits 3.
   - cloud: AWS
     id: "444455556666"
@@ -189,7 +291,8 @@ scopes:
         rm_tags:
           AdminEmail: web@example.com
 
-      # INVALID_VALUE (prod is not in the dictionary) and a missing AdminEmail.
+      # INVALID_VALUE (prod is not in the dictionary) and a missing AdminEmail;
+      # Terraform route, in bitbucket/acme-ws/infra-gcp.
       - native_type: compute.googleapis.com/Instance
         id: //compute.googleapis.com/projects/acme-prod/zones/us-central1-a/instances/batch-1
         name: batch-1
@@ -202,3 +305,6 @@ scopes:
           exposure: internal
           owningorg: platform
           endpointtype: server
+          scm: bitbucket
+          org: acme-ws
+          repo: infra-gcp

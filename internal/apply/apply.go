@@ -1,7 +1,8 @@
-// Package apply executes a plan's direct changes through each cloud's tag
-// writer. It checks every change against the tag found just before the
-// write, enforces the cloud's tag limits, never removes a tag, and records
-// every attempt in the audit log. One failure never stops the others.
+// Package apply executes a plan. Direct changes go through each cloud's
+// tag writer: every change is checked against the tag found just before the
+// write, the cloud's tag limits are enforced, and no tag is ever removed.
+// Terraform changes go to a TerraformRunner. Every attempt is recorded in
+// the audit log, and one failure never stops the others.
 package apply
 
 import (
@@ -49,13 +50,22 @@ type Options struct {
 	Providers   map[model.Cloud]provider.Provider
 	Concurrency int       // scopes written in parallel
 	Audit       io.Writer // receives one JSON line per attempted change
-	Now         func() time.Time
-	Log         *slog.Logger
+	// Terraform makes the Terraform changes; nil leaves them pending.
+	Terraform TerraformRunner
+	Now       func() time.Time
+	Log       *slog.Logger
 }
 
-// Run applies the plan's direct changes. Terraform changes are reported as
-// pending, and unwritable or unroutable ones as skipped. Results keep the
-// plan's order.
+// TerraformRunner makes Terraform changes, returning one result per change
+// in order, and names who made them.
+type TerraformRunner interface {
+	Run(ctx context.Context, planID string, cs []model.Change) []model.ChangeResult
+	Actor() string
+}
+
+// Run applies the plan's direct changes and, with opts.Terraform, its
+// Terraform changes; without it they are pending. Unwritable changes are
+// skipped. Results keep the plan's order.
 func Run(ctx context.Context, p model.Plan, opts Options) model.ApplyReport {
 	if opts.Now == nil {
 		opts.Now = time.Now
@@ -70,6 +80,7 @@ func Run(ctx context.Context, p model.Plan, opts Options) model.ApplyReport {
 
 	byScope := map[scopeKey][]int{}
 	var order []scopeKey
+	var terraform []int
 	for i, c := range p.Changes {
 		r.results[i] = model.ChangeResult{Change: c}
 		switch c.Route {
@@ -80,7 +91,11 @@ func Run(ctx context.Context, p model.Plan, opts Options) model.ApplyReport {
 			}
 			byScope[k] = append(byScope[k], i)
 		case model.RouteTerraform:
-			r.set(i, model.OutcomePending, "the Terraform route arrives in phase 6")
+			if opts.Terraform == nil {
+				r.set(i, model.OutcomePending, "not run: --only direct")
+			} else {
+				terraform = append(terraform, i)
+			}
 		case model.RouteUnwritable:
 			r.set(i, model.OutcomeSkipped, "this type is scanned but not written")
 		default:
@@ -88,8 +103,15 @@ func Run(ctx context.Context, p model.Plan, opts Options) model.ApplyReport {
 		}
 	}
 
-	sem := make(chan struct{}, max(opts.Concurrency, 1))
 	var wg sync.WaitGroup
+	if len(terraform) > 0 {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			r.terraform(ctx, terraform)
+		}()
+	}
+	sem := make(chan struct{}, max(opts.Concurrency, 1))
 	for _, k := range order {
 		wg.Add(1)
 		go func() {
@@ -124,6 +146,28 @@ func (r *run) set(i int, o model.Outcome, detail string) {
 	r.results[i].Outcome, r.results[i].Detail = o, detail
 }
 
+// terraform runs the Terraform changes. Edits in code are attempts and are
+// logged; unroutable changes are not.
+func (r *run) terraform(ctx context.Context, idx []int) {
+	cs := make([]model.Change, len(idx))
+	for j, i := range idx {
+		cs[j] = r.results[i].Change
+	}
+	results := r.opts.Terraform.Run(ctx, r.plan.ID, cs)
+	actor := r.opts.Terraform.Actor()
+	for j, i := range idx {
+		res := results[j]
+		r.results[i].Terraform = res.Terraform
+		if res.Outcome == model.OutcomeUnroutable {
+			r.mu.Lock()
+			r.set(i, res.Outcome, res.Detail)
+			r.mu.Unlock()
+			continue
+		}
+		r.record(i, actor, res.Old, res.Outcome, res.Detail)
+	}
+}
+
 // record sets an attempted change's outcome and appends its audit line.
 func (r *run) record(i int, actor, old string, o model.Outcome, detail string) {
 	r.mu.Lock()
@@ -133,7 +177,7 @@ func (r *run) record(i int, actor, old string, o model.Outcome, detail string) {
 	line, err := json.Marshal(model.AuditRecord{
 		Time: r.opts.Now().UTC(), PlanID: r.plan.ID, Actor: actor,
 		Cloud: c.Cloud, Scope: c.Scope, ResourceID: c.ResourceID, Type: c.Type,
-		Tag: c.Tag, Kind: c.Kind, Old: old, New: c.New, Rule: c.Rule, Outcome: o, Detail: detail,
+		Tag: c.Tag, Kind: c.Kind, Route: c.Route, Old: old, New: c.New, Rule: c.Rule, Outcome: o, Detail: detail,
 	})
 	if err == nil {
 		_, err = r.opts.Audit.Write(append(line, '\n'))

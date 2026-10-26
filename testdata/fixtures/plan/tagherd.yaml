@@ -6,3 +6,7 @@ policy_dir: ../../../policy
 ownership_file: ownership.yaml
 defaults_file: defaults.yaml
 synonyms_file: synonyms.yaml
+terraform:
+  allowed_repositories:
+    - { scm: GitHub, org: acme, repo: "infra-*" }
+    - { scm: BitBucket, org: acme-ws, repo: "*" }
