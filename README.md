@@ -44,6 +44,30 @@ make test       # go test -race ./...
 make validate   # build, then validate ./policy
 ```
 
+## Releases
+
+Each push to `main` runs CI, then
+[semantic-release](https://semantic-release.gitbook.io) picks the next
+version from the commit messages since the last tag, which must follow
+[Conventional Commits](https://www.conventionalcommits.org): `fix:` makes a
+patch release, `feat:` a minor one, and `feat!:` or a `BREAKING CHANGE:`
+footer a major one. Other types (`docs:`, `chore:`, `ci:`, ...) release
+nothing. A release is tagged `v<version>` and gets:
+
+- Binaries for Linux, macOS and Windows (amd64 and arm64), with
+  `checksums.txt`, on the GitHub release
+- A container image in GitHub Packages, `ghcr.io/overad9658/tagherd`, tagged
+  `<version>`, `<major>.<minor>` and `<major>`, with the repository's policy
+  at `/work/policy`
+
+```bash
+docker run --rm -v "$PWD/tagherd.yaml:/work/tagherd.yaml" \
+  ghcr.io/overad9658/tagherd:1 scan --summary
+```
+
+The image has `git` for the Terraform route but not `terraform`; build on it
+to add the version your state needs.
+
 ## Usage
 
 ```bash
