@@ -39,6 +39,14 @@
         ],
         "GCP": [
             "GCP Project"
+        ],
+        "OCI": [
+            "OCI Compartment",
+            "OCI Resource Manager Stack",
+            "OCI Monitoring Alarm",
+            "OCI Logging Log Group",
+            "OCI Events Rule",
+            "OCI Block Volume Backup Policy"
         ]
     },
     "filters": {

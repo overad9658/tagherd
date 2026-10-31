@@ -173,7 +173,7 @@ func Parse(data []byte) (*Catalog, error) {
 	var errs []error
 	for _, e := range entries {
 		if !slices.Contains(model.Clouds, e.Cloud) {
-			errs = append(errs, fmt.Errorf("%q: cloud must be AWS, Azure or GCP", e.Display))
+			errs = append(errs, fmt.Errorf("%q: cloud must be AWS, Azure, GCP or OCI", e.Display))
 		}
 		if !strings.HasPrefix(e.Display, e.Cloud.Prefix()) {
 			errs = append(errs, fmt.Errorf("%q: display name must start with %q", e.Display, e.Cloud.Prefix()))

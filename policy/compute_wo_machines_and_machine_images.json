@@ -34,6 +34,11 @@
         "GCP": [
             "GCP Cloud Function",
             "GCP Compute Instance Template"
+        ],
+        "OCI": [
+            "OCI Functions Application",
+            "OCI Functions Function",
+            "OCI Compute Instance Configuration"
         ]
     },
     "filters": {

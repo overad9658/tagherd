@@ -16,6 +16,12 @@
             "AWS CodeDeploy Deployment Group"
         ],
         "Azure": [],
-        "GCP": []
+        "GCP": [],
+        "OCI": [
+            "OCI DevOps Project",
+            "OCI DevOps Build Pipeline",
+            "OCI DevOps Deploy Pipeline",
+            "OCI DevOps Code Repository"
+        ]
     }
 }

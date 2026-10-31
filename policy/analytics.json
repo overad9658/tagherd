@@ -23,6 +23,14 @@
         "Azure": [
             "Azure Application Insights"
         ],
-        "GCP": []
+        "GCP": [],
+        "OCI": [
+            "OCI Data Integration Workspace",
+            "OCI Data Flow Application",
+            "OCI Streaming Stream",
+            "OCI Search with OpenSearch Cluster",
+            "OCI Analytics Cloud Instance",
+            "OCI APM Domain"
+        ]
     }
 }

@@ -14,19 +14,20 @@ const (
 	AWS   Cloud = "AWS"
 	Azure Cloud = "Azure"
 	GCP   Cloud = "GCP"
+	OCI   Cloud = "OCI"
 )
 
 // Clouds lists every supported cloud in display order.
-var Clouds = []Cloud{AWS, Azure, GCP}
+var Clouds = []Cloud{AWS, Azure, GCP, OCI}
 
-// ParseCloud accepts a cloud name in any case ("aws", "Azure", "GCP").
+// ParseCloud accepts a cloud name in any case ("aws", "Azure", "GCP", "oci").
 func ParseCloud(s string) (Cloud, error) {
 	for _, c := range Clouds {
 		if strings.EqualFold(s, string(c)) {
 			return c, nil
 		}
 	}
-	return "", fmt.Errorf("unknown cloud %q (want aws, azure or gcp)", s)
+	return "", fmt.Errorf("unknown cloud %q (want aws, azure, gcp or oci)", s)
 }
 
 // Prefix is the word every display name for this cloud starts with, plus a space.

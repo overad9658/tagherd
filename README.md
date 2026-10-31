@@ -29,6 +29,10 @@ All seven phases are implemented:
 - The Wiz override for machine images: the AMI group's graph query runs
   through the Wiz API, with a safe fallback when Wiz is not available
 
+OCI (Oracle Cloud) is in the policy and the type catalog. It has no
+discovery adapter or tag writer yet, so its types are listed by
+`tagherd catalog --gaps`.
+
 The adapters are unit-tested against stubs, and the Terraform route against
 local git repositories; none has yet run against real accounts or SCMs (the
 pilot in the backlog). The same goes for the Wiz client, which is tested

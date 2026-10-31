@@ -29,6 +29,11 @@
         "GCP": [
             "GCP Cloud Run Service",
             "GCP Kubernetes Engine (GKE) Cluster"
+        ],
+        "OCI": [
+            "OCI Kubernetes Engine (OKE) Cluster",
+            "OCI Container Instance",
+            "OCI Compute Instance Pool"
         ]
     }
 }

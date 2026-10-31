@@ -49,7 +49,7 @@ func TestParseRejects(t *testing.T) {
 		"missing taggable": {`- {display: "AWS X", cloud: AWS, native_type: "AWS::X"}`, "taggable is required"},
 		"bad taggable":     {`- {display: "AWS X", cloud: AWS, native_type: "AWS::X", taggable: maybe}`, "taggable must be"},
 		"wrong prefix":     {`- {display: "Azure X", cloud: AWS, native_type: "AWS::X", taggable: true}`, "must start with"},
-		"unknown cloud":    {`- {display: "OCI X", cloud: OCI, native_type: "X", taggable: true}`, "cloud must be"},
+		"unknown cloud":    {`- {display: "IBM X", cloud: IBM, native_type: "X", taggable: true}`, "cloud must be"},
 		"no native type":   {`- {display: "AWS X", cloud: AWS, taggable: true}`, "native_type is required"},
 		"unknown field":    {`- {display: "AWS X", cloud: AWS, native_type: "AWS::X", taggable: true, colour: red}`, "colour"},
 		"dangling alias":   {`- {display: "AWS X", cloud: AWS, alias_of: "AWS Y", taggable: true}`, "not in the catalog"},

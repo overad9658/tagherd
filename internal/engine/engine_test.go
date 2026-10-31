@@ -14,12 +14,12 @@ import (
 var testPolicy = fstest.MapFS{
 	"tags.json": {Data: []byte(`{"Environment": ["Production", "Staging"], "DeploymentType": ["Manual", "Automation"], "OwningOrg": ["ITOps"], "AdminEmail": null}`)},
 	"a.json": {Data: []byte(`{"name": "A", "description": "a", "tags": ["Environment"],
-		"target": {"AWS": ["AWS DynamoDB Table", "AWS Lambda Function"], "Azure": [], "GCP": []},
+		"target": {"AWS": ["AWS DynamoDB Table", "AWS Lambda Function"], "Azure": [], "GCP": [], "OCI": []},
 		"filters": {"AWS": {"name": {"DOES_NOT_CONTAIN": ["controltower"]}}}}`)},
 	"b.json": {Data: []byte(`{"name": "B", "description": "b", "tags": ["DeploymentType"],
-		"target": {"AWS": ["AWS DynamoDB Table"], "Azure": [], "GCP": []}}`)},
+		"target": {"AWS": ["AWS DynamoDB Table"], "Azure": [], "GCP": [], "OCI": []}}`)},
 	"img.json": {Data: []byte(`{"name": "Images", "description": "i", "tags": ["OwningOrg", "AdminEmail"],
-		"target": {"AWS": ["AWS Machine Image (AMI)", "AWS IAM AWS Managed Policy"], "Azure": [], "GCP": []},
+		"target": {"AWS": ["AWS Machine Image (AMI)", "AWS IAM AWS Managed Policy"], "Azure": [], "GCP": [], "OCI": []},
 		"override": {"AWS": {"all": null, "missing": {"type": ["VIRTUAL_MACHINE_IMAGE"]}}}}`)},
 }
 

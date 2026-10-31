@@ -98,8 +98,8 @@ func validateSummary(r validateResult, infos int) string {
 	if !r.Valid {
 		status = "INVALID"
 	}
-	s := fmt.Sprintf("Policy %s: %d groups, %d AWS / %d Azure / %d GCP types; %d errors, %d warnings, %d info.",
-		status, r.Groups, r.Types[model.AWS], r.Types[model.Azure], r.Types[model.GCP], r.Errors, r.Warnings, infos)
+	s := fmt.Sprintf("Policy %s: %d groups, %d AWS / %d Azure / %d GCP / %d OCI types; %d errors, %d warnings, %d info.",
+		status, r.Groups, r.Types[model.AWS], r.Types[model.Azure], r.Types[model.GCP], r.Types[model.OCI], r.Errors, r.Warnings, infos)
 	if r.Hash != "" {
 		s += " Hash " + r.Hash[:12] + "."
 	}
@@ -131,7 +131,7 @@ func (a *app) policyListCmd() *cobra.Command {
 				return output.Usagef("--group: %v", err)
 			}
 			var data []groupSummary
-			rows := output.Rows{Headers: []string{"GROUP", "FILE", "TAGS", "AWS", "AZURE", "GCP"}}
+			rows := output.Rows{Headers: []string{"GROUP", "FILE", "TAGS", "AWS", "AZURE", "GCP", "OCI"}}
 			for _, g := range groups {
 				s := groupSummary{
 					Name: g.Name, File: g.File, Description: g.Description, Tags: g.TagNames,

@@ -16,6 +16,9 @@
             "AWS DB Instance Snapshot"
         ],        
         "Azure": [],
-        "GCP": []
+        "GCP": [],
+        "OCI": [
+            "OCI MySQL HeatWave Backup"
+        ]
     }
 }

@@ -48,6 +48,20 @@
             "GCP Secret",
             "GCP Cloud KMS Crypto Key",
             "GCP KMS Key"
+        ],
+        "OCI": [
+            "OCI IAM User",
+            "OCI IAM Group",
+            "OCI IAM Dynamic Group",
+            "OCI IAM Policy",
+            "OCI Vault",
+            "OCI Vault Key",
+            "OCI Vault Secret",
+            "OCI Certificate",
+            "OCI Cloud Guard Target",
+            "OCI Bastion",
+            "OCI Email Delivery Domain",
+            "OCI Email Delivery Approved Sender"
         ]
     }
 }
