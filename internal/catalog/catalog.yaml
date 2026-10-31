@@ -2,6 +2,7 @@
 #
 # native_type  AWS: CloudFormation / AWS Config type. Azure: ARM type, lower case
 #              as Resource Graph returns it. GCP: Cloud Asset Inventory asset type.
+#              OCI: Search Service resource type.
 #              A type with no provider equivalent uses a descriptive placeholder
 #              and is marked taggable: false.
 # match        Attribute predicates, required when entries share a native type.
@@ -305,3 +306,92 @@
 - {display: "GCP Vertex AI Workbench Instance", cloud: GCP, native_type: "notebooks.googleapis.com/Instance", match: {workbench_version: v2}, taggable: true}
 - {display: "GCP Vertex AI Workbench Managed Notebook", cloud: GCP, native_type: "notebooks.googleapis.com/Runtime", taggable: true}
 - {display: "GCP Vertex AI Workbench User Managed Notebook", cloud: GCP, native_type: "notebooks.googleapis.com/Instance", match: {workbench_version: v1}, taggable: true}
+
+# ---------------------------------------------------------------- OCI
+# No OCI discovery adapter yet: every entry is discovery: none, and the native
+# types and taggability are to be confirmed when the adapter is written.
+- {display: "OCI API Gateway", cloud: OCI, native_type: "ApiGateway", discovery: none, taggable: true}
+- {display: "OCI APM Domain", cloud: OCI, native_type: "ApmDomain", discovery: none, taggable: true}
+- {display: "OCI Analytics Cloud Instance", cloud: OCI, native_type: "AnalyticsInstance", discovery: none, taggable: true}
+- {display: "OCI Artifact Registry Repository", cloud: OCI, native_type: "ArtifactRepository", discovery: none, taggable: true}
+- {display: "OCI Autonomous Database", cloud: OCI, native_type: "AutonomousDatabase", discovery: none, taggable: true}
+- {display: "OCI Base Database DB System", cloud: OCI, native_type: "DbSystem", discovery: none, taggable: true}
+- {display: "OCI Bastion", cloud: OCI, native_type: "Bastion", discovery: none, taggable: true}
+- {display: "OCI Block Volume", cloud: OCI, native_type: "Volume", discovery: none, taggable: true}
+- {display: "OCI Block Volume Backup", cloud: OCI, native_type: "VolumeBackup", discovery: none, taggable: true}
+- {display: "OCI Block Volume Backup Policy", cloud: OCI, native_type: "VolumeBackupPolicy", discovery: none, taggable: true}
+- {display: "OCI Boot Volume", cloud: OCI, native_type: "BootVolume", discovery: none, taggable: true}
+- {display: "OCI Boot Volume Backup", cloud: OCI, native_type: "BootVolumeBackup", discovery: none, taggable: true}
+- {display: "OCI Cache Cluster", cloud: OCI, native_type: "RedisCluster", discovery: none, taggable: true}
+- {display: "OCI Certificate", cloud: OCI, native_type: "Certificate", discovery: none, taggable: true}
+- {display: "OCI Cloud Guard Target", cloud: OCI, native_type: "CloudGuardTarget", discovery: none, taggable: true}
+- {display: "OCI Compartment", cloud: OCI, native_type: "Compartment", discovery: none, taggable: true, note: "The root compartment is the tenancy; updates go to the home region"}
+- {display: "OCI Compute Image", cloud: OCI, native_type: "Image", discovery: none, taggable: true}
+- {display: "OCI Compute Instance", cloud: OCI, native_type: "Instance", discovery: none, taggable: true}
+- {display: "OCI Compute Instance Configuration", cloud: OCI, native_type: "InstanceConfiguration", discovery: none, taggable: true}
+- {display: "OCI Compute Instance Pool", cloud: OCI, native_type: "InstancePool", discovery: none, taggable: true, note: "Pool members are OCI Compute Instances with their own tags"}
+- {display: "OCI Connector Hub Connector", cloud: OCI, native_type: "ServiceConnector", discovery: none, taggable: true}
+- {display: "OCI Container Instance", cloud: OCI, native_type: "ContainerInstance", discovery: none, taggable: true}
+- {display: "OCI Container Registry Repository", cloud: OCI, native_type: "ContainerRepo", discovery: none, taggable: true}
+- {display: "OCI Customer-Premises Equipment (CPE)", cloud: OCI, native_type: "Cpe", discovery: none, taggable: true}
+- {display: "OCI DNS Zone", cloud: OCI, native_type: "CustomerDnsZone", discovery: none, taggable: true}
+- {display: "OCI Data Flow Application", cloud: OCI, native_type: "DataFlowApplication", discovery: none, taggable: true}
+- {display: "OCI Data Integration Workspace", cloud: OCI, native_type: "DISWorkspace", discovery: none, taggable: true}
+- {display: "OCI Data Science Job", cloud: OCI, native_type: "DataScienceJob", discovery: none, taggable: true}
+- {display: "OCI Data Science Model", cloud: OCI, native_type: "DataScienceModel", discovery: none, taggable: true}
+- {display: "OCI Data Science Model Deployment", cloud: OCI, native_type: "DataScienceModelDeployment", discovery: none, taggable: true}
+- {display: "OCI Data Science Notebook Session", cloud: OCI, native_type: "DataScienceNotebookSession", discovery: none, taggable: true}
+- {display: "OCI Data Science Pipeline", cloud: OCI, native_type: "DataSciencePipeline", discovery: none, taggable: true}
+- {display: "OCI Data Science Project", cloud: OCI, native_type: "DataScienceProject", discovery: none, taggable: true}
+- {display: "OCI DevOps Build Pipeline", cloud: OCI, native_type: "DevopsBuildPipeline", discovery: none, taggable: true}
+- {display: "OCI DevOps Code Repository", cloud: OCI, native_type: "DevopsRepository", discovery: none, taggable: true}
+- {display: "OCI DevOps Deploy Pipeline", cloud: OCI, native_type: "DevopsDeployPipeline", discovery: none, taggable: true}
+- {display: "OCI DevOps Project", cloud: OCI, native_type: "DevopsProject", discovery: none, taggable: true}
+- {display: "OCI Dynamic Routing Gateway (DRG)", cloud: OCI, native_type: "Drg", discovery: none, taggable: true}
+- {display: "OCI Email Delivery Approved Sender", cloud: OCI, native_type: "EmailSender", discovery: none, taggable: true}
+- {display: "OCI Email Delivery Domain", cloud: OCI, native_type: "EmailDomain", discovery: none, taggable: true}
+- {display: "OCI Events Rule", cloud: OCI, native_type: "EventRule", discovery: none, taggable: true}
+- {display: "OCI Exadata Cloud VM Cluster", cloud: OCI, native_type: "CloudVmCluster", discovery: none, taggable: true}
+- {display: "OCI File Storage File System", cloud: OCI, native_type: "FileSystem", discovery: none, taggable: true}
+- {display: "OCI Functions Application", cloud: OCI, native_type: "FunctionsApplication", discovery: none, taggable: true}
+- {display: "OCI Functions Function", cloud: OCI, native_type: "FunctionsFunction", discovery: none, taggable: true}
+- {display: "OCI Generative AI Dedicated AI Cluster", cloud: OCI, native_type: "GenerativeAiDedicatedAiCluster", discovery: none, taggable: true}
+- {display: "OCI Generative AI Endpoint", cloud: OCI, native_type: "GenerativeAiEndpoint", discovery: none, taggable: true}
+- {display: "OCI IAM Dynamic Group", cloud: OCI, native_type: "DynamicGroup", discovery: none, taggable: partial, note: "In identity-domain tenancies this is a domain (SCIM) object, not an IAM resource"}
+- {display: "OCI IAM Group", cloud: OCI, native_type: "Group", discovery: none, taggable: partial, note: "In identity-domain tenancies this is a domain (SCIM) object, not an IAM resource"}
+- {display: "OCI IAM Policy", cloud: OCI, native_type: "Policy", discovery: none, taggable: true}
+- {display: "OCI IAM User", cloud: OCI, native_type: "User", discovery: none, taggable: partial, note: "In identity-domain tenancies this is a domain (SCIM) object, not an IAM resource"}
+- {display: "OCI Integration Instance", cloud: OCI, native_type: "IntegrationInstance", discovery: none, taggable: true}
+- {display: "OCI Internet Gateway", cloud: OCI, native_type: "InternetGateway", discovery: none, taggable: true}
+- {display: "OCI Kubernetes Engine (OKE) Cluster", cloud: OCI, native_type: "ClustersCluster", discovery: none, taggable: true}
+- {display: "OCI Load Balancer", cloud: OCI, native_type: "LoadBalancer", discovery: none, taggable: true}
+- {display: "OCI Local Peering Gateway", cloud: OCI, native_type: "LocalPeeringGateway", discovery: none, taggable: true}
+- {display: "OCI Logging Log Group", cloud: OCI, native_type: "LogGroup", discovery: none, taggable: true}
+- {display: "OCI Monitoring Alarm", cloud: OCI, native_type: "Alarm", discovery: none, taggable: true}
+- {display: "OCI MySQL HeatWave Backup", cloud: OCI, native_type: "MysqlBackup", discovery: none, taggable: true}
+- {display: "OCI MySQL HeatWave DB System", cloud: OCI, native_type: "MysqlDbSystem", discovery: none, taggable: true}
+- {display: "OCI NAT Gateway", cloud: OCI, native_type: "NatGateway", discovery: none, taggable: true}
+- {display: "OCI Network Firewall", cloud: OCI, native_type: "NetworkFirewall", discovery: none, taggable: true}
+- {display: "OCI Network Load Balancer", cloud: OCI, native_type: "NetworkLoadBalancer", discovery: none, taggable: true}
+- {display: "OCI Network Security Group (NSG)", cloud: OCI, native_type: "NetworkSecurityGroup", discovery: none, taggable: true}
+- {display: "OCI NoSQL Table", cloud: OCI, native_type: "NoSQLTable", discovery: none, taggable: true}
+- {display: "OCI Notifications Subscription", cloud: OCI, native_type: "OnsSubscription", discovery: none, taggable: true}
+- {display: "OCI Notifications Topic", cloud: OCI, native_type: "OnsTopic", discovery: none, taggable: true}
+- {display: "OCI Object Storage Bucket", cloud: OCI, native_type: "Bucket", discovery: none, taggable: true}
+- {display: "OCI PostgreSQL DB System", cloud: OCI, native_type: "PostgresqlDbSystem", discovery: none, taggable: true}
+- {display: "OCI Public IP Address", cloud: OCI, native_type: "PublicIp", discovery: none, taggable: true}
+- {display: "OCI Queue", cloud: OCI, native_type: "Queue", discovery: none, taggable: true}
+- {display: "OCI Resource Manager Stack", cloud: OCI, native_type: "OrmStack", discovery: none, taggable: true}
+- {display: "OCI Route Table", cloud: OCI, native_type: "RouteTable", discovery: none, taggable: true}
+- {display: "OCI Search with OpenSearch Cluster", cloud: OCI, native_type: "OpensearchCluster", discovery: none, taggable: true}
+- {display: "OCI Security List", cloud: OCI, native_type: "SecurityList", discovery: none, taggable: true}
+- {display: "OCI Service Gateway", cloud: OCI, native_type: "ServiceGateway", discovery: none, taggable: true}
+- {display: "OCI Site-to-Site VPN IPSec Connection", cloud: OCI, native_type: "IPSecConnection", discovery: none, taggable: true}
+- {display: "OCI Streaming Stream", cloud: OCI, native_type: "Stream", discovery: none, taggable: true}
+- {display: "OCI VCN Subnet", cloud: OCI, native_type: "Subnet", discovery: none, taggable: true}
+- {display: "OCI VNIC", cloud: OCI, native_type: "Vnic", discovery: none, taggable: true}
+- {display: "OCI Vault", cloud: OCI, native_type: "Vault", discovery: none, taggable: true}
+- {display: "OCI Vault Key", cloud: OCI, native_type: "Key", discovery: none, taggable: true}
+- {display: "OCI Vault Secret", cloud: OCI, native_type: "VaultSecret", discovery: none, taggable: true}
+- {display: "OCI Virtual Cloud Network (VCN)", cloud: OCI, native_type: "Vcn", discovery: none, taggable: true}
+- {display: "OCI Web Application Firewall Policy", cloud: OCI, native_type: "WebAppFirewallPolicy", discovery: none, taggable: true}

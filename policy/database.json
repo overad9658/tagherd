@@ -63,6 +63,15 @@
             "GCP Memorystore Redis Instance",
             "GCP Memorystore Memcache Instance",
             "GCP Spanner Instance"
+        ],
+        "OCI": [
+            "OCI Autonomous Database",
+            "OCI Base Database DB System",
+            "OCI Exadata Cloud VM Cluster",
+            "OCI MySQL HeatWave DB System",
+            "OCI PostgreSQL DB System",
+            "OCI NoSQL Table",
+            "OCI Cache Cluster"
         ]
     }
 }

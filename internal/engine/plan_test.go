@@ -16,11 +16,11 @@ var planPolicy = fstest.MapFS{
 	"tags.json": {Data: []byte(`{"Environment": ["Production", "Staging"], "DeploymentType": ["Manual", "Automation"],
 		"OwningOrg": ["ITOps", "Platform"], "AdminEmail": null, "Brand": null}`)},
 	"db.json": {Data: []byte(`{"name": "Database", "description": "d", "tags": ["Environment", "DeploymentType", "OwningOrg", "AdminEmail", "Brand"],
-		"target": {"AWS": ["AWS DynamoDB Table"], "Azure": ["Azure Compute Virtual Machine"], "GCP": []}}`)},
+		"target": {"AWS": ["AWS DynamoDB Table"], "Azure": ["Azure Compute Virtual Machine"], "GCP": [], "OCI": []}}`)},
 	"compute.json": {Data: []byte(`{"name": "Compute (only machines)", "description": "c", "tags": ["Environment", "DeploymentType", "OwningOrg", "AdminEmail", "Brand"],
-		"target": {"AWS": [], "Azure": [], "GCP": ["GCP Compute Instance", "GCP Compute Instance Template"]}}`)},
+		"target": {"AWS": [], "Azure": [], "GCP": ["GCP Compute Instance", "GCP Compute Instance Template"], "OCI": []}}`)},
 	"sec.json": {Data: []byte(`{"name": "Security", "description": "s", "tags": ["DeploymentType", "Brand"],
-		"target": {"AWS": [], "Azure": [], "GCP": ["GCP Secret Manager Secret"]}}`)},
+		"target": {"AWS": [], "Azure": [], "GCP": ["GCP Secret Manager Secret"], "OCI": []}}`)},
 }
 
 func loadPlanPolicy(t *testing.T) *policy.Set {

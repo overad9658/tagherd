@@ -18,6 +18,10 @@
         ],
         "GCP": [
             "GCP Google Artifact Registry (GAR)"
+        ],
+        "OCI": [
+            "OCI Container Registry Repository",
+            "OCI Artifact Registry Repository"
         ]
     }
 }

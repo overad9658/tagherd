@@ -440,6 +440,21 @@ The policy files have the items below worth fixing or confirming. Only the "Azur
 
 **Notes from loading the files.** All 18 files parse. The counts match this spec: 147 AWS, 80 Azure and 38 GCP types, 265 in total. Every required tag exists in `tags.json`. No type appears in more than one group, so the union rule is not exercised yet. The only prefix error is the "Azure Storage Account" entry listed above.
 
+**OCI targets.** Every group file has an `OCI` list: 85 Oracle Cloud types mapped from the AWS, Azure and GCP equivalents in the same group. OCI has no discovery adapter or tag writer yet, so the catalog marks every OCI type `discovery: none`. They show in `tagherd catalog --gaps`, and a scan reports them as `UNMAPPED_TYPE`. Native types are OCI Search Service resource types, to be confirmed when the adapter is written. Mapping choices worth confirming:
+
+| Group | OCI choice | Why |
+| --- | --- | --- |
+| Management & Governance | Compartment stands in for AWS Account, Azure Subscription and Resource Group, and GCP Project | OCI has one hierarchy; the root compartment is the tenancy, and its updates go to the home region |
+| Management & Governance | Resource Manager Stack, Monitoring Alarm, Logging Log Group, Events Rule, Block Volume Backup Policy | Equivalents of CloudFormation, CloudWatch alarms and log groups, EventBridge and AWS Backup plans |
+| Containers & Kubernetes | Compute Instance Pool stands in for AWS Auto Scaling Group and Azure scale sets | Pool members are ordinary Compute Instances and are checked by "Compute (only machines)" |
+| Compute (only machine images) | Compute Image, no override | OCI images carry their own tags; the AMI override exists because of `ec2#amitags` and has no OCI counterpart |
+| Security, Identity, & Compliance | IAM User, Group and Dynamic Group are `partial` | In identity-domain tenancies they are domain (SCIM) objects, not IAM resources; scan only |
+| Database (only snapshots), Developer Tools | MySQL HeatWave Backup; the four DevOps types | These groups now cover OCI even though Azure and GCP are still empty |
+| Storage | Object Storage Bucket only | AWS Backup Vault and Azure Recovery Services Vault have no OCI equivalent |
+| All groups | No OCI types for AWS Kinesis Video, Athena, SSM, Step Functions, WorkSpaces, Shield, SSH key pairs or Audit | No taggable OCI resource matches |
+
+Filters have no OCI entries. The nearest equivalent of the Control Tower exclusions is Oracle's `ManagedCompartmentForPaaS` compartment, worth a `filters.OCI` entry once OCI is scanned. OCI has freeform and defined tags. Defined tags (namespace.key, with optional list-of-values validation) map best onto `tags.json`, but that is a decision for the writer.
+
 **Decisions**
 
 1. **Override syntax.** tagherd can read the inventory data the machine-image override needs. If it cannot, the AMI group falls back to the default tag test.

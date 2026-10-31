@@ -115,7 +115,7 @@ func Parse(data []byte) (*Env, error) {
 	out := map[model.Cloud]*Provider{}
 	for i, s := range f.Scopes {
 		if !slices.Contains(model.Clouds, s.Cloud) {
-			return nil, fmt.Errorf("fixture: scopes[%d]: cloud must be AWS, Azure or GCP", i)
+			return nil, fmt.Errorf("fixture: scopes[%d]: cloud must be AWS, Azure, GCP or OCI", i)
 		}
 		p := out[s.Cloud]
 		if p == nil {

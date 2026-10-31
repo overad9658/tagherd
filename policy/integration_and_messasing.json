@@ -29,6 +29,13 @@
         "GCP": [
             "GCP Pub/Sub Topic",
             "GCP Pub/Sub Subscription"
+        ],
+        "OCI": [
+            "OCI Notifications Topic",
+            "OCI Notifications Subscription",
+            "OCI Queue",
+            "OCI Connector Hub Connector",
+            "OCI Integration Instance"
         ]
     },
     "filters": {

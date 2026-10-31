@@ -15,6 +15,9 @@
         ],
         "GCP": [
             "GCP Bucket"
+        ],
+        "OCI": [
+            "OCI Object Storage Bucket"
         ]
     }
 }

@@ -63,7 +63,7 @@ func TestValidateRealPolicy(t *testing.T) {
 func TestValidateBrokenPolicy(t *testing.T) {
 	dir := t.TempDir()
 	write(t, dir, "tags.json", `{"DeploymentType": ["Manual", "Automation"]}`)
-	write(t, dir, "g.json", `{"name": "G", "description": "x", "tags": ["Owner"], "target": {"AWS": [], "Azure": [], "GCP": []}}`)
+	write(t, dir, "g.json", `{"name": "G", "description": "x", "tags": ["Owner"], "target": {"AWS": [], "Azure": [], "GCP": [], "OCI": []}}`)
 	r := run(t, nil, "policy", "validate", "--policy-dir", dir, "-o", "table")
 	if r.code != output.ExitUsage {
 		t.Fatalf("exit %d, want 2", r.code)
@@ -146,7 +146,7 @@ func TestCatalog(t *testing.T) {
 	if !strings.Contains(r.stdout, ",list:ec2,") {
 		t.Errorf("discovery column: %s", r.stdout)
 	}
-	if r := run(t, nil, "catalog", "--cloud", "oci"); r.code != output.ExitUsage {
+	if r := run(t, nil, "catalog", "--cloud", "ibm"); r.code != output.ExitUsage {
 		t.Errorf("bad --cloud: exit %d", r.code)
 	}
 }

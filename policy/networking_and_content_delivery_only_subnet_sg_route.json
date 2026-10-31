@@ -19,6 +19,12 @@
             "Azure Route Table"
         ],
         "GCP": [
+        ],
+        "OCI": [
+            "OCI VCN Subnet",
+            "OCI Security List",
+            "OCI Network Security Group (NSG)",
+            "OCI Route Table"
         ]
     }
 }

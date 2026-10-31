@@ -20,6 +20,9 @@
         ],
         "GCP": [
             "GCP Compute Instance"
+        ],
+        "OCI": [
+            "OCI Compute Instance"
         ]
     }
 }

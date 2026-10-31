@@ -96,7 +96,7 @@ apply writes: nothing changes in a cloud account unless apply runs.`,
 	f := root.PersistentFlags()
 	f.StringVar(&a.g.configPath, "config", "", "config file (default ./tagherd.yaml, then ~/.config/tagherd/tagherd.yaml)")
 	f.StringVar(&a.g.policyDir, "policy-dir", "", "directory with tags.json and the group files (default ./policy)")
-	f.StringSliceVar(&a.g.clouds, "cloud", nil, "limit to clouds: aws, azure, gcp")
+	f.StringSliceVar(&a.g.clouds, "cloud", nil, "limit to clouds: aws, azure, gcp, oci")
 	f.StringArrayVar(&a.g.accounts, "account", nil, "limit to AWS accounts; repeatable; globs allowed")
 	f.StringArrayVar(&a.g.subscriptions, "subscription", nil, "limit to Azure subscriptions; repeatable; globs allowed")
 	f.StringArrayVar(&a.g.projects, "project", nil, "limit to GCP projects; repeatable; globs allowed")

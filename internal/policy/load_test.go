@@ -107,7 +107,7 @@ const fixtureGroup = `{
   "name": "Database",
   "description": "Databases",
   "tags": ["Environment", "DeploymentType"],
-  "target": {"AWS": ["AWS DynamoDB Table"], "Azure": ["Azure SQL Server"], "GCP": []},
+  "target": {"AWS": ["AWS DynamoDB Table"], "Azure": ["Azure SQL Server"], "GCP": [], "OCI": []},
   "filters": {"AWS": {"name": {"DOES_NOT_CONTAIN": ["controltower"]}}}
 }`
 
@@ -115,7 +115,7 @@ const fixtureAMI = `{
   "name": "Images",
   "description": "Images",
   "tags": ["DeploymentType", "OwningOrg", "AdminEmail"],
-  "target": {"AWS": ["AWS Machine Image (AMI)"], "Azure": [], "GCP": []},
+  "target": {"AWS": ["AWS Machine Image (AMI)"], "Azure": [], "GCP": [], "OCI": []},
   "override": {"AWS": {"all": null, "missing": {
     "type": ["VIRTUAL_MACHINE_IMAGE"],
     "where": {"_or": [
@@ -156,7 +156,7 @@ func TestChecks(t *testing.T) {
 		{"duplicate tag", "db.json", `"Environment", "DeploymentType"`, `"Environment", "ENVIRONMENT"`, LevelWarning, "listed twice"},
 		{"missing target", "db.json", `"target"`, `"targets"`, LevelError, `unknown field "targets"`},
 		{"missing cloud", "db.json", `, "GCP": []`, ``, LevelError, "target.GCP: missing"},
-		{"unknown cloud", "db.json", `"GCP": []`, `"GCP": [], "OCI": []`, LevelError, `target.OCI: unknown cloud`},
+		{"unknown cloud", "db.json", `"OCI": []`, `"OCI": [], "IBM": []`, LevelError, `target.IBM: unknown cloud`},
 		{"wrong prefix", "db.json", `"AWS": ["AWS DynamoDB Table"]`, `"AWS": ["AWS DynamoDB Table", "Azure Storage Account"]`, LevelWarning, "target.AWS[1]: \"Azure Storage Account\" is listed under AWS"},
 		{"not in catalog", "db.json", `"AWS DynamoDB Table"`, `"AWS Dynamo Table"`, LevelError, "is not in the type catalog"},
 		{"duplicate type", "db.json", `["AWS DynamoDB Table"]`, `["AWS DynamoDB Table", "AWS DynamoDB Table"]`, LevelWarning, "is listed twice"},
@@ -165,7 +165,7 @@ func TestChecks(t *testing.T) {
 		{"empty filter", "db.json", `["controltower"]`, `[]`, LevelError, "needs name.DOES_NOT_CONTAIN"},
 		{"filter without targets", "db.json", `"AWS": ["AWS DynamoDB Table"]`, `"AWS": []`, LevelWarning, "filter has no effect"},
 		{"override all set", "ami.json", `"all": null`, `"all": {"type": ["X"]}`, LevelError, "override.AWS.all"},
-		{"override missing null", "ami.json", "", `{"name": "Images", "description": "x", "tags": ["DeploymentType"], "target": {"AWS": ["AWS Machine Image (AMI)"], "Azure": [], "GCP": []}, "override": {"AWS": {"all": null, "missing": null}}}`, LevelError, "override.AWS.missing: missing is required"},
+		{"override missing null", "ami.json", "", `{"name": "Images", "description": "x", "tags": ["DeploymentType"], "target": {"AWS": ["AWS Machine Image (AMI)"], "Azure": [], "GCP": [], "OCI": []}, "override": {"AWS": {"all": null, "missing": null}}}`, LevelError, "override.AWS.missing: missing is required"},
 		{"override bad operator", "ami.json", `TAG_DOES_NOT_CONTAIN_ANY": [{"key": "OwningOrg"`, `TAG_STARTS_WITH": [{"key": "OwningOrg"`, LevelError, "unsupported key \"TAG_STARTS_WITH\""},
 		{"override value drift", "ami.json", `"value": "DevOps"`, `"value": "Devops"`, LevelWarning, `value "Devops" for OwningOrg is not an allowed value`},
 		{"override missing value", "ami.json", `, {"key": "OwningOrg", "value": "DevOps"}`, ``, LevelWarning, "OwningOrg values do not match tags.json: missing DevOps"},

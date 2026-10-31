@@ -54,8 +54,9 @@ func TestFixture(t *testing.T) {
 	wantCodes := map[model.Code]int{
 		model.MissingTag: 9, model.EmptyValue: 1, model.InvalidValue: 5, model.CaseMismatch: 3,
 		model.DuplicateKey: 1, model.InvalidDeploymentType: 1, model.NotTaggable: 1,
-		// The fixture's one uncovered type, plus each catalog gap once per cloud.
-		model.UnmappedType: 1 + len(catalogGaps(set, nil)),
+		// The fixture's one uncovered type, plus each catalog gap once per
+		// cloud the fixture has scopes for.
+		model.UnmappedType: 1 + len(catalogGaps(set, []model.Cloud{model.AWS, model.Azure, model.GCP})),
 	}
 	for c, n := range wantCodes {
 		if r.Summary.ByCode[c] != n {

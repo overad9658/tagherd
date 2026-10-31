@@ -70,7 +70,7 @@ func TestDiscoverAndWrite(t *testing.T) {
 
 func TestParseRejects(t *testing.T) {
 	for _, src := range []string{
-		"scopes: [{cloud: OCI, id: x}]",
+		"scopes: [{cloud: IBM, id: x}]",
 		"scopes: [{cloud: AWS, id: x, colour: red}]",
 	} {
 		if _, err := Parse([]byte(src)); err == nil {

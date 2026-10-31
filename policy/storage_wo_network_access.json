@@ -25,6 +25,13 @@
             "GCP Compute Disk",
             "GCP Compute Snapshot",
             "GCP FileStore"
+        ],
+        "OCI": [
+            "OCI Block Volume",
+            "OCI Boot Volume",
+            "OCI Block Volume Backup",
+            "OCI Boot Volume Backup",
+            "OCI File Storage File System"
         ]
     }
 }

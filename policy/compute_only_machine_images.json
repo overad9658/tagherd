@@ -15,6 +15,9 @@
         ],
         "GCP": [
             "GCP Compute Image"
+        ],
+        "OCI": [
+            "OCI Compute Image"
         ]
     },
     "override": {

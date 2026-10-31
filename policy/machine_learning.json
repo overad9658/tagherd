@@ -36,6 +36,16 @@
             "GCP Vertex AI User Managed Workbench",
             "GCP Vertex AI Managed Workbench",
             "GCP Vertex AI Dataset"
+        ],
+        "OCI": [
+            "OCI Data Science Project",
+            "OCI Data Science Notebook Session",
+            "OCI Data Science Model",
+            "OCI Data Science Model Deployment",
+            "OCI Data Science Job",
+            "OCI Data Science Pipeline",
+            "OCI Generative AI Dedicated AI Cluster",
+            "OCI Generative AI Endpoint"
         ]
     }
 }

@@ -174,7 +174,7 @@ func (l *loader) targets(g *Group, target map[string][]string) {
 	}
 	for key := range target {
 		if !isCloudKey(key) {
-			l.r.add(LevelError, g.File, "target."+key, "unknown cloud %q (want AWS, Azure or GCP)", key)
+			l.r.add(LevelError, g.File, "target."+key, "unknown cloud %q (want AWS, Azure, GCP or OCI)", key)
 		}
 	}
 	for _, cloud := range model.Clouds {
@@ -225,7 +225,7 @@ func (l *loader) filters(g *Group, filters map[string]filterFile) {
 		p := "filters." + key
 		cloud, ok := cloudKey(key)
 		if !ok {
-			l.r.add(LevelError, g.File, p, "unknown cloud %q (want AWS, Azure or GCP)", key)
+			l.r.add(LevelError, g.File, p, "unknown cloud %q (want AWS, Azure, GCP or OCI)", key)
 			continue
 		}
 		if f.Name == nil || len(f.Name.DoesNotContain) == 0 {
@@ -253,7 +253,7 @@ func (l *loader) overrides(g *Group, overrides map[string]overrideFile) {
 		p := "override." + key
 		cloud, ok := cloudKey(key)
 		if !ok {
-			l.r.add(LevelError, g.File, p, "unknown cloud %q (want AWS, Azure or GCP)", key)
+			l.r.add(LevelError, g.File, p, "unknown cloud %q (want AWS, Azure, GCP or OCI)", key)
 			continue
 		}
 		if !isNull(o.All) {

@@ -62,6 +62,24 @@
             "GCP Compute Address",
             "GCP Load Balancing Forwarding Rule",
             "GCP DNS Managed Zone"
+        ],
+        "OCI": [
+            "OCI Virtual Cloud Network (VCN)",
+            "OCI Internet Gateway",
+            "OCI NAT Gateway",
+            "OCI Service Gateway",
+            "OCI Local Peering Gateway",
+            "OCI Dynamic Routing Gateway (DRG)",
+            "OCI Customer-Premises Equipment (CPE)",
+            "OCI Site-to-Site VPN IPSec Connection",
+            "OCI Public IP Address",
+            "OCI Load Balancer",
+            "OCI Network Load Balancer",
+            "OCI Network Firewall",
+            "OCI Web Application Firewall Policy",
+            "OCI DNS Zone",
+            "OCI API Gateway",
+            "OCI VNIC"
         ]
     }
 }
