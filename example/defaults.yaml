@@ -1,0 +1,15 @@
+# Default tag values by cloud, scope, group or type, used by tagherd plan for
+# missing or empty tags. The most specific match wins: type, then group, then
+# scope, then the cloud-wide "*". Every value must pass the tag dictionary.
+# "groups" and "types" are reserved keys, never scope IDs.
+#
+aws:
+  "*":
+    Exposure: Internal
+    AdminEmail: admin@example.com
+    Brand: ExampleCorp
+    Environment: Production
+  types:
+    AWS S3 Bucket:
+      DataClassification: Internal
+      EndpointType: Server

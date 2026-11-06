@@ -1,0 +1,24 @@
+{
+    "name": "Storage",
+    "description": "Object storage buckets and accounts",
+    "tags": [
+        "AdminEmail",
+        "Brand",
+        "DataClassification",
+        "DeploymentType",
+        "EndpointType",
+        "Environment",
+        "Exposure"
+    ],
+    "target": {
+        "AWS": [
+            "AWS S3 Bucket"
+        ],
+        "Azure": [
+            "Azure Storage Account"
+        ],
+        "GCP": [
+            "GCP Bucket"
+        ]
+    }
+}

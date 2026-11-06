@@ -147,6 +147,40 @@ func TestParseRows(t *testing.T) {
 	}
 }
 
+func TestKMSKeysClassifyByManager(t *testing.T) {
+	cat, err := catalog.Default()
+	if err != nil {
+		t.Fatal(err)
+	}
+	tests := map[string]struct {
+		manager, display string
+		taggable         catalog.Taggability
+	}{
+		"customer managed": {"CUSTOMER", "AWS KMS Customer Managed Key", catalog.Taggable},
+		"AWS managed":      {"AWS", "AWS KMS AWS Managed Key", catalog.NotTaggable},
+	}
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			row := `{"resourceId":"k","resourceType":"AWS::KMS::Key","awsRegion":"us-east-1","accountId":"1","arn":"arn:aws:kms:us-east-1:1:key/k","configuration":{"keyManager":"` + tc.manager + `"}}`
+			res, err := parseRows([]string{row})
+			if err != nil {
+				t.Fatal(err)
+			}
+			e, err := cat.Classify(model.AWS, res[0].NativeType, res[0].Attrs)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if e == nil || e.Display != tc.display || e.Taggable != tc.taggable {
+				t.Errorf("classified as %+v, want %q", e, tc.display)
+			}
+		})
+	}
+	q := buildQueries([]string{"AWS::KMS::Key"}, "")
+	if len(q) != 1 || !strings.Contains(q[0], "configuration.keyManager") {
+		t.Errorf("query must select keyManager: %v", q)
+	}
+}
+
 func TestBuildQueries(t *testing.T) {
 	var natives []string
 	for i := range 200 {

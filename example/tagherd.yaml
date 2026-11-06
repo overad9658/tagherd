@@ -1,0 +1,21 @@
+# tagherd configuration. Secrets never go in this file: any value can
+# reference an environment variable as ${NAME}. Relative paths resolve
+# against this file's directory.
+#
+# Precedence: command-line flag, then TAGHERD_<FLAG> environment variable,
+# then this file, then the default.
+
+policy_dir: ./policy # tags.json and the group files
+ownership_file: ./ownership.yaml # scope -> OwningOrg
+defaults_file: ./defaults.yaml # optional scope-level tag defaults
+synonyms_file: ./synonyms.yaml # invalid value -> dictionary value
+
+scopes:
+  aws:
+    organization: false # list accounts with AWS Organizations
+    accounts: ["000000000000"] # optional, list of account IDs to query
+    profile: default # optional, AWS CLI profile to use
+    regions: [us-east-1] # default: each account's enabled regions
+    # config_aggregator:          # one AWS Config query per account instead of
+    #   name: org-aggregator      # one per account and region
+    #   region: us-east-1

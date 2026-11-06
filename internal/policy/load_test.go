@@ -30,7 +30,7 @@ func TestRealPolicy(t *testing.T) {
 		t.Errorf("groups = %d, want 17", len(set.Groups))
 	}
 
-	// Listed entries before dedup must match the spec: 147 / 80 / 38.
+	// Listed entries before dedup must match the spec: 149 / 80 / 38.
 	listed := map[model.Cloud]int{}
 	for _, d := range rep.Diagnostics {
 		if strings.Contains(d.Message, "same type as") || strings.Contains(d.Message, "named for another cloud") {
@@ -43,7 +43,7 @@ func TestRealPolicy(t *testing.T) {
 			listed[c] += len(ts)
 		}
 	}
-	want := map[model.Cloud]int{model.AWS: 147, model.Azure: 80, model.GCP: 38}
+	want := map[model.Cloud]int{model.AWS: 149, model.Azure: 80, model.GCP: 38}
 	for c, n := range want {
 		if listed[c] != n {
 			t.Errorf("%s types listed = %d, want %d", c, listed[c], n)

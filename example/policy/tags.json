@@ -1,0 +1,33 @@
+{
+    "Environment": [
+        "Production",
+        "Staging",
+        "Development",
+        "Testing"
+    ],
+    "DeploymentType": [
+        "Manual",
+        "Automation"
+    ],
+    "AdminEmail": [
+        "admin@example.com"
+    ],
+    "Brand": [
+        "ExampleCorp"
+    ],
+    "DataClassification": [
+        "Confidential",
+        "External",
+        "Internal"
+    ],
+    "EndpointType": [
+        "Server"
+    ],
+    "Exposure": [
+        "External",
+        "Internal"
+    ],
+    "OwningOrg": [
+        "DevOps"
+    ]
+}

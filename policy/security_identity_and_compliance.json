@@ -21,6 +21,8 @@
             "AWS ACM Server Certificate",
             "AWS CloudTrail",
             "AWS Secret",
+            "AWS KMS AWS Managed Key",
+            "AWS KMS Customer Managed Key",
             "AWS Account",
             "AWS SAML Identity Provider",
             "AWS OIDC Identity Provider",
