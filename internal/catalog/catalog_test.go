@@ -17,9 +17,9 @@ func TestDefaultLoads(t *testing.T) {
 	for _, e := range c.Entries {
 		counts[e.Cloud]++
 	}
-	// 265 policy names, less the misplaced "Azure Storage Account" under AWS,
+	// 267 policy names, less the misplaced "Azure Storage Account" under AWS,
 	// plus "AWS Backup Plan" and the Azure "Azure Storage Account".
-	want := map[model.Cloud]int{model.AWS: 147, model.Azure: 81, model.GCP: 38}
+	want := map[model.Cloud]int{model.AWS: 149, model.Azure: 81, model.GCP: 38}
 	for cl, n := range want {
 		if counts[cl] != n {
 			t.Errorf("%s entries = %d, want %d", cl, counts[cl], n)

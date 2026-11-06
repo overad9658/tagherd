@@ -103,7 +103,7 @@ The query also uses a top-level `type` list (`SERVICE_CONFIGURATION`, `VIRTUAL_M
 
 ## Resource coverage
 
-The 17 groups name 265 resource types: 147 for AWS, 80 for Azure and 38 for GCP. DeploymentType is required in every group, and AdminEmail and OwningOrg in every group except the subnet, security group and route table group.
+The 17 groups name 267 resource types: 149 for AWS, 80 for Azure and 38 for GCP. DeploymentType is required in every group, and AdminEmail and OwningOrg in every group except the subnet, security group and route table group.
 
 | Group | Required tags | AWS types | Azure types | GCP types |
 | --- | --- | --- | --- | --- |
@@ -121,7 +121,7 @@ The 17 groups name 265 resource types: 147 for AWS, 80 for Azure and 38 for GCP.
 | Management & Governance | Environment, DeploymentType, Brand, AppCategory, AdminEmail, OwningOrg | 14 | 9 | 1 |
 | Networking (w/o subnet, SG, route tables) | Environment, DeploymentType, Brand, AppCategory, AdminEmail, OwningOrg | 28 | 16 | 3 |
 | Networking (only subnet, SG, route tables) | Environment, DeploymentType, Brand, AppCategory | 3 | 3 | 0 |
-| Security, Identity & Compliance | Environment, DeploymentType, Brand, AppCategory, AdminEmail, OwningOrg | 20 | 8 | 5 |
+| Security, Identity & Compliance | Environment, DeploymentType, Brand, AppCategory, AdminEmail, OwningOrg | 22 | 8 | 5 |
 | Storage | Environment, DeploymentType, Brand, AppCategory, Exposure, AdminEmail, OwningOrg, DataClassification | 8 | 5 | 1 |
 | Storage (w/o network access) | Environment, DeploymentType, Brand, AppCategory, AdminEmail, OwningOrg, DataClassification | 5 | 1 | 3 |
 
@@ -137,6 +137,7 @@ Many display names share one provider type, so each catalog entry also needs a d
 | ELB V2 Application / Network Load Balancer | `AWS::ElasticLoadBalancingV2::LoadBalancer` | `type` |
 | EBS Encrypted / Unencrypted Snapshot | `AWS::EC2::Snapshot` | `encrypted` |
 | IAM AWS Managed / Customer Managed Policy | `AWS::IAM::Policy` | ARN account (`aws` vs account ID) |
+| KMS AWS Managed / Customer Managed Key | `AWS::KMS::Key` | `keyManager` |
 | Azure Function / Azure App Service | `Microsoft.Web/sites` | `kind` contains `functionapp` |
 | Azure Database for MySQL / PostgreSQL (Server vs Flexible) | `Microsoft.DBforMySQL/servers` vs `.../flexibleServers` | type only |
 
@@ -438,7 +439,7 @@ The policy files have the items below worth fixing or confirming. Only the "Azur
 | Azure | Databricks Catalog, OpenAI Fine Tuning Job, OpenAI Model | Not ARM resources |
 | GCP | Compute Instance Template; Vertex AI Training, Pipeline Run, Batch Prediction Job | Labels are fixed at creation; scan only, report as not writable |
 
-**Notes from loading the files.** All 18 files parse. The counts match this spec: 147 AWS, 80 Azure and 38 GCP types, 265 in total. Every required tag exists in `tags.json`. No type appears in more than one group, so the union rule is not exercised yet. The only prefix error is the "Azure Storage Account" entry listed above.
+**Notes from loading the files.** All 18 files parse. The counts match this spec: 149 AWS, 80 Azure and 38 GCP types, 267 in total. Every required tag exists in `tags.json`. No type appears in more than one group, so the union rule is not exercised yet. The only prefix error is the "Azure Storage Account" entry listed above.
 
 **OCI targets.** Every group file has an `OCI` list: 85 Oracle Cloud types mapped from the AWS, Azure and GCP equivalents in the same group. OCI has no discovery adapter or tag writer yet, so the catalog marks every OCI type `discovery: none`. They show in `tagherd catalog --gaps`, and a scan reports them as `UNMAPPED_TYPE`. Native types are OCI Search Service resource types, to be confirmed when the adapter is written. Mapping choices worth confirming:
 

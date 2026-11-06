@@ -115,6 +115,8 @@
 - {display: "AWS IAM Service Control Policy (SCP)", cloud: AWS, native_type: "AWS::Organizations::Policy", match: {policy_type: SERVICE_CONTROL_POLICY}, discovery: "list:organizations", taggable: true, write_scope: org-management-account}
 - {display: "AWS IAM User", cloud: AWS, native_type: "AWS::IAM::User", taggable: true}
 - {display: "AWS Internet Gateway", cloud: AWS, native_type: "AWS::EC2::InternetGateway", taggable: true}
+- {display: "AWS KMS AWS Managed Key", cloud: AWS, native_type: "AWS::KMS::Key", match: {key_manager: AWS}, taggable: false, note: "Customers cannot tag AWS managed keys"}
+- {display: "AWS KMS Customer Managed Key", cloud: AWS, native_type: "AWS::KMS::Key", match: {key_manager: CUSTOMER}, taggable: true}
 - {display: "AWS Kinesis Data Streams", cloud: AWS, native_type: "AWS::Kinesis::Stream", taggable: true}
 - {display: "AWS Kinesis Video Streams", cloud: AWS, native_type: "AWS::KinesisVideo::Stream", taggable: true}
 - {display: "AWS Lambda Function", cloud: AWS, native_type: "AWS::Lambda::Function", taggable: true}

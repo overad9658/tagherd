@@ -23,6 +23,7 @@ var configProps = map[string][]string{
 	"AWS::RDS::DBInstance":                      {"engine", "dBClusterIdentifier"},
 	"AWS::RDS::DBCluster":                       {"engine"},
 	"AWS::ElasticLoadBalancingV2::LoadBalancer": {"type"},
+	"AWS::KMS::Key":                             {"keyManager"},
 }
 
 // buildQueries returns the advanced queries for natives. account, when set,
@@ -120,6 +121,8 @@ func rowAttrs(r configRow) map[string]string {
 		attrs["engine"] = str("engine")
 	case "AWS::ElasticLoadBalancingV2::LoadBalancer":
 		attrs["type"] = str("type")
+	case "AWS::KMS::Key":
+		attrs["key_manager"] = str("keyManager")
 	case "AWS::IAM::Policy":
 		// AWS managed policies live in the "aws" account: arn:aws:iam::aws:policy/...
 		attrs["policy_owner"] = "customer"
