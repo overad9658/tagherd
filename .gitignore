@@ -7,6 +7,6 @@ coverage.*
 
 # Local runs
 /tagherd.yaml
-/plan.json
+*plan.json
 /patches/
 tagherd-audit.ndjson

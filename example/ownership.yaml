@@ -1,0 +1,4 @@
+# Owning org by scope, used to fill OwningOrg. Values must be one of the
+# OwningOrg values in tags.json.
+aws:
+  "000000000000": DevOps

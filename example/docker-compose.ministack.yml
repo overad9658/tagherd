@@ -1,0 +1,32 @@
+name: ministack
+
+services:
+  ministack:
+    image: ministackorg/ministack:latest
+    container_name: ministack
+    ports:
+      - "4566:4566"
+    environment:
+      PERSIST_STATE: "1"
+      LOG_LEVEL: INFO
+      # ECS RunTask containers join this network so they can call back to MiniStack.
+      DOCKER_NETWORK: ministack_default
+    pull_policy: always
+    volumes:
+      - ministack-state:/tmp/ministack-state
+      - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:4566/_ministack/health')",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
+volumes:
+  ministack-state:
